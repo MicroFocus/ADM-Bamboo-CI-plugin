@@ -1,10 +1,10 @@
-package ut.com.emyoli.nga.ui;
+package ut.com.hp.octane.plugins.bamboo.ui;
 
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
-import com.emyoli.nga.api.OctaneConfigurationKeys;
-import com.emyoli.nga.ui.ConfigureOctaneAction;
 
+import com.hp.octane.plugins.bamboo.api.OctaneConfigurationKeys;
+import com.hp.octane.plugins.bamboo.ui.ConfigureOctaneAction;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;

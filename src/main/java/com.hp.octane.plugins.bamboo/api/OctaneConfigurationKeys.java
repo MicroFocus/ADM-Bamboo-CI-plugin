@@ -1,9 +1,9 @@
-package com.emyoli.nga.api;
+package com.hp.octane.plugins.bamboo.api;
 
 public interface OctaneConfigurationKeys {
 
     String BAMBOO_INSTANCE_PREFIX = "bamboo-instance-";
-    String PLUGIN_PREFIX = "com.emyoli.nga.bamboo-plugin.";
+    String PLUGIN_PREFIX = "com.hp.octane.plugins.bamboo.";
     String NGA_URL = PLUGIN_PREFIX + "ngaUrl";
     String API_KEY = PLUGIN_PREFIX + "apiKey";
     String API_SECRET = PLUGIN_PREFIX + "apiSecret";

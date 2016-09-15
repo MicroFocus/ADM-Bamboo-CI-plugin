@@ -1,4 +1,4 @@
-package com.emyoli.nga.listener;
+package com.hp.octane.plugins.bamboo.listener;
 
 import com.atlassian.bamboo.chains.StageExecution;
 import com.atlassian.bamboo.chains.plugins.PreJobAction;

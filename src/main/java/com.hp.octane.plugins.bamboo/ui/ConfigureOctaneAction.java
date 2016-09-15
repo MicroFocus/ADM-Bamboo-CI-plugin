@@ -1,16 +1,16 @@
-package com.emyoli.nga.ui;
+package com.hp.octane.plugins.bamboo.ui;
 
 import com.atlassian.bamboo.user.BambooUserManager;
 import com.atlassian.bamboo.ww2.BambooActionSupport;
 import com.atlassian.sal.api.component.ComponentLocator;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
-import com.emyoli.nga.api.OctaneConfigurationKeys;
-import com.emyoli.nga.octane.BambooPluginServices;
 import com.hp.octane.integrations.OctaneSDK;
 import com.hp.octane.integrations.dto.configuration.OctaneConfiguration;
 import com.hp.octane.integrations.dto.connectivity.OctaneResponse;
 
+import com.hp.octane.plugins.bamboo.api.OctaneConfigurationKeys;
+import com.hp.octane.plugins.bamboo.octane.BambooPluginServices;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

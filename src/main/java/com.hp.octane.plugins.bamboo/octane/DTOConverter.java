@@ -1,4 +1,4 @@
-package com.emyoli.nga.octane;
+package com.hp.octane.plugins.bamboo.octane;
 
 import com.atlassian.bamboo.chains.cache.ImmutableChainStage;
 import com.atlassian.bamboo.plan.PlanIdentifier;

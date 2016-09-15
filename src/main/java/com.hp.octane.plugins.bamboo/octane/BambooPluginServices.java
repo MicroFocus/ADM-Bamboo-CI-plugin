@@ -1,4 +1,4 @@
-package com.emyoli.nga.octane;
+package com.hp.octane.plugins.bamboo.octane;
 
 import com.atlassian.bamboo.agent.classserver.AgentServerManager;
 import com.atlassian.bamboo.applinks.ImpersonationService;
@@ -13,7 +13,6 @@ import com.atlassian.bamboo.user.BambooUserManager;
 import com.atlassian.sal.api.component.ComponentLocator;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
-import com.emyoli.nga.api.OctaneConfigurationKeys;
 import com.hp.octane.integrations.OctaneSDK;
 import com.hp.octane.integrations.dto.DTOFactory;
 import com.hp.octane.integrations.dto.configuration.CIProxyConfiguration;
@@ -27,6 +26,7 @@ import com.hp.octane.integrations.dto.snapshots.SnapshotNode;
 import com.hp.octane.integrations.dto.tests.TestsResult;
 import com.hp.octane.integrations.spi.CIPluginServices;
 
+import com.hp.octane.plugins.bamboo.api.OctaneConfigurationKeys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

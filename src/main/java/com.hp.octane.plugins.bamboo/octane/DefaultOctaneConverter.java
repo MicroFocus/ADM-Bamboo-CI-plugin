@@ -1,4 +1,4 @@
-package com.emyoli.nga.octane;
+package com.hp.octane.plugins.bamboo.octane;
 
 import com.atlassian.bamboo.agent.classserver.AgentServerManager;
 import com.atlassian.bamboo.chains.cache.ImmutableChainStage;
@@ -8,7 +8,6 @@ import com.atlassian.bamboo.plan.cache.ImmutableTopLevelPlan;
 import com.atlassian.bamboo.results.tests.TestResults;
 import com.atlassian.bamboo.resultsummary.ImmutableResultsSummary;
 import com.atlassian.sal.api.component.ComponentLocator;
-import com.emyoli.nga.api.OctaneConfigurationKeys;
 import com.hp.octane.integrations.dto.DTOFactory;
 import com.hp.octane.integrations.dto.causes.CIEventCause;
 import com.hp.octane.integrations.dto.causes.CIEventCauseType;
@@ -27,6 +26,7 @@ import com.hp.octane.integrations.dto.tests.BuildContext;
 import com.hp.octane.integrations.dto.tests.TestRun;
 import com.hp.octane.integrations.dto.tests.TestRunError;
 import com.hp.octane.integrations.dto.tests.TestRunResult;
+import com.hp.octane.plugins.bamboo.api.OctaneConfigurationKeys;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,8 +1,8 @@
-package com.emyoli.nga.listener;
+package com.hp.octane.plugins.bamboo.listener;
 
-import com.emyoli.nga.octane.DTOConverter;
-import com.emyoli.nga.octane.DefaultOctaneConverter;
 
+import com.hp.octane.plugins.bamboo.octane.DTOConverter;
+import com.hp.octane.plugins.bamboo.octane.DefaultOctaneConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
