@@ -15,7 +15,7 @@
     <packaging>atlassian-plugin</packaging>
 	<groupId>com.hpe.alm.octane.plugins</groupId>
     <artifactId>bamboo-ci-plugin</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.0</version>
 
 	<properties>
 		<maven.compiler.plugin.version>1.7</maven.compiler.plugin.version>
@@ -32,6 +32,7 @@
 		<matching.obj>jarfile_batch_sign_local_timestamp</matching.obj>
 		<file.name>${project.artifactId}-${project.version}.jar</file.name>
 		<shaded.file.name>${project.artifactId}-${project.version}-shaded.jar</shaded.file.name>
+		<integrations.sdk.version>1.0</integrations.sdk.version>
 	</properties>
 
 	<dependencies>
@@ -78,7 +79,7 @@
 		<dependency>
 			<artifactId>integrations-sdk</artifactId>
 			<groupId>com.hpe.alm.octane.plugins</groupId>
-			<version>1.0-SNAPSHOT</version>
+			<version>${integrations.sdk.version}</version>
 		</dependency>
 
 		<!-- TESTS -->
@@ -169,8 +170,8 @@
 							<artifactItems>
 								<artifactItem>
 									<artifactId>integrations-sdk</artifactId>
-									<groupId>com.hp.mqm</groupId>
-									<version>${project.version}</version>
+									<groupId>com.hpe.alm.octane.plugins</groupId>
+									<version>${integrations.sdk.version}</version>
 									<type>test-jar</type>
 									<outputDirectory>${project.build.directory}/test-classes</outputDirectory>
 								</artifactItem>
