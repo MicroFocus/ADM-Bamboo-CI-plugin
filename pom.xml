@@ -79,7 +79,7 @@
 		<matching.obj>jarfile_batch_sign_local_timestamp</matching.obj>
 		<file.name>${project.artifactId}-${project.version}.jar</file.name>
 		<shaded.file.name>${project.artifactId}-${project.version}-shaded.jar</shaded.file.name>
-		<integrations.sdk.version>1.0</integrations.sdk.version>
+		<integrations.sdk.version>1.1</integrations.sdk.version>
 		<nexus-staging-maven-plugin.version>1.6.7</nexus-staging-maven-plugin.version>
 	</properties>
 
@@ -125,7 +125,7 @@
 		<!-- INTERNAL -->
 		<dependency>
 			<artifactId>integrations-sdk</artifactId>
-			<groupId>com.hpe.alm.octane.plugins</groupId>
+			<groupId>com.hpe.adm.octane.ciplugins</groupId>
 			<version>${integrations.sdk.version}</version>
 		</dependency>
 
@@ -254,7 +254,7 @@
 							<artifactItems>
 								<artifactItem>
 									<artifactId>integrations-sdk</artifactId>
-									<groupId>com.hpe.alm.octane.plugins</groupId>
+									<groupId>com.hpe.adm.octane.ciplugins</groupId>
 									<version>${integrations.sdk.version}</version>
 									<type>test-jar</type>
 									<outputDirectory>${project.build.directory}/test-classes</outputDirectory>
