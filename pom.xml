@@ -3,25 +3,72 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.hpe.adm.octane.ciplugins</groupId>
+	<artifactId>bamboo-ci-plugin</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>atlassian-plugin</packaging>
+
 	<name>HPE ALM Octane Bamboo CI Plugin</name>
 	<description>
 		This plugin enables ALM Octane to retrieve and display Bamboo build pipelines and synchronize test results with Bamboo.
 	</description>
-
+	<url></url>
 	<organization>
 		<name>HPE</name>
 	</organization>
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 
-    <packaging>atlassian-plugin</packaging>
-	<groupId>com.hpe.alm.octane.plugins</groupId>
-    <artifactId>bamboo-ci-plugin</artifactId>
-	<version>1.0</version>
+	<developers>
+		<developer>
+			<name>Michael Seldin</name>
+			<email>michael.seldin@hpe.com</email>
+			<organization>HPE</organization>
+			<roles>
+				<role>Global owner and maintainer</role>
+			</roles>
+		</developer>
+		<developer>
+			<id>lazara3</id>
+			<name>Ayellet Lazar</name>
+			<email>ayellet.lazar@hpe.com</email>
+			<organization>HPE</organization>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>scm:git:ssh://github.com/HPSoftware/octane-bamboo-plugin.git</connection>
+		<developerConnection>scm:git:ssh://github.com/HPSoftware/octane-bamboo-plugin.git</developerConnection>
+		<url>https://github.com/HPSoftware/octane-bamboo-plugin</url>
+		<tag>HEAD</tag>
+	</scm>
+
+	<issueManagement></issueManagement>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>snapshot-repository</id>
+			<name>Maven2 Snapshot Repository</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<uniqueVersion>false</uniqueVersion>
+		</snapshotRepository>
+		<repository>
+			<id>release-repository</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+		</repository>
+	</distributionManagement>
 
 	<properties>
+		<maven-javadoc-plugin.version>2.10.4</maven-javadoc-plugin.version>
 		<maven.compiler.plugin.version>1.7</maven.compiler.plugin.version>
 		<bamboo.version>5.9.10</bamboo.version>
 		<bamboo.data.version>5.9.10</bamboo.data.version>
-		<amps.version>5.0.18</amps.version>
+		<amps.version>5.1.11</amps.version>
 		<plugin.testrunner.version>1.2.3</plugin.testrunner.version>
 		<atlassian.spring.scanner.version>1.2.13</atlassian.spring.scanner.version>
 		<!-- This key is used to keep the consistency between the key in atlassian-plugin.xml and the key to generate bundle. -->
@@ -33,10 +80,10 @@
 		<file.name>${project.artifactId}-${project.version}.jar</file.name>
 		<shaded.file.name>${project.artifactId}-${project.version}-shaded.jar</shaded.file.name>
 		<integrations.sdk.version>1.0</integrations.sdk.version>
+		<nexus-staging-maven-plugin.version>1.6.7</nexus-staging-maven-plugin.version>
 	</properties>
 
 	<dependencies>
-
 		<!-- CONTAINER -->
 		<dependency>
 			<artifactId>atlassian-bamboo-web</artifactId>
@@ -103,6 +150,38 @@
 		</dependency>
 	</dependencies>
 
+	<repositories>
+		<repository>
+			<id>atlassian-public</id>
+			<url>https://maven.atlassian.com/repository/public</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>never</updatePolicy>
+				<checksumPolicy>warn</checksumPolicy>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+				<checksumPolicy>warn</checksumPolicy>
+			</releases>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>atlassian-public</id>
+			<url>https://maven.atlassian.com/repository/public</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>never</updatePolicy>
+				<checksumPolicy>warn</checksumPolicy>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+				<checksumPolicy>warn</checksumPolicy>
+			</releases>
+		</pluginRepository>
+	</pluginRepositories>
+
 	<build>
 		<pluginManagement>
 			<plugins>
@@ -114,6 +193,11 @@
 						<source>${maven.compiler.plugin.version}</source>
 						<target>${maven.compiler.plugin.version}</target>
 					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>2.10.4</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -180,77 +264,103 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<excludePackageNames>*.impl</excludePackageNames>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
-	<!--<profiles>-->
-		<!--<profile>-->
-			<!--<id>jar-signing</id>-->
-			<!--<build>-->
-				<!--<defaultGoal>install</defaultGoal>-->
-				<!--<plugins>-->
-					<!--<plugin>-->
-						<!--<groupId>org.apache.maven.plugins</groupId>-->
-						<!--<artifactId>maven-antrun-plugin</artifactId>-->
-						<!--<version>1.7</version>-->
-						<!--<executions>-->
-							<!--<execution>-->
-								<!--<phase>generate-resources</phase>-->
-								<!--<goals>-->
-									<!--<goal>run</goal>-->
-								<!--</goals>-->
-								<!--<configuration>-->
-									<!--<tasks>-->
-										<!--<echo>inside jar-signing</echo>-->
-									<!--</tasks>-->
-								<!--</configuration>-->
-							<!--</execution>-->
 
-							<!--<execution>-->
-								<!--<id>default-cli</id>-->
-								<!--<phase>post-integration-test</phase>-->
-								<!--<goals>-->
-									<!--<goal>run</goal>-->
-								<!--</goals>-->
-								<!--<configuration>-->
-									<!--<target name="Sign">-->
-										<!--<echo message="Signing JAR"/>-->
-										<!--<exec executable="/bin/bash" failonerror="true">-->
-											<!--<arg value="../../scripts/Sign/sign_jar.sh"/>-->
-											<!--<arg value="${project.build.directory}"/>-->
-											<!--<arg value="${file.name}"/>-->
-										<!--</exec>-->
-									<!--</target>-->
-								<!--</configuration>-->
-							<!--</execution>-->
-						<!--</executions>-->
-					<!--</plugin>-->
-				<!--</plugins>-->
-			<!--</build>-->
-		<!--</profile>-->
-	<!--</profiles>-->
+	<profiles>
 
+		<profile>
+			<id>build-deployment</id>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-javadoc-plugin</artifactId>
+							<version>${maven-javadoc-plugin.version}</version>
+							<executions>
+								<execution>
+									<id>attach-javadocs</id>
+									<goals>
+										<goal>jar</goal>
+									</goals>
+								</execution>
+							</executions>
+						</plugin>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-source-plugin</artifactId>
+							<version>${maven-source-plugin.version}</version>
+							<executions>
+								<execution>
+									<id>attach-sources</id>
+									<goals>
+										<goal>jar</goal>
+										<goal>test-jar</goal>
+									</goals>
+								</execution>
+							</executions>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
 
-    <profiles>
-        <profile>
-            <id>snapshot</id>
-            <distributionManagement>
-                <snapshotRepository>
-                    <id>mqm-snapshots</id>
-                    <name>Snapshot repository</name>
-                    <url>${baseNexusURL}/content/repositories/mqm-snapshots</url>
-                </snapshotRepository>
-            </distributionManagement>
-        </profile>
-        <profile>
-            <id>bintray-release</id>
-            <distributionManagement>
-                <repository>
-                    <id>bintray-adm-maven</id>
-                    <name>adm-maven</name>
-                    <url>https://api.bintray.com/maven/adm/maven/mqm-client-lib/</url>
-                </repository>
-            </distributionManagement>
-        </profile>
-    </profiles>
-    
+		</profile>
+		<profile>
+			<id>sign</id>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-gpg-plugin</artifactId>
+							<version>${maven-gpg-plugin.version}</version>
+							<executions>
+								<execution>
+									<id>sign-artifacts</id>
+									<phase>verify</phase>
+									<goals>
+										<goal>sign</goal>
+									</goals>
+								</execution>
+							</executions>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.sonatype.plugins</groupId>
+						<artifactId>nexus-staging-maven-plugin</artifactId>
+						<version>${nexus-staging-maven-plugin.version}</version>
+						<extensions>true</extensions>
+						<configuration>
+							<serverId>release-repository</serverId>
+							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+							<autoReleaseAfterClose>true</autoReleaseAfterClose>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
 </project>
