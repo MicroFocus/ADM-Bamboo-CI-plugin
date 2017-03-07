@@ -12,7 +12,7 @@
 	<description>
 		This plugin enables ALM Octane to retrieve and display Bamboo build pipelines and synchronize test results with Bamboo.
 	</description>
-	<url></url>
+	<url>https://github.com/HPSoftware/octane-bamboo-plugin</url>
 	<organization>
 		<name>HPE</name>
 	</organization>
@@ -60,6 +60,7 @@
 	<properties>
 		<maven-javadoc-plugin.version>2.10.4</maven-javadoc-plugin.version>
 		<maven.compiler.plugin.version>1.7</maven.compiler.plugin.version>
+		<maven-source-plugin.version>2.2.1</maven-source-plugin.version>
 		<bamboo.version>5.9.10</bamboo.version>
 		<bamboo.data.version>5.9.10</bamboo.data.version>
 		<amps.version>5.1.11</amps.version>
