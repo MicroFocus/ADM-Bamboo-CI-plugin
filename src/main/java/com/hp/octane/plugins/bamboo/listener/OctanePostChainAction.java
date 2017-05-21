@@ -78,7 +78,7 @@ public class OctanePostChainAction extends BaseListener implements PostChainActi
 						Arrays.asList(cause),
 						String.valueOf(planResultKey.getBuildNumber()),
 						event.getContext().getCurrentResult().getBuildState(),
-						System.currentTimeMillis(),
+						(event.getTimestamp()- event.getContext().getCurrentResult().getTasksStartDate().getTime()),
 						PhaseType.INTERNAL);
 
 				OctaneSDK.getInstance().getEventsService().publishEvent(ciEvent);
@@ -131,7 +131,7 @@ public class OctanePostChainAction extends BaseListener implements PostChainActi
 				causes,
 				String.valueOf(chainExecution.getBuildIdentifier().getBuildNumber()),
 				chainResultsSummary.getBuildState(),
-				System.currentTimeMillis(),
+				chainResultsSummary.getProcessingDuration(),//System.currentTimeMillis(),
 				PhaseType.INTERNAL);
 
 //		event.setResult((chainResultsSummary.getBuildState() == BuildState.SUCCESS) ? CIBuildResult.SUCCESS : CIBuildResult.FAILURE);

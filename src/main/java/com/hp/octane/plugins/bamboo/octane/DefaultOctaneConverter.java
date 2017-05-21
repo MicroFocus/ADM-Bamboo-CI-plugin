@@ -242,11 +242,14 @@ public class DefaultOctaneConverter implements DTOConverter {
 	}
 
 	@Override
-	public CIEvent getEventWithDetails(String project, String buildCiId, String displayName, CIEventType eventType, long startTime, long estimatedDuration,
-	                                   List<CIEventCause> causes, String number, BuildState buildState, Long currnetTime, PhaseType phaseType) {
+	public CIEvent getEventWithDetails(String project, String buildCiId, String displayName, CIEventType eventType, long startTime,
+									   long estimatedDuration, List<CIEventCause> causes, String number, BuildState buildState,
+									   Long currnetTime, PhaseType phaseType) {
 
-		CIEvent event = getEventWithDetails(project, buildCiId, displayName, eventType, startTime, estimatedDuration, causes, number, phaseType);
-		event.setDuration(currnetTime - event.getStartTime());
+		CIEvent event = getEventWithDetails(project, buildCiId, displayName, eventType, startTime, estimatedDuration,
+				causes, number, phaseType);
+		//event.setDuration(currnetTime - event.getStartTime());
+		event.setDuration(currnetTime);
 		event.setResult(getJobResult(buildState));
 		return event;
 	}
