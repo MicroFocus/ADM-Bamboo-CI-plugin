@@ -14,7 +14,7 @@
  *
  */
 
-package com.hp.octane.plugins.bamboo.listener;
+package com.hpe.bamboo.plugin.octane.listener;
 
 import com.atlassian.bamboo.chains.Chain;
 import com.atlassian.bamboo.chains.ChainExecution;
@@ -40,7 +40,7 @@ import com.hp.octane.integrations.dto.tests.BuildContext;
 import com.hp.octane.integrations.dto.tests.TestRun;
 import com.hp.octane.integrations.dto.tests.TestRunResult;
 import com.hp.octane.integrations.dto.tests.TestsResult;
-import com.hp.octane.plugins.bamboo.api.OctaneConfigurationKeys;
+import com.hpe.bamboo.plugin.octane.api.OctaneConfigurationKeys;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -14,7 +14,7 @@
  *
  */
 
-package com.hp.octane.plugins.bamboo.rest;
+package com.hpe.bamboo.plugin.octane.rest;
 
 import com.atlassian.bamboo.user.BambooUser;
 import com.atlassian.bamboo.user.BambooUserManager;

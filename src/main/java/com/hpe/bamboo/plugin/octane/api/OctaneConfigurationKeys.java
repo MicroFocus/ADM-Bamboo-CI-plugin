@@ -14,14 +14,14 @@
  *
  */
 
-package com.hp.octane.plugins.bamboo.listener;
+package com.hpe.bamboo.plugin.octane.api;
 
-import com.hp.octane.plugins.bamboo.octane.DTOConverter;
-import com.hp.octane.plugins.bamboo.octane.DefaultOctaneConverter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-public class BaseListener {
-	protected static final DTOConverter CONVERTER = DefaultOctaneConverter.getInstance();
-	protected final Logger log = LoggerFactory.getLogger(getClass());
+public interface OctaneConfigurationKeys {
+	String PLUGIN_PREFIX = "com.hp.octane.plugins.bamboo.";
+	String OCTANE_URL = PLUGIN_PREFIX + "octaneUrl";
+	String ACCESS_KEY = PLUGIN_PREFIX + "accessKey";
+	String API_SECRET = PLUGIN_PREFIX + "apiSecret";
+	String IMPERSONATION_USER = PLUGIN_PREFIX + "userName";
+	String SHARED_SPACE_ID = PLUGIN_PREFIX + "sharedSpaceId";
+	String UUID = "uuid";
 }

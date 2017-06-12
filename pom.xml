@@ -8,11 +8,11 @@
 	<version>1.0-SNAPSHOT</version>
 	<packaging>atlassian-plugin</packaging>
 
-	<name>HPE ALM Octane Bamboo CI Plugin</name>
+	<name>HPE Bamboo CI Plugin</name>
 	<description>
-		This plugin enables ALM Octane to retrieve and display Bamboo build pipelines and synchronize test results with Bamboo.
+		This plugin allows users to use HPE Software products' functionalities through Bamboo.
 	</description>
-	<url>https://github.com/HPSoftware/octane-bamboo-plugin</url>
+	<url>https://github.com/HPSoftware/hpe-bamboo-plugin</url>
 	<organization>
 		<name>HPE</name>
 	</organization>

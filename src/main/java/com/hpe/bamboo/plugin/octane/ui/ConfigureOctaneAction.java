@@ -14,7 +14,7 @@
  *
  */
 
-package com.hp.octane.plugins.bamboo.ui;
+package com.hpe.bamboo.plugin.octane.ui;
 
 import org.acegisecurity.AccessDeniedException;
 import com.atlassian.bamboo.security.BambooPermissionManager;
@@ -22,8 +22,8 @@ import com.atlassian.bamboo.ww2.BambooActionSupport;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.hp.octane.integrations.OctaneSDK;
-import com.hp.octane.plugins.bamboo.api.OctaneConfigurationKeys;
-import com.hp.octane.plugins.bamboo.octane.BambooPluginServices;
+import com.hpe.bamboo.plugin.octane.api.OctaneConfigurationKeys;
+import com.hpe.bamboo.plugin.octane.octane.BambooPluginServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;

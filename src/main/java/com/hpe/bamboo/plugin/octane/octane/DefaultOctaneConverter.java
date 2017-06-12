@@ -14,7 +14,7 @@
  *
  */
 
-package com.hp.octane.plugins.bamboo.octane;
+package com.hpe.bamboo.plugin.octane.octane;
 
 import com.atlassian.bamboo.builder.BuildState;
 import com.atlassian.bamboo.builder.LifeCycleState;

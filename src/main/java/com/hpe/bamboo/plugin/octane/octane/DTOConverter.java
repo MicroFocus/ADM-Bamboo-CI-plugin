@@ -14,7 +14,7 @@
  *
  */
 
-package com.hp.octane.plugins.bamboo.octane;
+package com.hpe.bamboo.plugin.octane.octane;
 
 import com.atlassian.bamboo.builder.BuildState;
 import com.atlassian.bamboo.chains.cache.ImmutableChainStage;
@@ -33,7 +33,6 @@ import com.hp.octane.integrations.dto.general.CIServerInfo;
 import com.hp.octane.integrations.dto.pipelines.PipelineNode;
 import com.hp.octane.integrations.dto.pipelines.PipelinePhase;
 import com.hp.octane.integrations.dto.scm.SCMData;
-import com.hp.octane.integrations.dto.snapshots.CIBuildResult;
 import com.hp.octane.integrations.dto.snapshots.SnapshotNode;
 import com.hp.octane.integrations.dto.tests.BuildContext;
 import com.hp.octane.integrations.dto.tests.TestRun;

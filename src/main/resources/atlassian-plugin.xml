@@ -43,33 +43,38 @@
   </web-item>
   <xwork key="ngaActions" name="Octane Configuration Actions">
     <package name="ngaAdmin" extends="admin" namespace="/admin/nga">
-      <action name="configureOctaneEdit" class="com.hp.octane.plugins.bamboo.ui.ConfigureOctaneAction" method="edit">
+      <action name="configureOctaneEdit" class="com.hpe.bamboo.plugin.octane.ui.ConfigureOctaneAction" method="edit">
         <result name="input" type="freemarker">/templates/configureOctane.ftl</result>
         <param name="mode">edit</param>
       </action>
-      <action name="configureOctaneSave" class="com.hp.octane.plugins.bamboo.ui.ConfigureOctaneAction" method="save">
+      <action name="configureOctaneSave" class="com.hpe.bamboo.plugin.octane.ui.ConfigureOctaneAction" method="save">
         <result name="input" type="freemarker">/templates/configureOctane.ftl</result>
         <result name="success" type="freemarker">/templates/configureOctane.ftl</result>
         <result name="error" type="freemarker">/error.ftl</result>
       </action>
     </package>
   </xwork>
-  <bambooEventListener key="buildContextListener" name="Build Context Listener" class="com.hp.octane.plugins.bamboo.listener.OctanePostChainAction">
+  <bambooEventListener key="buildContextListener" name="Build Context Listener" class="com.hpe.bamboo.plugin.octane.listener.OctanePostChainAction">
     <description>Listens for build context events</description>
   </bambooEventListener>
-  <postChainAction key="ngaPostChainReporter" name="NGA post-chain build status reporter" class="com.hp.octane.plugins.bamboo.listener.OctanePostChainAction">
+  <postChainAction key="ngaPostChainReporter" name="NGA post-chain build status reporter" class="com.hpe.bamboo.plugin.octane.listener.OctanePostChainAction">
     <description>Report root job finished to NGA</description>
   </postChainAction>
-  <preChainAction key="ngaPreChainReporter" name="NGA pre-chain build status reporter" class="com.hp.octane.plugins.bamboo.listener.OctanePreChainAction">
+  <preChainAction key="ngaPreChainReporter" name="NGA pre-chain build status reporter" class="com.hpe.bamboo.plugin.octane.listener.OctanePreChainAction">
     <description>Report root job started to NGA</description>
   </preChainAction>
-  <preJobAction key="ngaPreJobReporter" name="NGA pre-job build status reporter" class="com.hp.octane.plugins.bamboo.listener.OctanePreJobAction">
+  <preJobAction key="ngaPreJobReporter" name="NGA pre-job build status reporter" class="com.hpe.bamboo.plugin.octane.listener.OctanePreJobAction">
     <description>Report non-root job started to NGA</description>
   </preJobAction>
-  <postJobAction key="ngaPostJobReporter" name="NGA post-job build status reporter" class="com.hp.octane.plugins.bamboo.listener.OctanePostJobAction">
+  <postJobAction key="ngaPostJobReporter" name="NGA post-job build status reporter" class="com.hpe.bamboo.plugin.octane.listener.OctanePostJobAction">
     <description>Report non-root job finished to NGA</description>
   </postJobAction>
   <rest name="Octane Rest Resource" i18n-name-key="octane-rest-resource.name" key="octane-rest-resource" path="/octane" version="1.0">
     <description key="octane-rest-resource.description">Octane Rest</description>
   </rest>
+  <taskType key="LoadRunnerTestTask" name="LoadRunner Test Task" class="com.hpe.bamboo.plugin.loadrunner.task.LoadRunnerTestTask">
+      <description>Run LoadRunner tests</description>
+      <configuration class="com.hpe.bamboo.plugin.loadrunner.ui.LoadRunnerTaskConfigurator" />
+      <resource type="freemarker" name="edit" location="templates/loadrunner/configureLRTest.ftl"/>
+  </taskType>
 </atlassian-plugin>

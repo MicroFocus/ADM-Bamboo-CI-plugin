@@ -14,7 +14,7 @@
  *
  */
 
-package com.hp.octane.plugins.bamboo.listener;
+package com.hpe.bamboo.plugin.octane.listener;
 
 import com.atlassian.bamboo.chains.StageExecution;
 import com.atlassian.bamboo.chains.plugins.PreJobAction;

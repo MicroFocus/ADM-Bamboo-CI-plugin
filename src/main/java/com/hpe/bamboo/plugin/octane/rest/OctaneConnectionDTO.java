@@ -14,7 +14,7 @@
  *
  */
 
-package com.hp.octane.plugins.bamboo.rest;
+package com.hpe.bamboo.plugin.octane.rest;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

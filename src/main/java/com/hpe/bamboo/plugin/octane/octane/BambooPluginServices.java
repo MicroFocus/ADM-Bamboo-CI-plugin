@@ -14,7 +14,7 @@
  *
  */
 
-package com.hp.octane.plugins.bamboo.octane;
+package com.hpe.bamboo.plugin.octane.octane;
 
 import com.atlassian.bamboo.applinks.ImpersonationService;
 import com.atlassian.bamboo.configuration.AdministrationConfigurationAccessor;
@@ -45,7 +45,7 @@ import com.hp.octane.integrations.dto.tests.TestsResult;
 import com.hp.octane.integrations.exceptions.ConfigurationException;
 import com.hp.octane.integrations.exceptions.PermissionException;
 import com.hp.octane.integrations.spi.CIPluginServices;
-import com.hp.octane.plugins.bamboo.api.OctaneConfigurationKeys;
+import com.hpe.bamboo.plugin.octane.api.OctaneConfigurationKeys;
 import org.acegisecurity.acls.Permission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
