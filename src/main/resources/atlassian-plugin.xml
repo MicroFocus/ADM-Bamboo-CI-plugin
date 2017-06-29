@@ -74,6 +74,7 @@
   </rest>
   <taskType key="LoadRunnerTestTask" name="LoadRunner Test Task" class="com.hpe.bamboo.plugin.loadrunner.task.LoadRunnerTestTask">
       <description>Run LoadRunner tests</description>
+      <category name="test"/>
       <configuration class="com.hpe.bamboo.plugin.loadrunner.ui.LoadRunnerTaskConfigurator" />
       <resource type="freemarker" name="edit" location="templates/loadrunner/configureLRTest.ftl"/>
   </taskType>

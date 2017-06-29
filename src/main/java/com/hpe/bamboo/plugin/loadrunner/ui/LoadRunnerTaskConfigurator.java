@@ -6,6 +6,7 @@ import com.atlassian.bamboo.task.TaskDefinition;
 import com.atlassian.bamboo.utils.error.ErrorCollection;
 import com.atlassian.struts.DefaultTextProvider;
 import com.atlassian.struts.TextProvider;
+import com.hpe.utils.loadrunner.LRConsts;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Map;
@@ -15,32 +16,16 @@ import java.util.Map;
  */
 public class LoadRunnerTaskConfigurator extends AbstractTaskConfigurator {
 
-    private static TextProvider textProvider = new DefaultTextProvider();
-    private static final String TESTS = textProvider.getText("lr.param.name.tests");
-    private static final String TIMEOUT = textProvider.getText("lr.param.name.timeout");
-    private static final String POLLING_INTERVAL = textProvider.getText("lr.param.name.pollingInterval");
-    private static final String EXEC_TIMEOUT = textProvider.getText("lr.param.name.execTimeout");
-    private static final String IGNORE_ERRORS = textProvider.getText("lr.param.name.ignoreErrors");
-    private static final String LABEL_TESTS = textProvider.getText("lr.param.label.tests");
-    private static final String LABEL_TIMEOUT = textProvider.getText("lr.param.label.timeout");
-    private static final String LABEL_POLLING_INTERVAL = textProvider.getText("lr.param.label.pollingInterval");
-    private static final String LABEL_EXEC_TIMEOUT = textProvider.getText("lr.param.label.execTimeout");
-    private static final String LABEL_IGNORE_ERRORS = textProvider.getText("lr.param.label.ignoreErrors");
-    private static final String DEFAULT_TIMEOUT = textProvider.getText("lr.param.value.timeout");
-    private static final String DEFAULT_POLLING_INTERVAL = textProvider.getText("lr.param.value.pollingInterval");
-    private static final String DEFAULT_EXEC_TIMEOUT = textProvider.getText("lr.param.value.execTimeout");
-
     private static final String INT_REGEX = "[0-9]*";
-
 
     public Map<String, String> generateTaskConfigMap(final ActionParametersMap params, final TaskDefinition previousTaskDefinition)
     {
         final Map<String, String> config = super.generateTaskConfigMap(params, previousTaskDefinition);
-        config.put(TESTS, params.getString(TESTS));
-        config.put(TIMEOUT, params.getString(TIMEOUT));
-        config.put(POLLING_INTERVAL, params.getString(POLLING_INTERVAL));
-        config.put(EXEC_TIMEOUT, params.getString(EXEC_TIMEOUT));
-        config.put(IGNORE_ERRORS, params.getString(IGNORE_ERRORS));
+        config.put(LRConsts.TESTS, params.getString(LRConsts.TESTS));
+        config.put(LRConsts.TIMEOUT, params.getString(LRConsts.TIMEOUT));
+        config.put(LRConsts.POLLING_INTERVAL, params.getString(LRConsts.POLLING_INTERVAL));
+        config.put(LRConsts.EXEC_TIMEOUT, params.getString(LRConsts.EXEC_TIMEOUT));
+        config.put(LRConsts.IGNORE_ERRORS, params.getString(LRConsts.IGNORE_ERRORS));
 
         return config;
     }
@@ -49,28 +34,29 @@ public class LoadRunnerTaskConfigurator extends AbstractTaskConfigurator {
     {
         super.validate(params, errorCollection);
 
-        String testsValue = params.getString(TESTS);
-        if (!goodInput(TESTS, testsValue))
+        String testsValue = params.getString(LRConsts.TESTS);
+        if (!goodInput(LRConsts.TESTS, testsValue))
         {
-            errorCollection.addError(TESTS, textProvider.getText("lr.param.error.tests"));
+            errorCollection.addError(LRConsts.TESTS,
+                    LRConsts.ERROR_TESTS);
         }
-        //TBD: Make sure the value is a positive integers
-        String timeoutValue = params.getString(TIMEOUT);
-        if (!goodInput(TIMEOUT, timeoutValue))
+        String timeoutValue = params.getString(LRConsts.TIMEOUT);
+        if (!goodInput(LRConsts.TIMEOUT, timeoutValue))
         {
-            errorCollection.addError(TIMEOUT, textProvider.getText("lr.param.error.timeout"));
+            errorCollection.addError(LRConsts.TIMEOUT,
+                    LRConsts.ERROR_TIMEOUT);
         }
-        //TBD: Make sure the value is a positive integers
-        String pollingValue = params.getString(POLLING_INTERVAL);
-        if (!goodInput(POLLING_INTERVAL, pollingValue))
+        String pollingValue = params.getString(LRConsts.POLLING_INTERVAL);
+        if (!goodInput(LRConsts.POLLING_INTERVAL, pollingValue))
         {
-            errorCollection.addError(POLLING_INTERVAL, textProvider.getText("lr.param.error.pollingInterval"));
+            errorCollection.addError(LRConsts.POLLING_INTERVAL,
+                    LRConsts.ERROR_POLLING_INTERVAL);
         }
-        //TBD: Make sure the value is a positive integers
-        String execTimeoutValue = params.getString(EXEC_TIMEOUT);
-        if (!goodInput(EXEC_TIMEOUT, execTimeoutValue))
+        String execTimeoutValue = params.getString(LRConsts.EXEC_TIMEOUT);
+        if (!goodInput(LRConsts.EXEC_TIMEOUT, execTimeoutValue))
         {
-            errorCollection.addError(EXEC_TIMEOUT, textProvider.getText("lr.param.error.execTimeout"));
+            errorCollection.addError(LRConsts.EXEC_TIMEOUT,
+                    LRConsts.ERROR_EXEC_TIMEOUT);
         }
     }
 
@@ -79,9 +65,9 @@ public class LoadRunnerTaskConfigurator extends AbstractTaskConfigurator {
     {
         super.populateContextForCreate(context);
 
-        context.put(TIMEOUT, DEFAULT_TIMEOUT);
-        context.put(POLLING_INTERVAL, DEFAULT_POLLING_INTERVAL);
-        context.put(EXEC_TIMEOUT, DEFAULT_EXEC_TIMEOUT);
+        context.put(LRConsts.TIMEOUT, LRConsts.DEFAULT_TIMEOUT);
+        context.put(LRConsts.POLLING_INTERVAL, LRConsts.DEFAULT_POLLING_INTERVAL);
+        context.put(LRConsts.EXEC_TIMEOUT, LRConsts.DEFAULT_EXEC_TIMEOUT);
 
     }
 
@@ -90,21 +76,23 @@ public class LoadRunnerTaskConfigurator extends AbstractTaskConfigurator {
     {
         super.populateContextForEdit(context, taskDefinition);
 
-        context.put(TESTS, taskDefinition.getConfiguration().get(TESTS));
-        context.put(TIMEOUT, taskDefinition.getConfiguration().get(TIMEOUT));
-        context.put(POLLING_INTERVAL, taskDefinition.getConfiguration().get(POLLING_INTERVAL));
-        context.put(EXEC_TIMEOUT, taskDefinition.getConfiguration().get(EXEC_TIMEOUT));
-        context.put(IGNORE_ERRORS, taskDefinition.getConfiguration().get(IGNORE_ERRORS));
+        context.put(LRConsts.TESTS, taskDefinition.getConfiguration().get(LRConsts.TESTS));
+        context.put(LRConsts.TIMEOUT, taskDefinition.getConfiguration().get(LRConsts.TIMEOUT));
+        context.put(LRConsts.POLLING_INTERVAL, taskDefinition.getConfiguration().get(LRConsts.POLLING_INTERVAL));
+        context.put(LRConsts.EXEC_TIMEOUT, taskDefinition.getConfiguration().get(LRConsts.EXEC_TIMEOUT));
+        context.put(LRConsts.IGNORE_ERRORS, taskDefinition.getConfiguration().get(LRConsts.IGNORE_ERRORS));
     }
 
     private boolean goodInput(String key, String input) {
         boolean good = true;
-        if(input == null || StringUtils.isEmpty(input))
-            good = false;
-        else if(TIMEOUT.equals(key) || POLLING_INTERVAL.equals(key)
-    || EXEC_TIMEOUT.equals(key)) {
-            if(!input.matches(INT_REGEX)) {
+        if(input != null) {
+            if (StringUtils.isEmpty(input) && LRConsts.TESTS.equals(key))
                 good = false;
+            else if (LRConsts.TIMEOUT.equals(key) || LRConsts.POLLING_INTERVAL.equals(key)
+                    || LRConsts.EXEC_TIMEOUT.equals(key)) {
+                if (!StringUtils.isEmpty(input) && !input.matches(INT_REGEX)) {
+                    good = false;
+                }
             }
         }
         return good;
