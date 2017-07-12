@@ -8,56 +8,82 @@ import com.atlassian.struts.TextProvider;
  */
 public class LRConsts {
 
-    public static TextProvider textProvider = new DefaultTextProvider();
     //###########################################################################
     //########################      Bamboo Param Names   ########################
     //###########################################################################
-    public static final String TESTS = textProvider.getText("lr.param.name.tests");
-    public static final String TIMEOUT = textProvider.getText("lr.param.name.timeout");
-    public static final String POLLING_INTERVAL = textProvider.getText("lr.param.name.pollingInterval");
-    public static final String EXEC_TIMEOUT = textProvider.getText("lr.param.name.execTimeout");
-    public static final String IGNORE_ERRORS = textProvider.getText("lr.param.name.ignoreErrors");
+    public static final String TESTS = "tests";
+    public static final String TIMEOUT = "timeout";
+    public static final String POLLING_INTERVAL = "pollingInterval";
+    public static final String EXEC_TIMEOUT = "execTimeout";
+    public static final String IGNORE_ERRORS = "ignoreErrors";
     //###########################################################################
     //########################      Bamboo Param Labels  ########################
     //###########################################################################
-    public static final String LABEL_TESTS = textProvider.getText("lr.param.label.tests");
-    public static final String LABEL_TIMEOUT = textProvider.getText("lr.param.label.timeout");
-    public static final String LABEL_POLLING_INTERVAL = textProvider.getText("lr.param.label.pollingInterval");
-    public static final String LABEL_EXEC_TIMEOUT = textProvider.getText("lr.param.label.execTimeout");
-    public static final String LABEL_IGNORE_ERRORS = textProvider.getText("lr.param.label.ignoreErrors");
+    public static final String LABEL_TESTS = "Tests";
+    public static final String LABEL_TIMEOUT = "Timeout";
+    public static final String LABEL_POLLING_INTERVAL = "Controller Polling Interval";
+    public static final String LABEL_EXEC_TIMEOUT = "Scenario Execution Timeout";
+    public static final String LABEL_IGNORE_ERRORS = "Errors to Ignore";
     //###########################################################################
     //########################           Errors          ########################
     //###########################################################################
-    public static final String ERROR_TESTS = textProvider.getText("lr.param.error.tests");
-    public static final String ERROR_TIMEOUT = textProvider.getText("lr.param.error.timeout");
-    public static final String ERROR_POLLING_INTERVAL = textProvider.getText("lr.param.error.pollingInterval");
-    public static final String ERROR_EXEC_TIMEOUT = textProvider.getText("lr.param.error.execTimeout");
+    public static final String ERROR_TESTS = "Error: Please add the paths of the tests you would like to run";
+    public static final String ERROR_TIMEOUT = "Error: Please add the timeout in full seconds";
+    public static final String ERROR_POLLING_INTERVAL = "Error: Please add the polling interval of the controller in full seconds";
+    public static final String ERROR_EXEC_TIMEOUT = "Error: Please add the scenario execution timeout in full seconds";
     public static final String ERROR_PARAM_FILE_CREATION = "Error: A problem occurred while creating the param file!";
     public static final String ERROR_RESOURCE_NOT_FOUND = "Error: The resource %s could not be found!";
+    public static final String ERROR_LOAD_TEST_RUN_FAILED = "Error: Failed to run load test!";
+    public static final String ERROR_RESULTS_DONT_EXIST = "Error: Results files missing";
     //###########################################################################
     //######################## LoadRunner Related Values ########################
     //###########################################################################
-    public static final String DEFAULT_TIMEOUT = textProvider.getText("lr.param.value.timeout");
-    public static final String DEFAULT_POLLING_INTERVAL = textProvider.getText("lr.param.value.pollingInterval");
-    public static final String DEFAULT_EXEC_TIMEOUT = textProvider.getText("lr.param.value.execTimeout");
+    public static final String DEFAULT_TIMEOUT = "0";
+    public static final String DEFAULT_POLLING_INTERVAL = "30";
+    public static final String DEFAULT_EXEC_TIMEOUT = "10";
     public static final String HP_TOOLS_LAUNCHER = "HpToolsLauncher.exe";
     public static final String HP_TOOLS_ABORTER = "HpToolsAborter.exe";
+    public static final String HP_TOOLS_ANALYSIS = "LRAnalysisLauncher.exe";
+    public static final String TOOLS_PATH = "/Tools";
+    public static final String RESULTS_ZIP_NAME = "Results.zip";
 
     //###########################################################################
     //########################        Log Messages       ########################
     //###########################################################################
     public static final String LOG_PARAM_FILE_CREATION = "Param file was created successfully in folder %s";
     public static final String LOG_EXECUTABLE_COPIED = "Copied %s to the agent successfully";
+    public static final String LOG_TEST_RUN_ABORTED = "Test run aborted by user. Stopping the run.";
+
+    //###########################################################################
+    //########################       Parameter File      ########################
+    //###########################################################################
+    public static final String PARAM_FILE_TEST = "Test";
+    public static final String PARAM_FILE_TIMEOUT = "fsTimeout";
+    public static final String PARAM_FILE_POLLING_INTERVAL = "controllerPollingInterval";
+    public static final String PARAM_FILE_EXEC_TIMEOUT = "PerScenarioTimeOut";
+    public static final String PARAM_FILE_IGNORE_ERRORS = "ignoreErrorStrings";
+    public static final String PARAM_FILE_DATE_FORMAT = "dd-MM-yyyy_HH-mm-ss-SSS";
+    public static final String PARAM_FILE_NAME = "props%s.txt";
+    public static final String PARAM_FILE_RESULT_FILE_NAME = "Results%s.xml";
+    public static final String PARAM_FILE_RESULT_FILE = "resultsFilename";
+    public static final String PARAM_FILE_COMMAND_FLAG = "-paramfile";
+    public static final String PARAM_FILE_RUNTYPE_KEY = "runType";
+    public static final String PARAM_FILE_RUNTYPE_VALUE = "FileSystem";
+
+    //###########################################################################
+    //########################   LR Artifact Definition  ########################
+    //###########################################################################
+    public static final String LR_ARTIFACT_DEFINITION_NAME = "LR Results";
+    public static final String LR_ARTIFACT_DEFINITION_LOCATION = "LRResults";
+    public static final String LR_ARTIFACT_DEFINITION_COPY_PATTERN = "*/*.zip";
+    public static final boolean LR_ARTIFACT_DEFINITION_IS_SHARED = false;
 
     //###########################################################################
     //########################       Miscellaneous       ########################
     //###########################################################################
     public static final String TESTS_DELIMITER = "\n";
-    public static final String PARAM_FILE_TEST = "Test";
-    public static final String PARAM_FILE_TIMEOUT = "Timeout";
-    public static final String PARAM_FILE_POLLING_INTERVAL = "ControllerPollingInterval";
-    public static final String PARAM_FILE_EXEC_TIMEOUT = "ScenarioExecutionTimeout";
-    public static final String PARAM_FILE_IGNORE_ERRORS = "IgnoreErrors";
-    public static final String PARAM_FILE_DATE_FORMAT = "dd-MM-yyyy_HH-mm-ss-SSS";
+    public static final int TEST_RUN_INTERRUPTED = -1;
+    public static final boolean ABORT_TEST = true;
+    public static final int SUCCESS = 0;
 
 }

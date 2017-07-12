@@ -1,12 +1,10 @@
 package com.hpe.utils.loadrunner;
 
-import com.atlassian.bamboo.build.logger.BuildLogger;
-import com.atlassian.bamboo.task.TaskContext;
-
 import java.io.*;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -31,18 +29,27 @@ public class LoadRunnerExecutor {
         this.workingDirectory = workingDirectory;
     }
 
-    public boolean execute() throws IOException {
+    public Process run(String launcher, String paramFileName) throws IOException {
 
-        createParamFile();
-        //runLauncher();
-        return true;
+        ProcessBuilder processBuilder = new ProcessBuilder(workingDirectory + "\\" + launcher,
+                LRConsts.PARAM_FILE_COMMAND_FLAG, workingDirectory + "\\" + paramFileName);
+        processBuilder.directory(new File(workingDirectory));
+        processBuilder.redirectErrorStream(true);
+        return processBuilder.start();
     }
 
-    private void createParamFile() throws IOException {
+    public String createParamFile() throws IOException {
         Properties props = new Properties();
-        String[] testsArr = tests.split("\n");
+        Date now = new Date();
+        Format formatter = new SimpleDateFormat(LRConsts.PARAM_FILE_DATE_FORMAT);
+        String time = formatter.format(now);
+        //Create a unique filename for the params and results files using date and time
+        String paramFileName = String.format(LRConsts.PARAM_FILE_NAME, time);
+        String resultsFileName = String.format(LRConsts.PARAM_FILE_RESULT_FILE_NAME, time);
+        //Set the params file values
+        props.put(LRConsts.PARAM_FILE_RUNTYPE_KEY, LRConsts.PARAM_FILE_RUNTYPE_VALUE);
+        String[] testsArr = tests.split(LRConsts.TESTS_DELIMITER);
         int i = 1;
-
         for(String test: testsArr) {
             test.trim();
             props.put(LRConsts.PARAM_FILE_TEST + i, test);
@@ -53,20 +60,12 @@ public class LoadRunnerExecutor {
         props.put(LRConsts.PARAM_FILE_EXEC_TIMEOUT, execTimeout);
         if(!"".equals(ignoreErrors))
             props.put(LRConsts.PARAM_FILE_IGNORE_ERRORS, ignoreErrors);
+        props.put(LRConsts.PARAM_FILE_RESULT_FILE, workingDirectory + "\\" + resultsFileName);
 
-        Date now = new Date();
-        Format formatter = new SimpleDateFormat(LRConsts.PARAM_FILE_DATE_FORMAT);
-        String time = formatter.format(now);
-
-        // get a unique filename for the params file
-        String paramFileName = "props" + time + ".txt";
         BufferedWriter buf;
         buf = new BufferedWriter(new FileWriter(new File(workingDirectory + "\\" + paramFileName)));
-//
-//        BufferedOutputStream buf;
-//        buf = new BufferedOutputStream(new FileOutputStream(
-//                new File(workingDirectory + "\\" + paramFileName)));
         props.store(buf, null);
-
+        buf.close();
+        return paramFileName;
     }
 }

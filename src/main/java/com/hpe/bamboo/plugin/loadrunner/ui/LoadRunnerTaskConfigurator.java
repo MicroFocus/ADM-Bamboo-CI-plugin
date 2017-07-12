@@ -76,11 +76,12 @@ public class LoadRunnerTaskConfigurator extends AbstractTaskConfigurator {
     {
         super.populateContextForEdit(context, taskDefinition);
 
-        context.put(LRConsts.TESTS, taskDefinition.getConfiguration().get(LRConsts.TESTS));
-        context.put(LRConsts.TIMEOUT, taskDefinition.getConfiguration().get(LRConsts.TIMEOUT));
-        context.put(LRConsts.POLLING_INTERVAL, taskDefinition.getConfiguration().get(LRConsts.POLLING_INTERVAL));
-        context.put(LRConsts.EXEC_TIMEOUT, taskDefinition.getConfiguration().get(LRConsts.EXEC_TIMEOUT));
-        context.put(LRConsts.IGNORE_ERRORS, taskDefinition.getConfiguration().get(LRConsts.IGNORE_ERRORS));
+        Map<String, String> conf = taskDefinition.getConfiguration();
+        context.put(LRConsts.TESTS, conf.get(LRConsts.TESTS));
+        context.put(LRConsts.TIMEOUT, conf.get(LRConsts.TIMEOUT));
+        context.put(LRConsts.POLLING_INTERVAL, conf.get(LRConsts.POLLING_INTERVAL));
+        context.put(LRConsts.EXEC_TIMEOUT, conf.get(LRConsts.EXEC_TIMEOUT));
+        context.put(LRConsts.IGNORE_ERRORS, conf.get(LRConsts.IGNORE_ERRORS));
     }
 
     private boolean goodInput(String key, String input) {
