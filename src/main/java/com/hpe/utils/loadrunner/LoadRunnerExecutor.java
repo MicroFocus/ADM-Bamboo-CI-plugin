@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Properties;
 
 /**
+ * This class is responsible for handling pure Load Runner related actions.
+ *
  * Created by habash on 27/06/2017.
  */
 public class LoadRunnerExecutor {
@@ -29,6 +31,15 @@ public class LoadRunnerExecutor {
         this.workingDirectory = workingDirectory;
     }
 
+    /**
+     * Creates and returns a Process object that either runs the load Runner test according to the specified paramFile or aborts the ongoing
+     * run
+     *
+     * @param launcher the Launcher to be run
+     * @param paramFileName the name of the paramFile
+     * @return A Process object that runs the LR task
+     * @throws IOException
+     */
     public Process run(String launcher, String paramFileName) throws IOException {
 
         ProcessBuilder processBuilder = new ProcessBuilder(workingDirectory + "\\" + launcher,
@@ -38,6 +49,12 @@ public class LoadRunnerExecutor {
         return processBuilder.start();
     }
 
+    /**
+     * Creates a paramFile with the values needed for a LR test run
+     *
+     * @return name of the paramFile
+     * @throws IOException
+     */
     public String createParamFile() throws IOException {
         Properties props = new Properties();
         Date now = new Date();
@@ -55,9 +72,14 @@ public class LoadRunnerExecutor {
             props.put(LRConsts.PARAM_FILE_TEST + i, test);
             ++i;
         }
-        props.put(LRConsts.PARAM_FILE_TIMEOUT, timeout);
-        props.put(LRConsts.PARAM_FILE_POLLING_INTERVAL, pollingInterval);
-        props.put(LRConsts.PARAM_FILE_EXEC_TIMEOUT, execTimeout);
+        if(timeout != null && !"".equals(timeout))
+            props.put(LRConsts.PARAM_FILE_TIMEOUT, timeout);
+        if(pollingInterval != null && !"".equals(pollingInterval))
+            props.put(LRConsts.PARAM_FILE_POLLING_INTERVAL, pollingInterval);
+        else props.put(LRConsts.PARAM_FILE_POLLING_INTERVAL, LRConsts.DEFAULT_POLLING_INTERVAL);
+        if(execTimeout != null && !"".equals(execTimeout))
+            props.put(LRConsts.PARAM_FILE_EXEC_TIMEOUT, execTimeout);
+        else props.put(LRConsts.PARAM_FILE_EXEC_TIMEOUT, LRConsts.DEFAULT_EXEC_TIMEOUT);
         if(!"".equals(ignoreErrors))
             props.put(LRConsts.PARAM_FILE_IGNORE_ERRORS, ignoreErrors);
         props.put(LRConsts.PARAM_FILE_RESULT_FILE, workingDirectory + "\\" + resultsFileName);

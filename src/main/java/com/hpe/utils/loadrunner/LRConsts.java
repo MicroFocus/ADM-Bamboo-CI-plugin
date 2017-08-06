@@ -1,5 +1,6 @@
 package com.hpe.utils.loadrunner;
 
+import com.atlassian.bamboo.v2.build.agent.capability.CapabilityDefaultsHelper;
 import com.atlassian.struts.DefaultTextProvider;
 import com.atlassian.struts.TextProvider;
 
@@ -38,14 +39,16 @@ public class LRConsts {
     //###########################################################################
     //######################## LoadRunner Related Values ########################
     //###########################################################################
-    public static final String DEFAULT_TIMEOUT = "0";
     public static final String DEFAULT_POLLING_INTERVAL = "30";
     public static final String DEFAULT_EXEC_TIMEOUT = "10";
     public static final String HP_TOOLS_LAUNCHER = "HpToolsLauncher.exe";
     public static final String HP_TOOLS_ABORTER = "HpToolsAborter.exe";
     public static final String HP_TOOLS_ANALYSIS = "LRAnalysisLauncher.exe";
-    public static final String TOOLS_PATH = "/Tools";
     public static final String RESULTS_ZIP_NAME = "Results.zip";
+    public static final String TOOLS_PATH = "/Tools";
+    public static final String RAW_RESULTS_FOLDER = "LRR";
+    public static final String LOAD_TEST_SLA_FILE = "SLA.xml";
+    public static final String WLRUN_EXE_ABSOLUTE_NAME = "C:\\Program Files (x86)\\HPE\\LoadRunner\\bin\\Wlrun.exe";
 
     //###########################################################################
     //########################        Log Messages       ########################
@@ -71,19 +74,12 @@ public class LRConsts {
     public static final String PARAM_FILE_RUNTYPE_VALUE = "FileSystem";
 
     //###########################################################################
-    //########################   LR Artifact Definition  ########################
-    //###########################################################################
-    public static final String LR_ARTIFACT_DEFINITION_NAME = "LR Results";
-    public static final String LR_ARTIFACT_DEFINITION_LOCATION = "LRResults";
-    public static final String LR_ARTIFACT_DEFINITION_COPY_PATTERN = "*/*.zip";
-    public static final boolean LR_ARTIFACT_DEFINITION_IS_SHARED = false;
-
-    //###########################################################################
     //########################       Miscellaneous       ########################
     //###########################################################################
     public static final String TESTS_DELIMITER = "\n";
     public static final int TEST_RUN_INTERRUPTED = -1;
     public static final boolean ABORT_TEST = true;
     public static final int SUCCESS = 0;
+    public static final String CAPABILITY_KEY = "LoadRunner";
 
 }

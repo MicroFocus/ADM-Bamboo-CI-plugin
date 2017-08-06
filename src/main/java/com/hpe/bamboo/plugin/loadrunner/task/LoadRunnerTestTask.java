@@ -1,14 +1,19 @@
 package com.hpe.bamboo.plugin.loadrunner.task;
 
+import com.atlassian.bamboo.artifact.MutableArtifactImpl;
 import com.atlassian.bamboo.build.logger.BuildLogger;
+import com.atlassian.bamboo.build.test.TestCollationService;
+import com.atlassian.bamboo.configuration.SystemInfo;
 import com.atlassian.bamboo.plan.PlanResultKey;
 import com.atlassian.bamboo.plan.artifact.*;
 import com.atlassian.bamboo.security.SecureToken;
 import com.atlassian.bamboo.task.*;
+//import com.hpe.bamboo.plugin.loadrunner.results.SLATestResultsReportCollector;
 import com.hpe.utils.loadrunner.LRConsts;
 import com.hpe.utils.loadrunner.LoadRunnerExecutor;
 
 import java.io.*;
+import java.util.Collection;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -20,16 +25,16 @@ public class LoadRunnerTestTask implements TaskType {
     @Override
     public TaskResult execute(final TaskContext taskContext) throws TaskException
     {
+        //Build and environment related values
         final BuildLogger buildLogger = taskContext.getBuildLogger();
         String workingDirectory = taskContext.getWorkingDirectory().getAbsolutePath();
         int buildNumber = taskContext.getBuildContext().getBuildNumber();
-        String buildDirectoryPath = workingDirectory + "\\" + buildNumber;
+        String jobName = taskContext.getBuildContext().getBuildResultKey();
+        String buildDirectoryPath = workingDirectory + "\\" + jobName + "_TR_" + buildNumber;
         File buildDirectory = new File(buildDirectoryPath);
-
+        //Build parameters that were configured in the task
         String tests = taskContext.getConfigurationMap().get(LRConsts.TESTS);
-        String timeout = "".equals(taskContext.getConfigurationMap().get(LRConsts.TIMEOUT)) ?
-                LRConsts.DEFAULT_TIMEOUT :
-                taskContext.getConfigurationMap().get(LRConsts.TIMEOUT);
+        String timeout = taskContext.getConfigurationMap().get(LRConsts.TIMEOUT);
         String pollingInterval = "".equals(taskContext.getConfigurationMap().get(LRConsts.POLLING_INTERVAL)) ?
                 LRConsts.DEFAULT_POLLING_INTERVAL :
                 taskContext.getConfigurationMap().get(LRConsts.POLLING_INTERVAL);
@@ -51,7 +56,7 @@ public class LoadRunnerTestTask implements TaskType {
 
         try {
             LoadRunnerExecutor lre;
-            String paramFileName, resultsZip;
+            String paramFileName;
             int lrTestExitCode;
             buildDirectory.mkdir();
 
@@ -85,9 +90,8 @@ public class LoadRunnerTestTask implements TaskType {
             else if(lrTestExitCode != LRConsts.SUCCESS)
                 throw new Exception(LRConsts.ERROR_LOAD_TEST_RUN_FAILED);
             buildLogger.addBuildLogEntry("**************************************************************************" + "\n");
-            buildLogger.addBuildLogEntry("************************* Collating test results *************************" + "\n");
-            resultsZip = zipResultsFolder(buildDirectory);
-            //createArtifact(resultsZip, buildLogger, taskContext.getBuildContext().getPlanResultKey(), 1);
+            buildLogger.addBuildLogEntry("************************* Preparing test results *************************" + "\n");
+            zipResultsFolder(buildDirectory);
             buildLogger.addBuildLogEntry("**************************************************************************" + "\n");
         }
         catch(Exception e) {
@@ -97,16 +101,17 @@ public class LoadRunnerTestTask implements TaskType {
         return TaskResultBuilder.create(taskContext).success().build();
     }
 
-    private void createArtifact() throws Exception {
-        ArtifactDefinition artifactDef = new ArtifactDefinitionImpl(LRConsts.LR_ARTIFACT_DEFINITION_NAME,
-                LRConsts.LR_ARTIFACT_DEFINITION_LOCATION, LRConsts.LR_ARTIFACT_DEFINITION_COPY_PATTERN);
-        artifactDef.setSharedArtifact(LRConsts.LR_ARTIFACT_DEFINITION_IS_SHARED);
-
-    }
-
+    /**
+     * Zips the provided LR results folder. The result of this method will be the destination of the zip file that will be uploaded
+     * as an artifact in Bamboo.
+     *
+     * @param buildDirectory The LR results directory
+     * @return The destination of the zip file
+     * @throws Exception
+     */
     private String zipResultsFolder(File buildDirectory) throws Exception{
         String srcFolder, destZipFile = buildDirectory.getAbsolutePath() + "\\" + LRConsts.RESULTS_ZIP_NAME;
-        srcFolder = buildDirectory.getAbsolutePath() + "\\" + buildDirectory.list()[0] + "\\LRR";
+        srcFolder = buildDirectory.getAbsolutePath() + "\\" + buildDirectory.list()[0] + "\\" + LRConsts.RAW_RESULTS_FOLDER;
         ZipOutputStream zip = null;
         FileOutputStream fileWriter = null;
 
@@ -119,6 +124,14 @@ public class LoadRunnerTestTask implements TaskType {
         return destZipFile;
     }
 
+    /**
+     * Adds a file to the result zip file.
+     *
+     * @param path the path inside the zip file
+     * @param srcFile the name of the file
+     * @param zip zip output stream
+     * @throws Exception
+     */
     private void addFileToZip(String path, String srcFile, ZipOutputStream zip)
             throws Exception {
 
@@ -138,6 +151,14 @@ public class LoadRunnerTestTask implements TaskType {
         }
     }
 
+    /**
+     * Adds a folder to the result zip file.
+     *
+     * @param path the path inside the zip file
+     * @param srcFolder the name of the folder
+     * @param zip zip output stream
+     * @throws Exception
+     */
     private void addFolderToZip(String path, String srcFolder, ZipOutputStream zip)
             throws Exception {
         File folder = new File(srcFolder);
@@ -151,7 +172,17 @@ public class LoadRunnerTestTask implements TaskType {
         }
     }
 
-
+    /**
+     * Copies a resource file of the plugin to the provided build directory path. A resource file can be one of the following:
+     *
+     * HpToolsLauncher.exe
+     * HpToolsAborter.exe
+     * LRAnalysisLauncher.exe
+     *
+     * @param buildDirectoryPath the build directory
+     * @param resourceName name of the resource file
+     * @throws Exception
+     */
     private void copyExecutable(String buildDirectoryPath, String resourceName) throws Exception {
         InputStream stream = null;
         OutputStream resStreamOut = null;
@@ -187,6 +218,16 @@ public class LoadRunnerTestTask implements TaskType {
         }
     }
 
+    /**
+     * Starts the Load Runner test, unless the value of <b>abort</b> is true, then it will abort the test in progress.
+     *
+     * @param lre The LoadRunnerExecutor object
+     * @param paramFileName the param file containing the relevant values for the test
+     * @param buildLogger buildLogger object for documentation
+     * @param abort if true aborts the ongoing test run, otherwise starts a new test run
+     * @return the status code of the HpToolsLauncher.exe process (Or the aborter process).
+     * @throws IOException
+     */
     private int runLoadTest(LoadRunnerExecutor lre, String paramFileName, BuildLogger buildLogger, boolean abort)
             throws IOException{
         InputStream processInputStream;

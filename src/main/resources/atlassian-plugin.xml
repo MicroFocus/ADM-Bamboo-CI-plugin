@@ -36,16 +36,17 @@
     <!-- 		<resource type="download" name="images/" location="/images" /> -->
     <!-- 		<context>bamboo-plugin</context> -->
     <!-- 	</web-resource> -->
-    
+
     <taskType key="LoadRunnerTestTask" name="LoadRunner Test Task" class="com.hpe.bamboo.plugin.loadrunner.task.LoadRunnerTestTask">
         <description>Run LoadRunner tests</description>
         <category name="test"/>
         <configuration class="com.hpe.bamboo.plugin.loadrunner.ui.LoadRunnerTaskConfigurator" />
+        <capabilityDefaultsHelper class="com.hpe.bamboo.plugin.loadrunner.task.LoadRunnerCapability" />
         <resource type="freemarker" name="edit" location="templates/loadrunner/configureLRTest.ftl"/>
         <resource type="download" name="icon" location="/images/task/loadrunner/loadrunner_icon.png"/>
     </taskType>
     <!--
-    <taskType key="Performance CenterTestTask" name="LoadRunner Test Task" class="com.hpe.bamboo.plugin.performancecenter.task.PerformanceCenterTestTask">
+    <taskType key="PerformanceCenterTestTask" name="Performance Center Test Task" class="com.hpe.bamboo.plugin.performancecenter.task.PerformanceCenterTestTask">
         <description>Run Performance Center tests</description>
         <category name="test"/>
         <configuration class="com.hpe.bamboo.plugin.performancecenter.ui.PerformanceCenterTaskConfigurator" />

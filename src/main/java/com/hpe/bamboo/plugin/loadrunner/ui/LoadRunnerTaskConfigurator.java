@@ -3,18 +3,21 @@ package com.hpe.bamboo.plugin.loadrunner.ui;
 import com.atlassian.bamboo.collections.ActionParametersMap;
 import com.atlassian.bamboo.task.AbstractTaskConfigurator;
 import com.atlassian.bamboo.task.TaskDefinition;
+import com.atlassian.bamboo.task.TaskRequirementSupport;
 import com.atlassian.bamboo.utils.error.ErrorCollection;
-import com.atlassian.struts.DefaultTextProvider;
-import com.atlassian.struts.TextProvider;
+import com.atlassian.bamboo.v2.build.agent.capability.Requirement;
+import com.atlassian.bamboo.v2.build.agent.capability.RequirementImpl;
 import com.hpe.utils.loadrunner.LRConsts;
 import org.apache.commons.lang.StringUtils;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by habash on 30/05/2017.
  */
-public class LoadRunnerTaskConfigurator extends AbstractTaskConfigurator {
+public class LoadRunnerTaskConfigurator extends AbstractTaskConfigurator implements TaskRequirementSupport {
 
     private static final String INT_REGEX = "[0-9]*";
 
@@ -64,11 +67,6 @@ public class LoadRunnerTaskConfigurator extends AbstractTaskConfigurator {
     public void populateContextForCreate(final Map<String, Object> context)
     {
         super.populateContextForCreate(context);
-
-        context.put(LRConsts.TIMEOUT, LRConsts.DEFAULT_TIMEOUT);
-        context.put(LRConsts.POLLING_INTERVAL, LRConsts.DEFAULT_POLLING_INTERVAL);
-        context.put(LRConsts.EXEC_TIMEOUT, LRConsts.DEFAULT_EXEC_TIMEOUT);
-
     }
 
     @Override
@@ -82,6 +80,18 @@ public class LoadRunnerTaskConfigurator extends AbstractTaskConfigurator {
         context.put(LRConsts.POLLING_INTERVAL, conf.get(LRConsts.POLLING_INTERVAL));
         context.put(LRConsts.EXEC_TIMEOUT, conf.get(LRConsts.EXEC_TIMEOUT));
         context.put(LRConsts.IGNORE_ERRORS, conf.get(LRConsts.IGNORE_ERRORS));
+    }
+
+    @Override
+    public Set<Requirement> calculateRequirements(TaskDefinition taskDefinition) {
+        return defineLoadRunnerRequirement();
+    }
+
+    private Set<Requirement> defineLoadRunnerRequirement() {
+        RequirementImpl lrReq = new RequirementImpl(LRConsts.CAPABILITY_KEY, true, ".*");
+        Set<Requirement> result = new HashSet<Requirement>();
+        result.add(lrReq);
+        return result;
     }
 
     private boolean goodInput(String key, String input) {
