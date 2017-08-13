@@ -1,19 +1,12 @@
-package com.hpe.bamboo.plugin.loadrunner.task;
+package com.adm.bamboo.plugin.loadrunner.task;
 
-import com.atlassian.bamboo.artifact.MutableArtifactImpl;
 import com.atlassian.bamboo.build.logger.BuildLogger;
-import com.atlassian.bamboo.build.test.TestCollationService;
-import com.atlassian.bamboo.configuration.SystemInfo;
-import com.atlassian.bamboo.plan.PlanResultKey;
-import com.atlassian.bamboo.plan.artifact.*;
-import com.atlassian.bamboo.security.SecureToken;
 import com.atlassian.bamboo.task.*;
 //import com.hpe.bamboo.plugin.loadrunner.results.SLATestResultsReportCollector;
-import com.hpe.utils.loadrunner.LRConsts;
-import com.hpe.utils.loadrunner.LoadRunnerExecutor;
+import com.adm.utils.loadrunner.LRConsts;
+import com.adm.utils.loadrunner.LoadRunnerExecutor;
 
 import java.io.*;
-import java.util.Collection;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 

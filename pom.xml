@@ -3,18 +3,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.hpe.adm</groupId>
-	<artifactId>hpe-application-automation-tools-plugin</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<groupId>com.adm</groupId>
+	<artifactId>app-delivery-management-bamboo</artifactId>
+	<version>1.0-beta-SNAPSHOT</version>
 	<packaging>atlassian-plugin</packaging>
 
-	<name>HPE Application Automation Tools</name>
+	<name>HPE Bamboo plugin</name>
 	<description>
-		This plugin allows users to use HPE Software products' functionalities through Bamboo.
+		This plugin allows users to use HPE Software products functionalists through Bamboo.
 	</description>
 	<url>https://github.com/HPSoftware/hpe-bamboo-plugin</url>
 	<organization>
-		<name>HPE</name>
+		<name>ENTCO</name>
 	</organization>
 	<licenses>
 		<license>
@@ -27,7 +27,7 @@
 	<developers>
 		<developer>
 			<name>Amin Habash</name>
-			<email>a.habash1@gmail.com</email>
+			<email>amin.habash@hpe.com</email>
 			<organization>HPE</organization>
 		</developer>
 	</developers>

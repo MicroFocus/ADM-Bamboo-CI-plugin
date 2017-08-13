@@ -1,10 +1,9 @@
-package com.hpe.utils.loadrunner;
+package com.adm.utils.loadrunner;
 
 import java.io.*;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Properties;
 
 /**

@@ -1,8 +1,4 @@
-package com.hpe.utils.loadrunner;
-
-import com.atlassian.bamboo.v2.build.agent.capability.CapabilityDefaultsHelper;
-import com.atlassian.struts.DefaultTextProvider;
-import com.atlassian.struts.TextProvider;
+package com.adm.utils.loadrunner;
 
 /**
  * Created by habash on 19/06/2017.

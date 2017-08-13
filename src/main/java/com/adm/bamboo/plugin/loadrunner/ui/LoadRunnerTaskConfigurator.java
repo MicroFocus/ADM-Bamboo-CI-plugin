@@ -1,4 +1,4 @@
-package com.hpe.bamboo.plugin.loadrunner.ui;
+package com.adm.bamboo.plugin.loadrunner.ui;
 
 import com.atlassian.bamboo.collections.ActionParametersMap;
 import com.atlassian.bamboo.task.AbstractTaskConfigurator;
@@ -7,7 +7,7 @@ import com.atlassian.bamboo.task.TaskRequirementSupport;
 import com.atlassian.bamboo.utils.error.ErrorCollection;
 import com.atlassian.bamboo.v2.build.agent.capability.Requirement;
 import com.atlassian.bamboo.v2.build.agent.capability.RequirementImpl;
-import com.hpe.utils.loadrunner.LRConsts;
+import com.adm.utils.loadrunner.LRConsts;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.HashSet;

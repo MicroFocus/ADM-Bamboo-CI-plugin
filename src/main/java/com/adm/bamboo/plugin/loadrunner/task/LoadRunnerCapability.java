@@ -19,12 +19,12 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  */
-package com.hpe.bamboo.plugin.loadrunner.task;
+package com.adm.bamboo.plugin.loadrunner.task;
 
 import com.atlassian.bamboo.v2.build.agent.capability.CapabilityDefaultsHelper;
 import com.atlassian.bamboo.v2.build.agent.capability.CapabilityImpl;
 import com.atlassian.bamboo.v2.build.agent.capability.CapabilitySet;
-import com.hpe.utils.loadrunner.LRConsts;
+import com.adm.utils.loadrunner.LRConsts;
 import java.io.File;
 
 /**
