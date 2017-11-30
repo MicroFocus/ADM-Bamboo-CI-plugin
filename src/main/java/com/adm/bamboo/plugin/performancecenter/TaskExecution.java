@@ -54,7 +54,11 @@ public class TaskExecution implements TaskType
             buildLogger.addBuildLogEntry("Executing Load Test:");
             buildLogger.addBuildLogEntry("====================");
             buildLogger.addBuildLogEntry("Test ID:" + TEST_ID);
-            buildLogger.addBuildLogEntry("Test Instance ID:" + TEST_INSTANCE_ID);
+            if("AUTO".equals(TEST_INSTANCE_ID_RADIO)){
+                buildLogger.addBuildLogEntry("Test Instance ID:" + TEST_INSTANCE_ID_RADIO);
+            }else{
+                buildLogger.addBuildLogEntry("Test Instance ID:" + TEST_INSTANCE_ID);
+            }
             buildLogger.addBuildLogEntry("Timeslot Duration::" + TIMESLOT_HOURS + ":" + TIMESLOT_MINUTES + " (h:mm)");
             buildLogger.addBuildLogEntry("Post Run Action:" + POST_RUN_ACTION);
             buildLogger.addBuildLogEntry("Use VUDS:" + ("true".equals(VUDS.toLowerCase())?"true":"false"));
