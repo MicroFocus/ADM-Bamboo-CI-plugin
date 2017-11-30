@@ -147,7 +147,7 @@ public class PcClientBamboo {
             else{
                 String msg = "No trend report ID is associated with the test.\n" +
                         "Please turn Automatic Trending on for the test through Performance Center UI.\n" +
-                        "Alternatively you can check 'Add run to trend report with ID' on Jenkins job configuration.";
+                        "Alternatively you can check 'Add run to trend report with ID' on configuration dialog.";
                 throw new PcException(msg);
             }
         }
