@@ -4,6 +4,7 @@ import com.atlassian.bamboo.build.logger.BuildLogger;
 import com.atlassian.bamboo.plan.artifact.ArtifactDefinitionContextImpl;
 import com.atlassian.bamboo.task.TaskContext;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.http.client.ClientProtocolException;
 
 import java.beans.IntrospectionException;
@@ -131,8 +132,7 @@ public class PcClientBamboo {
                 }
                 return testInstanceID;
             } catch (Exception e){
-               buildLogger.addBuildLogEntry(String.format("getCorrectTestInstanceID failed, reason: %s",e));
-                return Integer.parseInt(null);
+                throw new PcException(String.format("getCorrectTestInstanceID failed, reason: %s",e));
             }
         }
         return Integer.parseInt(model.getTestInstanceId());
@@ -400,6 +400,9 @@ public class PcClientBamboo {
             InputStream in = restProxy.getTrendingPDF(trendReportId);
             File dir = new File(directory);
             if(!dir.exists()){
+                dir.mkdirs();
+            }else{
+                FileUtils.deleteDirectory(dir);
                 dir.mkdirs();
             }
             String filePath = directory + IOUtils.DIR_SEPARATOR + "trendReport" + trendReportId + ".pdf";

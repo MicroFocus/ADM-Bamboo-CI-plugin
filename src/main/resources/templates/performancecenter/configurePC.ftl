@@ -42,7 +42,7 @@
             <span>Password</span>
         </td>
         <td>
-        [@ww.textfield name="Password" required='false'/]
+        [@ww.password name="Password" required='false' showPassword='true'/]
         </td>
     </tr>
     <tr>
@@ -106,7 +106,7 @@
             <span>Password:</span>
         </td>
         <td>
-        [@ww.textfield  name="ProxyPassword" required='false'/]
+        [@ww.password  name="ProxyPassword" required='false' showPassword='true'/]
         </td>
     </tr>
     <tr>
