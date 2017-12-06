@@ -24,18 +24,30 @@
         <param name="plugin-icon">images/pluginIcon.png</param>
         <param name="plugin-logo">images/pluginLogo.png</param>
     </plugin-info>
+
+    <servlet name="HTTP Servlet" key="httpOperationServlet"
+             class="com.hpe.application.automation.tools.common.integration.HttpOperationServlet">
+        <url-pattern>/httpOperationServlet</url-pattern>
+    </servlet>
+
     <!-- import Bamboo resources -->
     <component-import key="pluginSettingsFactory" interface="com.atlassian.sal.api.pluginsettings.PluginSettingsFactory"/>
+
     <!-- add our i18n resource -->
-    <resource type="i18n" name="i18n" location="bamboo-plugin"/>
-    <!-- add our web resources -->
-    <!-- 	<web-resource key="bamboo-plugin-resources" name="bamboo-plugin Web Resources"> -->
-    <!-- 		<dependency>com.atlassian.auiplugin:ajs</dependency> -->
-    <!-- 		<resource type="download" name="bamboo-plugin.css" location="/css/bamboo-plugin.css" /> -->
-    <!-- 		<resource type="download" name="bamboo-plugin.js" location="/js/bamboo-plugin.js" /> -->
-    <!-- 		<resource type="download" name="images/" location="/images" /> -->
-    <!-- 		<context>bamboo-plugin</context> -->
-    <!-- 	</web-resource> -->
+    <resource type="i18n" name="english properties lr" location="/properties/lr/bamboo-plugin"/>
+    <resource type="i18n" name="english properties uft" location="/properties/uft/bamboo_uft_en"/>
+    <resource type="i18n" name="english errors" location="/properties/uft/errors_en"/>
+    <resource type="i18n" name="english messages" location="/properties/uft/messages_en"/>
+
+    <!--add our web resources -->
+    <web-resource key="bamboo-plugin-resources" name="bamboo-plugin Web Resources">
+        <dependency>com.atlassian.auiplugin:ajs</dependency> -->
+        <resource type="download" name="bamboo-plugin.css" location="/css/bamboo-plugin.css" />
+        <resource type="download" name="bamboo-plugin.js" location="/js/bamboo-plugin.js" />
+        <resource type="download" name="fileSystem.css" location="/css/uft/fileSystem.css"/>
+        <context>bamboo-plugin</context>
+    </web-resource>
+
 
     <taskType key="LoadRunnerTestTask" name="LoadRunner Test Task"
               class="com.adm.bamboo.plugin.loadrunner.task.LoadRunnerTestTask">
@@ -46,6 +58,97 @@
         <resource type="freemarker" name="edit" location="templates/loadrunner/configureLRTest.ftl"/>
         <resource type="download" name="icon" location="/images/task/loadrunner/loadrunner_icon.png"/>
     </taskType>
+
+    <taskType
+            name="HPE UFT File System Execution"
+            class="com.adm.bamboo.plugin.uft.task.RunFromFileSystemUftTask"
+            key="RunFromFileSystemUftTask">
+        <description>Execute UFT tests from file system</description>
+        <category name="test"/>
+        <configuration class="com.adm.bamboo.plugin.uft.ui.FileSystemUftTaskConfigurator"/>
+        <capabilityDefaultsHelper class="com.adm.bamboo.plugin.uft.capability.CapabilityUftDefaultsHelper"/>
+        <resource
+                type="freemarker"
+                name="edit"
+                location="templates/uft/runFromFileSystemTask.ftl"/>
+        <resource
+                type="download"
+                name="icon"
+                location="images/task/uft/execute_file_system.png"/>
+        <resource
+                type="download"
+                name="fileSystem.css"
+                location="/css/uft/fileSystem.css"/>
+    </taskType>
+
+    <taskType
+            name="HPE UFT ALM Execution"
+            class="com.adm.bamboo.plugin.uft.task.RunFromAlmUftTask"
+            key="RunFromAlmUftTask">
+        <description>Execute UFT tests from ALM</description>
+        <category name="test"/>
+        <configuration class="com.adm.bamboo.plugin.uft.ui.AlmUftTaskConfigurator"/>
+        <resource
+                type="freemarker"
+                name="edit"
+                location="templates/uft/runFromALMTask.ftl"/>
+        <resource
+                type="download"
+                name="icon"
+                location="images/task/uft/execute_alm.png"/>
+    </taskType>
+
+    <taskType
+            name="HPE UFT ALM Lab Management"
+            class="com.adm.bamboo.plugin.uft.task.RunFromAlmLabManagementUftTask"
+            key="RunFromAlmLabManagementUftTask">
+        <description>Execute UFT tests using HPE ALM Lab Management</description>
+        <category name="test"/>
+        <configuration class="com.adm.bamboo.plugin.uft.ui.AlmLabManagementUftTaskConfigurator"/>
+        <resource
+                type="freemarker"
+                name="edit"
+                location="templates/uft/runFromAlmLabManagementTask.ftl"/>
+        <resource
+                type="download"
+                name="icon"
+                location="images/task/uft/alm_lab_exe.png"/>
+    </taskType>
+
+    <taskType
+            name="HPE UFT ALM Lab Management Environment Preparation"
+            class="com.adm.bamboo.plugin.uft.task.AlmLabEnvPrepareUftTask"
+            key="AlmLabEnvPrepareUftTask">
+        <description>Execute AUT Environment preparation using HPE ALM Lab Management</description>
+        <category name="test"/>
+        <configuration class="com.adm.bamboo.plugin.uft.ui.AlmLabEnvPrepareUftTaskConfigurator"/>
+        <resource
+                type="freemarker"
+                name="edit"
+                location="templates/uft/almLabEnvPrepareTask.ftl"/>
+        <resource
+                type="download"
+                name="icon"
+                location="images/task/uft/alm_lab_preparation.png"/>
+    </taskType>
+
+    <taskType
+            name="HPE MC Application Upload"
+            class="com.adm.bamboo.plugin.uft.task.UploadApplicationUftTask"
+            key="UploadApplicationUftTask">
+        <description>Uploads apps to Mobile Center</description>
+        <category name="test"/>
+        <configuration class="com.adm.bamboo.plugin.uft.ui.UploadApplicationUftTaskConfigurator"/>
+        <resource
+                type="freemarker"
+                name="edit"
+                location="templates/uft/uploadApp.ftl"/>
+        <resource
+                type="download"
+                name="icon"
+                location="images/task/uft/upload_app.png"/>
+    </taskType>
+
     <taskType key="TaskExecution" name="Performance Center Task" class="com.adm.bamboo.plugin.performancecenter.TaskExecution">
         <description>Execute Performance Center load test</description>
         <configuration class="com.adm.bamboo.plugin.performancecenter.TaskConfigurator"/>

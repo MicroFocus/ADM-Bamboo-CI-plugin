@@ -8,13 +8,13 @@
 	<version>1.0-beta-SNAPSHOT</version>
 	<packaging>atlassian-plugin</packaging>
 
-	<name>HPE Bamboo plugin</name>
+	<name>MicroFocus Bamboo plugins</name>
 	<description>
 		This plugin allows users to use HPE Software products functionalists through Bamboo.
 	</description>
-	<url>https://github.com/HPSoftware/hpe-bamboo-plugin</url>
+	<url>https://github.com/MicroFocus/ADM-Bamboo-CI-plugin</url>
 	<organization>
-		<name>ENTCO</name>
+		<name>MicroFocus</name>
 	</organization>
 	<licenses>
 		<license>
@@ -28,7 +28,7 @@
 		<developer>
 			<name>Amin Habash</name>
 			<email>amin.habash@hpe.com</email>
-			<organization>HPE</organization>
+			<organization>MicroFocus</organization>
 		</developer>
 	</developers>
 
@@ -44,7 +44,7 @@
 	<properties>
 		<maven-javadoc-plugin.version>2.10.4</maven-javadoc-plugin.version>
 		<maven-gpg-plugin.version>1.5</maven-gpg-plugin.version>
-		<maven.compiler.plugin.version>1.7</maven.compiler.plugin.version>
+		<maven.compiler.plugin.version>1.8</maven.compiler.plugin.version>
 		<maven-source-plugin.version>2.2.1</maven-source-plugin.version>
 		<bamboo.version>5.9.10</bamboo.version>
 		<bamboo.data.version>5.9.10</bamboo.data.version>
@@ -127,6 +127,11 @@
 			<groupId>com.atlassian.plugins</groupId>
 			<version>${plugin.testrunner.version}</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jenkins-ci.plugins</groupId>
+			<artifactId>hpe-application-automation-tools-common</artifactId>
+			<version>3.0.8-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
