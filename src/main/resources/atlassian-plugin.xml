@@ -52,6 +52,38 @@
         <resource type="download" name="icon" location="/images/pc/pc_64x64.png"/>
         <resource type="freemarker" name="edit" location="templates/performancecenter/configurePC.ftl"/>
     </taskType>
+
+    <taskType key="SVUndeployTask" name="SV: Undeploy Virtual Service Task"
+              class="com.adm.bamboo.plugin.sv.task.SVUndeployTask">
+        <description>Undeploy Virtual Service</description>
+        <configuration class="com.adm.bamboo.plugin.sv.ui.SVUndeployTaskConfigurator" />
+        <resource type="freemarker" name="edit" location="templates/sv/svUndeploy.ftl"/>
+        <resource type="download" name="icon" location="/images/task/sv/svUndeploy_icon.png"/>
+    </taskType>
+
+    <taskType key="SVDeployTask" name="SV: Deploy Virtual Service Task"
+              class="com.adm.bamboo.plugin.sv.task.SVDeployTask">
+        <description>Deploy Virtual Service</description>
+        <configuration class="com.adm.bamboo.plugin.sv.ui.SVDeployTaskConfigurator" />
+        <resource type="freemarker" name="edit" location="templates/sv/svDeploy.ftl"/>
+        <resource type="download" name="icon" location="/images/task/sv/svDeploy_icon.png"/>
+    </taskType>
+
+    <taskType key="SVExportTask" name="SV: Export Virtual Service Task"
+              class="com.adm.bamboo.plugin.sv.task.SVExportTask">
+        <description>Export Virtual Service</description>
+        <configuration class="com.adm.bamboo.plugin.sv.ui.SVExportTaskConfigurator" />
+        <resource type="freemarker" name="edit" location="templates/sv/svExport.ftl"/>
+        <resource type="download" name="icon" location="/images/task/sv/svExport_icon.png"/>
+    </taskType>
+
+    <taskType key="SVChangeModeTask" name="SV: Change Mode of Virtual Service Task"
+              class="com.adm.bamboo.plugin.sv.task.SVChangeModeTask">
+        <description>Change Mode of Virtual Service</description>
+        <configuration class="com.adm.bamboo.plugin.sv.ui.SVChangeModeTaskConfigurator" />
+        <resource type="freemarker" name="edit" location="templates/sv/svChangeMode.ftl"/>
+        <resource type="download" name="icon" location="/images/task/sv/svChangeMode_icon.png"/>
+    </taskType>
     <!--
     <taskType key="PerformanceCenterTestTask" name="Performance Center Test Task" class="com.hpe.bamboo.plugin.performancecenter.task.PerformanceCenterTestTask">
         <description>Run Performance Center tests</description>
