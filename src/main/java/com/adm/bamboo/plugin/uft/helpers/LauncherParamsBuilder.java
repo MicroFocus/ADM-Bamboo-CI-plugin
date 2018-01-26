@@ -1,9 +1,10 @@
 package com.adm.bamboo.plugin.uft.helpers;
 
+import com.adm.tools.common.EncryptionUtils;
+import com.adm.tools.common.StringUtils;
 import com.adm.utils.uft.enums.AlmRunMode;
 import com.adm.utils.uft.enums.RunType;
-import com.hpe.application.automation.tools.common.EncryptionUtils;
-import com.hpe.application.automation.tools.common.StringUtils;
+
 
 import java.util.Arrays;
 import java.util.List;

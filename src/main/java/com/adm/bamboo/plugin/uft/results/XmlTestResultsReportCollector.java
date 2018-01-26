@@ -1,16 +1,17 @@
 package com.adm.bamboo.plugin.uft.results;
 
+import com.adm.tools.common.result.ResultSerializer;
+import com.adm.tools.common.result.model.junit.JUnitTestCaseStatus;
+import com.adm.tools.common.result.model.junit.Testcase;
+import com.adm.tools.common.result.model.junit.Testsuite;
+import com.adm.tools.common.result.model.junit.Testsuites;
 import com.atlassian.bamboo.build.test.TestCollectionResult;
 import com.atlassian.bamboo.build.test.TestCollectionResultBuilder;
 import com.atlassian.bamboo.build.test.TestReportCollector;
 import com.atlassian.bamboo.results.tests.TestResults;
 import com.atlassian.bamboo.resultsummary.tests.TestState;
 import com.google.common.collect.Sets;
-import com.hpe.application.automation.tools.common.result.ResultSerializer;
-import com.hpe.application.automation.tools.common.result.model.junit.JUnitTestCaseStatus;
-import com.hpe.application.automation.tools.common.result.model.junit.Testcase;
-import com.hpe.application.automation.tools.common.result.model.junit.Testsuite;
-import com.hpe.application.automation.tools.common.result.model.junit.Testsuites;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;

@@ -1,5 +1,6 @@
 package com.adm.bamboo.plugin.uft.results;
 
+import com.adm.tools.common.StringUtils;
 import com.adm.utils.uft.enums.UFTConstants;
 import com.atlassian.bamboo.build.LogEntry;
 import com.atlassian.bamboo.build.logger.BuildLogger;
@@ -51,7 +52,7 @@ public class TestResultHelperAlm {
 
         if (taskName.equals(i18nBean.getText(UFTConstants.ALM_LAB_TASK_NAME.getValue()))) {
             String taskRunLogPath = findRequiredStringFromLog(taskContext, linkSearchFilter);
-            if (com.hpe.application.automation.tools.common.StringUtils.isNullOrEmpty(taskRunLogPath)) {
+            if (StringUtils.isNullOrEmpty(taskRunLogPath)) {
                 taskContext.getBuildLogger().addErrorLogEntry(i18nBean.getText(CAN_NOT_SAVE_RUN_LOG_MESSAGE));
                 return;
             }
@@ -156,7 +157,7 @@ public class TestResultHelperAlm {
         savedALMRunLogPaths.add(link);
         String RunReportFileId = link.replaceAll(idFilter, "");
 
-        if (com.hpe.application.automation.tools.common.StringUtils.isNullOrEmpty(RunReportFileId)) {
+        if (StringUtils.isNullOrEmpty(RunReportFileId)) {
             return;
         }
         String RunReportFileName = RUN_LOG_FILE_NAME + RunReportFileId + ".html";

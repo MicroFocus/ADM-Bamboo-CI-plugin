@@ -1,12 +1,12 @@
 package com.adm.utils.uft;
 
 import com.adm.bamboo.plugin.uft.results.ResultInfoItem;
+import com.adm.tools.common.sdk.DirectoryZipHelper;
 import com.adm.utils.uft.enums.UFTConstants;
 import com.atlassian.bamboo.build.logger.BuildLogger;
 import com.atlassian.bamboo.task.TaskContext;
 import com.atlassian.bamboo.task.TaskResult;
 import com.atlassian.bamboo.task.TaskResultBuilder;
-import com.hpe.application.automation.tools.common.sdk.DirectoryZipHelper;
 
 import java.io.*;
 import java.time.LocalDateTime;

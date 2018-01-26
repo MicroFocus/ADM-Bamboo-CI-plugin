@@ -1,10 +1,10 @@
 package com.adm.bamboo.plugin.uft.capability;
 
 import com.adm.bamboo.plugin.uft.helpers.WindowsRegistry;
+import com.adm.tools.common.StringUtils;
 import com.atlassian.bamboo.v2.build.agent.capability.CapabilityDefaultsHelper;
 import com.atlassian.bamboo.v2.build.agent.capability.CapabilityImpl;
 import com.atlassian.bamboo.v2.build.agent.capability.CapabilitySet;
-import com.hpe.application.automation.tools.common.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;

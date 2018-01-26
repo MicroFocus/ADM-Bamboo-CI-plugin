@@ -4,18 +4,19 @@ import com.adm.bamboo.plugin.uft.api.AbstractLauncherTask;
 import com.adm.bamboo.plugin.uft.helpers.AlmConfigParameter;
 import com.adm.bamboo.plugin.uft.helpers.VariableService;
 import com.adm.bamboo.plugin.uft.ui.AlmLabEnvPrepareUftTaskConfigurator;
+import com.adm.tools.common.StringUtils;
+import com.adm.tools.common.model.AutEnvironmentConfigModel;
+import com.adm.tools.common.model.AutEnvironmentParameterModel;
+import com.adm.tools.common.model.AutEnvironmentParameterType;
+import com.adm.tools.common.rest.RestClient;
+import com.adm.tools.common.sdk.AUTEnvironmentBuilderPerformer;
+import com.adm.tools.common.sdk.Logger;
 import com.adm.utils.uft.enums.UFTConstants;
 import com.atlassian.bamboo.build.logger.BuildLogger;
 import com.atlassian.bamboo.configuration.ConfigurationMap;
 import com.atlassian.bamboo.task.*;
 import com.atlassian.bamboo.variable.VariableDefinitionManager;
-import com.hpe.application.automation.tools.common.StringUtils;
-import com.hpe.application.automation.tools.common.model.AutEnvironmentConfigModel;
-import com.hpe.application.automation.tools.common.model.AutEnvironmentParameterModel;
-import com.hpe.application.automation.tools.common.model.AutEnvironmentParameterType;
-import com.hpe.application.automation.tools.common.rest.RestClient;
-import com.hpe.application.automation.tools.common.sdk.AUTEnvironmentBuilderPerformer;
-import com.hpe.application.automation.tools.common.sdk.Logger;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

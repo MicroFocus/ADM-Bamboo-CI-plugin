@@ -2,6 +2,8 @@ package com.adm.bamboo.plugin.uft.task;
 
 import com.adm.bamboo.plugin.uft.api.AbstractLauncherTask;
 import com.adm.bamboo.plugin.uft.helpers.LauncherParamsBuilder;
+import com.adm.tools.common.integration.HttpConnectionException;
+import com.adm.tools.common.integration.JobOperation;
 import com.adm.utils.uft.enums.RunType;
 import com.adm.bamboo.plugin.uft.results.ResultInfoItem;
 import com.adm.bamboo.plugin.uft.results.TestResultHelperFileSystem;
@@ -17,8 +19,7 @@ import com.atlassian.bamboo.task.TaskResult;
 import com.atlassian.bamboo.task.TaskResultBuilder;
 import com.atlassian.bamboo.utils.i18n.I18nBean;
 import com.atlassian.bamboo.utils.i18n.I18nBeanFactory;
-import com.hpe.application.automation.tools.common.integration.HttpConnectionException;
-import com.hpe.application.automation.tools.common.integration.JobOperation;
+
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.commons.io.FileUtils;

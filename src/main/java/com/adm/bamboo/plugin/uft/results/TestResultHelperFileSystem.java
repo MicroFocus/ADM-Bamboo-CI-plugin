@@ -1,13 +1,14 @@
 package com.adm.bamboo.plugin.uft.results;
 
+import com.adm.tools.common.result.ResultSerializer;
+import com.adm.tools.common.result.model.junit.Testcase;
+import com.adm.tools.common.result.model.junit.Testsuite;
+import com.adm.tools.common.result.model.junit.Testsuites;
 import com.adm.utils.uft.enums.ResultTypeFilter;
 import com.adm.utils.uft.enums.UFTConstants;
 import com.atlassian.bamboo.build.logger.BuildLogger;
 import com.atlassian.bamboo.task.TaskContext;
-import com.hpe.application.automation.tools.common.result.ResultSerializer;
-import com.hpe.application.automation.tools.common.result.model.junit.Testcase;
-import com.hpe.application.automation.tools.common.result.model.junit.Testsuite;
-import com.hpe.application.automation.tools.common.result.model.junit.Testsuites;
+
 import org.jetbrains.annotations.NotNull;
 
 import javax.xml.bind.JAXBException;

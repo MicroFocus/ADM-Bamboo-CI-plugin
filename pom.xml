@@ -8,13 +8,13 @@
 	<version>1.0-beta-SNAPSHOT</version>
 	<packaging>atlassian-plugin</packaging>
 
-	<name>MicroFocus Bamboo plugins</name>
+	<name>HPE Bamboo plugins</name>
 	<description>
 		This plugin allows users to use HPE Software products functionalists through Bamboo.
 	</description>
 	<url>https://github.com/MicroFocus/ADM-Bamboo-CI-plugin</url>
 	<organization>
-		<name>MicroFocus</name>
+		<name>ENTCO</name>
 	</organization>
 	<licenses>
 		<license>
@@ -28,7 +28,7 @@
 		<developer>
 			<name>Amin Habash</name>
 			<email>amin.habash@hpe.com</email>
-			<organization>MicroFocus</organization>
+			<organization>HPE</organization>
 		</developer>
 	</developers>
 
@@ -65,6 +65,16 @@
 
 	<dependencies>
 		<!-- CONTAINER -->
+		<dependency>
+			<groupId>net.minidev</groupId>
+			<artifactId>json-smart</artifactId>
+			<version>2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jayway.jsonpath</groupId>
+			<artifactId>json-path</artifactId>
+			<version>1.1.0</version>
+		</dependency>
 		<dependency>
 			<artifactId>atlassian-bamboo-web</artifactId>
 			<groupId>com.atlassian.bamboo</groupId>
@@ -127,11 +137,6 @@
 			<groupId>com.atlassian.plugins</groupId>
 			<version>${plugin.testrunner.version}</version>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jenkins-ci.plugins</groupId>
-			<artifactId>hpe-application-automation-tools-common</artifactId>
-			<version>3.0.8-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 

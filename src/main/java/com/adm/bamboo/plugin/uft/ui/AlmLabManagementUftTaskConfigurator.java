@@ -1,14 +1,15 @@
 package com.adm.bamboo.plugin.uft.ui;
 
 import com.adm.bamboo.plugin.uft.api.AbstractLauncherTaskConfigurator;
+import com.adm.tools.common.model.CdaDetails;
+import com.adm.tools.common.model.EnumDescription;
+import com.adm.tools.common.model.SseModel;
 import com.adm.utils.uft.enums.UFTConstants;
 import com.atlassian.bamboo.collections.ActionParametersMap;
 import com.atlassian.bamboo.task.TaskDefinition;
 import com.atlassian.bamboo.utils.error.ErrorCollection;
 import com.atlassian.bamboo.utils.i18n.I18nBean;
-import com.hpe.application.automation.tools.common.model.CdaDetails;
-import com.hpe.application.automation.tools.common.model.EnumDescription;
-import com.hpe.application.automation.tools.common.model.SseModel;
+
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
