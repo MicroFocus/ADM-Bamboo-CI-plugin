@@ -50,16 +50,6 @@ install:
 
     Start-BitsTransfer -Source $url -Destination $output
 
-
-
-    }
-
-
-
-
-
-
-
     $Process = [System.Diagnostics.Process]::Start("c:\atlassian-plugin-sdk-windows.exe", "-q")
 
 
@@ -83,6 +73,11 @@ install:
     		Write-Host "successful"
 
     	}
+    
+    
+    }
+
+
 
 cache: C:\Applications\Atlassian
 
