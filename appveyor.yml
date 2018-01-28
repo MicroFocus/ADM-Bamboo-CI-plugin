@@ -10,7 +10,7 @@ init:
     SET JAVA_OPTS=-XX:MaxPermSize=2g -Xmx4g
 install:
 - ps: >-
-    if (!(Test-Path -Path "C:\Applications\Atlassian\atlassian-plugin-sdk-6.3.6" )) {
+    if (!(Test-Path -Path "C:\Applications\Atlassian\" )) {
       $url = "https://marketplace.atlassian.com/download/plugins/atlassian-plugin-sdk-windows"
       $output = "c:\atlassian-plugin-sdk-windows.exe"
       $start_time = Get-Date
