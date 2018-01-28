@@ -1,5 +1,9 @@
 # Micro Focus ADM Bamboo Plugin
 
+###### Current master branch status: [![Build status](https://ci.appveyor.com/api/projects/status/ggg1nepwx438dpo4?svg=true)](https://ci.appveyor.com/project/HPEbot/adm-bamboo-ci-plugin)
+
+###### Current latest branch status: [![Build status](https://ci.appveyor.com/api/projects/status/ggg1nepwx438dpo4/branch/latest?svg=true)](https://ci.appveyor.com/project/HPEbot/adm-bamboo-ci-plugin/branch/latest)
+
 This plugin contains the Micro Focus Software products capabilities.
 
 The products currently supported are:
@@ -13,9 +17,9 @@ The products currently supported are:
 4. Switch and checkout a new branch per feature (choose any wanted name) - `git checkout -b new_feature_branch`
 5. Make changes, commit, and push them to the remote.
 6. Now - Pull request it to my original repo. Simply click on "Pull request" and make sure it is placed vs. the 'latest' branch.
-______
 7. Make sure each file has JavaDocs and licensing.
 8. A build wll start automitcally - make sure it's green, you can click on the link 'Details' for more information in case it fails.
+9. To get the artifact - please click on "Artifacts" under the approiate build.
 
 *** Now, if the build is green, the code is fine and matches the structure - It will be merged.
 
