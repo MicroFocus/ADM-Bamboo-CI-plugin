@@ -34,6 +34,7 @@ build_script:
 - cmd: >-
     set MAVEN_HOME="C:\Applications\Atlassian\atlassian-plugin-sdk-6.3.6\apache-maven-3.2.1"
     set M2_HOME= "C:\Applications\Atlassian\atlassian-plugin-sdk-6.3.6\apache-maven-3.2.1"
+    
     atlas-mvn clean package
 artifacts:
 - path: '\target\*.jar'
