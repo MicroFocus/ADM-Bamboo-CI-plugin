@@ -93,7 +93,7 @@ build_script:
 
 
 
-    atlas-mvn clean package -U
+    atlas-mvn clean package
 
 artifacts:
 
