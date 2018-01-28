@@ -27,59 +27,24 @@ install:
 - ps: >-
 
     if (!(Test-Path -Path "C:\Applications\Atlassian\atlassian-plugin-sdk-6.3.6" )) {
-
-
-
-    $url = "https://marketplace.atlassian.com/download/plugins/atlassian-plugin-sdk-windows"
-
-
-
-    $output = "c:\atlassian-plugin-sdk-windows.exe"
-
-
-
-    $start_time = Get-Date
-
-
-
-
-
-    Import-Module BitsTransfer
-
-
-
-    Start-BitsTransfer -Source $url -Destination $output
-
-    $Process = [System.Diagnostics.Process]::Start("c:\atlassian-plugin-sdk-windows.exe", "-q")
-
-
-
-    $Process.WaitForExit()
-
-    	
-
-    	if ($Process.ExitCode)
-
-    	{
-
-    		Write-Host "ended with an error"	
-
-    	}
-
-    	else
-
-    	{
-
-    		Write-Host "successful"
-
-    	}
-    
-    
+      $url = "https://marketplace.atlassian.com/download/plugins/atlassian-plugin-sdk-windows"
+      $output = "c:\atlassian-plugin-sdk-windows.exe"
+      $start_time = Get-Date
+      Import-Module BitsTransfer
+      Start-BitsTransfer -Source $url -Destination $output
+      $Process = [System.Diagnostics.Process]::Start("c:\atlassian-plugin-sdk-windows.exe", "-q")
+      $Process.WaitForExit()
+      if ($Process.ExitCode)
+      {
+        Write-Host "ended with an error"	
+      }    else    {
+        Write-Host "successful"
+      }
     }
 
 
 
-cache: C:\Applications\Atlassian
+cache: C:\Applications\Atlassian;C:\Applications\Atlassian\atlassian-plugin-sdk-6.3.6\repository
 
 build_script:
 
