@@ -4,18 +4,13 @@ import com.adm.utils.sv.SVConsts;
 import com.atlassian.bamboo.collections.ActionParametersMap;
 import com.atlassian.bamboo.task.AbstractTaskConfigurator;
 import com.atlassian.bamboo.task.TaskDefinition;
-import com.atlassian.bamboo.task.TaskRequirementSupport;
 import com.atlassian.bamboo.utils.error.ErrorCollection;
 import com.atlassian.bamboo.utils.i18n.I18nBean;
-import com.atlassian.bamboo.v2.build.agent.capability.Requirement;
-import com.atlassian.bamboo.v2.build.agent.capability.RequirementImpl;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,10 +21,10 @@ import java.util.Set;
  */
 public class SVChangeModeTaskConfigurator extends AbstractTaskConfigurator {
 
-    private static final Map SERVICE_SELECTION = new HashMap();
-    private static final Map DATA_MODEL = new HashMap();
-    private static final Map PERFORMANCE_MODEL = new HashMap();
-    private static final Map SERVICE_MODE = new HashMap();
+    private static final Map SERVICE_SELECTION = new LinkedHashMap();
+    private static final Map DATA_MODEL = new LinkedHashMap();
+    private static final Map PERFORMANCE_MODEL = new LinkedHashMap();
+    private static final Map SERVICE_MODE = new LinkedHashMap();
 
     public Map<String, String> generateTaskConfigMap(final ActionParametersMap params, final TaskDefinition previousTaskDefinition)
     {
@@ -102,8 +97,9 @@ public class SVChangeModeTaskConfigurator extends AbstractTaskConfigurator {
         populateContextForLists(context);
 
         context.put(SVConsts.SERVICE_SELECTION, SVConsts.SELECTED_SERVICE_ONLY);
-        context.put(SVConsts.DATA_MODEL, SVConsts.DM_SPECIFIC);
-        context.put(SVConsts.PERFORMANCE_MODEL, SVConsts.PM_SPECIFIC);
+        context.put(SVConsts.SERVICE_MODE, SVConsts.STAND_BY);
+        context.put(SVConsts.DATA_MODEL, SVConsts.DM_DEFAULT);
+        context.put(SVConsts.PERFORMANCE_MODEL, SVConsts.NONE_PERFORMANCE_MODEL);
     }
 
     @Override
@@ -117,9 +113,9 @@ public class SVChangeModeTaskConfigurator extends AbstractTaskConfigurator {
     private void populateContextForLists(@NotNull final Map<String, Object> context) {
         I18nBean textProvider = getI18nBean();
         if(SERVICE_SELECTION.isEmpty()) {
-            SERVICE_SELECTION.put(SVConsts.ALL_SERVICES_DEPLOYED_ON_SERVER, textProvider.getText("sv.param.label.allServicesDeployedOnServer"));
-            SERVICE_SELECTION.put(SVConsts.ALL_SERVICES_FROM_PROJECT, textProvider.getText("sv.param.label.allServicesFromProject"));
             SERVICE_SELECTION.put(SVConsts.SELECTED_SERVICE_ONLY, textProvider.getText("sv.param.label.selectedServiceOnly"));
+            SERVICE_SELECTION.put(SVConsts.ALL_SERVICES_FROM_PROJECT, textProvider.getText("sv.param.label.allServicesFromProject"));
+            SERVICE_SELECTION.put(SVConsts.ALL_SERVICES_DEPLOYED_ON_SERVER, textProvider.getText("sv.param.label.allServicesDeployedOnServer"));
         }
         if(DATA_MODEL.isEmpty()) {
             DATA_MODEL.put(SVConsts.DM_DEFAULT, textProvider.getText("sv.param.label.dmDefault"));
@@ -127,9 +123,9 @@ public class SVChangeModeTaskConfigurator extends AbstractTaskConfigurator {
             DATA_MODEL.put(SVConsts.DM_SPECIFIC, textProvider.getText("sv.param.label.dmSpecific"));
         }
         if(PERFORMANCE_MODEL.isEmpty()) {
-            PERFORMANCE_MODEL.put(SVConsts.DEFAULT_PERFORMANCE_MODEL, textProvider.getText("sv.param.label.defaultPerformanceModel"));
-            PERFORMANCE_MODEL.put(SVConsts.OFFLINE, textProvider.getText("sv.param.label.offline"));
             PERFORMANCE_MODEL.put(SVConsts.NONE_PERFORMANCE_MODEL, textProvider.getText("sv.param.label.nonePerformanceModel"));
+            PERFORMANCE_MODEL.put(SVConsts.OFFLINE, textProvider.getText("sv.param.label.offline"));
+            PERFORMANCE_MODEL.put(SVConsts.DEFAULT_PERFORMANCE_MODEL, textProvider.getText("sv.param.label.defaultPerformanceModel"));
             PERFORMANCE_MODEL.put(SVConsts.PM_SPECIFIC, textProvider.getText("sv.param.label.pmSpecific"));
         }
         if(SERVICE_MODE.isEmpty()) {
@@ -156,7 +152,7 @@ public class SVChangeModeTaskConfigurator extends AbstractTaskConfigurator {
         context.put(SVConsts.PROJECT_PATH, configuration.get(SVConsts.PROJECT_PATH));
         context.put(SVConsts.PROJECT_PASSWORD, configuration.get(SVConsts.PROJECT_PASSWORD));
 
-        context.put(SVConsts.SERVICE_MODE, configuration.get(SVConsts.SERVICE_SELECTION));
+        context.put(SVConsts.SERVICE_MODE, configuration.get(SVConsts.SERVICE_MODE));
 
         context.put(SVConsts.DATA_MODEL, configuration.get(SVConsts.DATA_MODEL));
         context.put(SVConsts.DM_NAME_OR_ID, configuration.get(SVConsts.DM_NAME_OR_ID));

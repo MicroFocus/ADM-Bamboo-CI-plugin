@@ -1,9 +1,7 @@
 package com.adm.utils.sv;
 
 import com.adm.bamboo.plugin.sv.model.ServiceInfo;
-import com.adm.bamboo.plugin.sv.model.SvServerSettingsModel;
 import com.adm.bamboo.plugin.sv.model.SvServiceSelectionModel;
-import com.adm.bamboo.plugin.sv.model.SvUnDeployModel;
 import com.atlassian.bamboo.build.logger.BuildLogger;
 import com.hp.sv.jsvconfigurator.build.ProjectBuilder;
 import com.hp.sv.jsvconfigurator.core.IProject;
