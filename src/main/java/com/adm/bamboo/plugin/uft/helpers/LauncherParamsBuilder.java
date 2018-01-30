@@ -1,7 +1,7 @@
 package com.adm.bamboo.plugin.uft.helpers;
 
-import com.adm.tools.common.EncryptionUtils;
-import com.adm.tools.common.StringUtils;
+import com.adm.utils.uft.EncryptionUtils;
+import com.adm.utils.uft.StringUtils;
 import com.adm.utils.uft.enums.AlmRunMode;
 import com.adm.utils.uft.enums.RunType;
 

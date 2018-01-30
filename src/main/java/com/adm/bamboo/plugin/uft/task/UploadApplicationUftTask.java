@@ -2,8 +2,8 @@ package com.adm.bamboo.plugin.uft.task;
 
 import com.adm.bamboo.plugin.uft.api.AbstractLauncherTask;
 import com.adm.bamboo.plugin.uft.ui.UploadApplicationUftTaskConfigurator;
-import com.adm.tools.common.integration.HttpConnectionException;
-import com.adm.tools.common.integration.JobOperation;
+import com.adm.utils.uft.integration.HttpConnectionException;
+import com.adm.utils.uft.integration.JobOperation;
 import com.adm.utils.uft.enums.UFTConstants;
 import com.atlassian.bamboo.build.logger.BuildLogger;
 import com.atlassian.bamboo.build.test.TestCollationService;

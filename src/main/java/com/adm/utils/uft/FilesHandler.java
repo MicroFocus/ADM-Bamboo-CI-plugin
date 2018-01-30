@@ -1,7 +1,7 @@
 package com.adm.utils.uft;
 
 import com.adm.bamboo.plugin.uft.results.ResultInfoItem;
-import com.adm.tools.common.sdk.DirectoryZipHelper;
+import com.adm.utils.uft.sdk.DirectoryZipHelper;
 import com.adm.utils.uft.enums.UFTConstants;
 import com.atlassian.bamboo.build.logger.BuildLogger;
 import com.atlassian.bamboo.task.TaskContext;

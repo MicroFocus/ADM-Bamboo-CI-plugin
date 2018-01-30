@@ -1,9 +1,9 @@
 package com.adm.bamboo.plugin.uft.results;
 
-import com.adm.tools.common.result.ResultSerializer;
-import com.adm.tools.common.result.model.junit.Testcase;
-import com.adm.tools.common.result.model.junit.Testsuite;
-import com.adm.tools.common.result.model.junit.Testsuites;
+import com.adm.utils.uft.result.ResultSerializer;
+import com.adm.utils.uft.result.model.junit.Testcase;
+import com.adm.utils.uft.result.model.junit.Testsuite;
+import com.adm.utils.uft.result.model.junit.Testsuites;
 import com.adm.utils.uft.enums.ResultTypeFilter;
 import com.adm.utils.uft.enums.UFTConstants;
 import com.atlassian.bamboo.build.logger.BuildLogger;

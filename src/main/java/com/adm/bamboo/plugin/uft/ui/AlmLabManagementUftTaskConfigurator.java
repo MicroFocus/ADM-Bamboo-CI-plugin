@@ -1,9 +1,9 @@
 package com.adm.bamboo.plugin.uft.ui;
 
 import com.adm.bamboo.plugin.uft.api.AbstractLauncherTaskConfigurator;
-import com.adm.tools.common.model.CdaDetails;
-import com.adm.tools.common.model.EnumDescription;
-import com.adm.tools.common.model.SseModel;
+import com.adm.utils.uft.model.CdaDetails;
+import com.adm.utils.uft.model.EnumDescription;
+import com.adm.utils.uft.model.SseModel;
 import com.adm.utils.uft.enums.UFTConstants;
 import com.atlassian.bamboo.collections.ActionParametersMap;
 import com.atlassian.bamboo.task.TaskDefinition;

@@ -1,14 +1,14 @@
 package com.adm.bamboo.plugin.uft.task;
 
 import com.adm.bamboo.plugin.uft.api.AbstractLauncherTask;
-import com.adm.tools.common.SSEException;
-import com.adm.tools.common.model.CdaDetails;
-import com.adm.tools.common.rest.RestClient;
-import com.adm.tools.common.result.ResultSerializer;
-import com.adm.tools.common.result.model.junit.Testsuites;
-import com.adm.tools.common.sdk.Args;
-import com.adm.tools.common.sdk.Logger;
-import com.adm.tools.common.sdk.RunManager;
+import com.adm.utils.uft.SSEException;
+import com.adm.utils.uft.model.CdaDetails;
+import com.adm.utils.uft.rest.RestClient;
+import com.adm.utils.uft.result.ResultSerializer;
+import com.adm.utils.uft.result.model.junit.Testsuites;
+import com.adm.utils.uft.sdk.Args;
+import com.adm.utils.uft.sdk.Logger;
+import com.adm.utils.uft.sdk.RunManager;
 import com.adm.utils.uft.enums.UFTConstants;
 import com.atlassian.bamboo.build.logger.BuildLogger;
 import com.atlassian.bamboo.build.test.TestCollationService;

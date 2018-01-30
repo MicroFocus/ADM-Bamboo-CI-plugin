@@ -1,10 +1,10 @@
 package com.adm.bamboo.plugin.uft.results;
 
-import com.adm.tools.common.result.ResultSerializer;
-import com.adm.tools.common.result.model.junit.JUnitTestCaseStatus;
-import com.adm.tools.common.result.model.junit.Testcase;
-import com.adm.tools.common.result.model.junit.Testsuite;
-import com.adm.tools.common.result.model.junit.Testsuites;
+import com.adm.utils.uft.result.ResultSerializer;
+import com.adm.utils.uft.result.model.junit.JUnitTestCaseStatus;
+import com.adm.utils.uft.result.model.junit.Testcase;
+import com.adm.utils.uft.result.model.junit.Testsuite;
+import com.adm.utils.uft.result.model.junit.Testsuites;
 import com.atlassian.bamboo.build.test.TestCollectionResult;
 import com.atlassian.bamboo.build.test.TestCollectionResultBuilder;
 import com.atlassian.bamboo.build.test.TestReportCollector;

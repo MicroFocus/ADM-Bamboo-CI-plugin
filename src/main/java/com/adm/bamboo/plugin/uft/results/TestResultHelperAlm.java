@@ -1,6 +1,6 @@
 package com.adm.bamboo.plugin.uft.results;
 
-import com.adm.tools.common.StringUtils;
+import com.adm.utils.uft.StringUtils;
 import com.adm.utils.uft.enums.UFTConstants;
 import com.atlassian.bamboo.build.LogEntry;
 import com.atlassian.bamboo.build.logger.BuildLogger;
