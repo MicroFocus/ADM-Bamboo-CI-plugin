@@ -156,6 +156,11 @@
 				<checksumPolicy>warn</checksumPolicy>
 			</releases>
 		</repository>
+        <repository>
+            <id>bintray-adm-maven</id>
+            <name>bintray</name>
+            <url>http://dl.bintray.com/adm/maven</url>
+        </repository>
 	</repositories>
 
 	<pluginRepositories>
