@@ -1,19 +1,24 @@
+/*
+ *     Copyright 2017 Hewlett-Packard Development Company, L.P.
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ *
+ */
+
 package com.adm.bamboo.plugin.sv.model;
 
-import com.adm.utils.sv.SVConsts;
+import com.adm.utils.sv.SVConstants;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
-/**
- * Created with IntelliJ IDEA.
- * User: jingwei
- * Date: 12/7/17
- * Time: 11:04 AM
- * To change this template use File | Settings | File Templates.
- */
 public class SvServiceSelectionModel {
     private SelectionType selectionType;
     private String service;
@@ -31,11 +36,11 @@ public class SvServiceSelectionModel {
     }
 
     public void setSelectionType(String serviceSelection) {
-        if(SVConsts.ALL_SERVICES_FROM_PROJECT.equals(serviceSelection)){
+        if(SVConstants.ALL_SERVICES_FROM_PROJECT.equals(serviceSelection)){
             this.selectionType = SvServiceSelectionModel.SelectionType.PROJECT;
-        } else if(SVConsts.ALL_SERVICES_DEPLOYED_ON_SERVER.equals(serviceSelection)){
+        } else if(SVConstants.ALL_SERVICES_DEPLOYED_ON_SERVER.equals(serviceSelection)){
             this.selectionType = SvServiceSelectionModel.SelectionType.ALL_DEPLOYED;
-        } else if(SVConsts.SELECTED_SERVICE_ONLY.equals(serviceSelection)){
+        } else if(SVConstants.SELECTED_SERVICE_ONLY.equals(serviceSelection)){
             this.selectionType = SvServiceSelectionModel.SelectionType.SERVICE;
         }
     }

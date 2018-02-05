@@ -1,9 +1,25 @@
+/*
+ *     Copyright 2017 Hewlett-Packard Development Company, L.P.
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ *
+ */
+
 package com.adm.bamboo.plugin.sv.task;
 
 import com.adm.bamboo.plugin.sv.model.SvDeployModel;
 import com.adm.bamboo.plugin.sv.model.SvServerSettingsModel;
-import com.adm.utils.sv.SVConsts;
-import com.adm.utils.sv.SVExecutor;
+import com.adm.utils.sv.SVConstants;
+import com.adm.utils.sv.SVExecutorUtil;
 import com.atlassian.bamboo.build.logger.BuildLogger;
 import com.atlassian.bamboo.configuration.ConfigurationMap;
 import com.atlassian.bamboo.task.TaskContext;
@@ -24,41 +40,31 @@ import com.hp.sv.jsvconfigurator.serverclient.ICommandExecutor;
 import com.hp.sv.jsvconfigurator.service.ServiceAmendingServiceImpl;
 import com.hp.sv.jsvconfigurator.util.ProjectUtils;
 import org.apache.commons.lang.BooleanUtils;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 
-/**
- * Created with IntelliJ IDEA.
- * User: jingwei
- * Date: 12/4/17
- * Time: 10:18 PM
- * To change this template use File | Settings | File Templates.
- */
 public class SVDeployTask implements TaskType {
-    @NotNull
     @Override
-    public TaskResult execute(@NotNull TaskContext taskContext) {
+    public TaskResult execute(final TaskContext taskContext) {
         Date startDate = new Date();
         final BuildLogger buildLogger = taskContext.getBuildLogger();
         final ConfigurationMap map = taskContext.getConfigurationMap();
-        String serverURL = map.get(SVConsts.URL);
-        String userName = map.get(SVConsts.USERNAME);
-        String userPassword = map.get(SVConsts.PASSWORD);
-        String projectPath = map.get(SVConsts.PROJECT_PATH);
-        String projectPassword = map.get(SVConsts.PROJECT_PASSWORD);
-        String serviceName = map.get(SVConsts.SERVICE_NAME_OR_ID);
+        String serverURL = map.get(SVConstants.URL);
+        String userName = map.get(SVConstants.USERNAME);
+        String userPassword = map.get(SVConstants.PASSWORD);
+        String projectPath = map.get(SVConstants.PROJECT_PATH);
+        String projectPassword = map.get(SVConstants.PROJECT_PASSWORD);
+        String serviceName = map.get(SVConstants.SERVICE_NAME_OR_ID);
         serviceName = (serviceName == null || serviceName.isEmpty()) ? null : serviceName;
-        boolean force = BooleanUtils.toBoolean(map.get(SVConsts.FORCE));
-        boolean firstSuitableAgentFallback = BooleanUtils.toBoolean(map.get(SVConsts.FIRST_SUITABLE_AGENT_FALLBACK));
+        boolean force = BooleanUtils.toBoolean(map.get(SVConstants.FORCE));
+        boolean firstSuitableAgentFallback = BooleanUtils.toBoolean(map.get(SVConstants.FIRST_SUITABLE_AGENT_FALLBACK));
 
         SvServerSettingsModel svServerSettingsModel = new SvServerSettingsModel(serverURL, userName, userPassword);
         SvDeployModel svDeployModel = new SvDeployModel(svServerSettingsModel, serviceName, force, firstSuitableAgentFallback);
 
-        logConfig(buildLogger, svDeployModel, startDate, "    ");
+        logConfig(buildLogger, svDeployModel, startDate, SVConstants.PREFIX);
         try {
             IProject project = new ProjectBuilder().buildProject(new File(projectPath), projectPassword);
             printProjectContent(project, buildLogger);
@@ -67,7 +73,7 @@ public class SVDeployTask implements TaskType {
             buildLogger.addErrorLogEntry("Build failed: " + e.getMessage());
             return TaskResultBuilder.create(taskContext).failedWithError().build();
         } catch (Exception e) {
-            buildLogger.addErrorLogEntry("Build failed: " + e.getMessage());
+            buildLogger.addErrorLogEntry("Build failed: " + e.getMessage(), e);
             return TaskResultBuilder.create(taskContext).failedWithError().build();
         } finally {
             double duration = (new Date().getTime() - startDate.getTime()) / 1000.;
@@ -89,10 +95,17 @@ public class SVDeployTask implements TaskType {
         }
     }
 
+    /**
+     * deploy virtual service
+     *
+     * @param svDeployModel
+     * @param project
+     * @param buildLogger
+     * @return
+     */
     private void deployServiceFromProject(SvDeployModel svDeployModel, IProject project, BuildLogger buildLogger) throws Exception {
-        SVExecutor svExecutor = new SVExecutor();
         IDeployProcessor processor = new DeployProcessor(null, new ServiceAmendingServiceImpl());
-        ICommandExecutor commandExecutor = svExecutor.createCommandExecutor(new URL(svDeployModel.getServerSettingsModel().getUrl()),
+        ICommandExecutor commandExecutor = SVExecutorUtil.createCommandExecutor(new URL(svDeployModel.getServerSettingsModel().getUrl()),
                 new Credentials(svDeployModel.getServerSettingsModel().getUsername(),svDeployModel.getServerSettingsModel().getPassword()));
 
         for (IService service : getServiceList(svDeployModel, project)) {
@@ -103,6 +116,13 @@ public class SVDeployTask implements TaskType {
         }
     }
 
+    /**
+     * get the virtual services list
+     *
+     * @param svDeployModel
+     * @param project
+     * @return the virtual services list
+     */
     private Iterable<IService> getServiceList(SvDeployModel svDeployModel, IProject project) {
         if (svDeployModel.getServiceName() == null || svDeployModel.getServiceName().isEmpty()) {
             return project.getServices();

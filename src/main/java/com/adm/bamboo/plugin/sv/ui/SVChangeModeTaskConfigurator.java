@@ -1,24 +1,32 @@
+/*
+ *     Copyright 2017 Hewlett-Packard Development Company, L.P.
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ *
+ */
+
 package com.adm.bamboo.plugin.sv.ui;
 
-import com.adm.utils.sv.SVConsts;
+import com.adm.utils.sv.SVConstants;
+import com.adm.utils.sv.SVExecutorUtil;
 import com.atlassian.bamboo.collections.ActionParametersMap;
 import com.atlassian.bamboo.task.AbstractTaskConfigurator;
 import com.atlassian.bamboo.task.TaskDefinition;
 import com.atlassian.bamboo.utils.error.ErrorCollection;
 import com.atlassian.bamboo.utils.i18n.I18nBean;
-import org.apache.commons.lang.StringUtils;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- * Created with IntelliJ IDEA.
- * User: jingwei
- * Date: 12/4/17
- * Time: 5:28 PM
- * To change this template use File | Settings | File Templates.
- */
 public class SVChangeModeTaskConfigurator extends AbstractTaskConfigurator {
 
     private static final Map SERVICE_SELECTION = new LinkedHashMap();
@@ -29,24 +37,24 @@ public class SVChangeModeTaskConfigurator extends AbstractTaskConfigurator {
     public Map<String, String> generateTaskConfigMap(final ActionParametersMap params, final TaskDefinition previousTaskDefinition)
     {
         final Map<String, String> config = super.generateTaskConfigMap(params, previousTaskDefinition);
-        config.put(SVConsts.URL, params.getString(SVConsts.URL));
-        config.put(SVConsts.USERNAME, params.getString(SVConsts.USERNAME));
-        config.put(SVConsts.PASSWORD, params.getString(SVConsts.PASSWORD));
+        config.put(SVConstants.URL, params.getString(SVConstants.URL));
+        config.put(SVConstants.USERNAME, params.getString(SVConstants.USERNAME));
+        config.put(SVConstants.PASSWORD, params.getString(SVConstants.PASSWORD));
 
-        config.put(SVConsts.SERVICE_SELECTION, params.getString(SVConsts.SERVICE_SELECTION));
-        config.put(SVConsts.SERVICE_NAME_OR_ID, params.getString(SVConsts.SERVICE_NAME_OR_ID));
-        config.put(SVConsts.PROJECT_PATH, params.getString(SVConsts.PROJECT_PATH));
-        config.put(SVConsts.PROJECT_PASSWORD, params.getString(SVConsts.PROJECT_PASSWORD));
+        config.put(SVConstants.SERVICE_SELECTION, params.getString(SVConstants.SERVICE_SELECTION));
+        config.put(SVConstants.SERVICE_NAME_OR_ID, params.getString(SVConstants.SERVICE_NAME_OR_ID));
+        config.put(SVConstants.PROJECT_PATH, params.getString(SVConstants.PROJECT_PATH));
+        config.put(SVConstants.PROJECT_PASSWORD, params.getString(SVConstants.PROJECT_PASSWORD));
 
-        config.put(SVConsts.SERVICE_MODE, params.getString(SVConsts.SERVICE_MODE));
+        config.put(SVConstants.SERVICE_MODE, params.getString(SVConstants.SERVICE_MODE));
 
-        config.put(SVConsts.DATA_MODEL, params.getString(SVConsts.DATA_MODEL));
-        config.put(SVConsts.DM_NAME_OR_ID, params.getString(SVConsts.DM_NAME_OR_ID));
+        config.put(SVConstants.DATA_MODEL, params.getString(SVConstants.DATA_MODEL));
+        config.put(SVConstants.DM_NAME_OR_ID, params.getString(SVConstants.DM_NAME_OR_ID));
 
-        config.put(SVConsts.PERFORMANCE_MODEL, params.getString(SVConsts.PERFORMANCE_MODEL));
-        config.put(SVConsts.PM_NAME_OR_ID, params.getString(SVConsts.PM_NAME_OR_ID));
+        config.put(SVConstants.PERFORMANCE_MODEL, params.getString(SVConstants.PERFORMANCE_MODEL));
+        config.put(SVConstants.PM_NAME_OR_ID, params.getString(SVConstants.PM_NAME_OR_ID));
 
-        config.put(SVConsts.FORCE, params.getString(SVConsts.FORCE));
+        config.put(SVConstants.FORCE, params.getString(SVConstants.FORCE));
 
 
         return config;
@@ -56,36 +64,36 @@ public class SVChangeModeTaskConfigurator extends AbstractTaskConfigurator {
     {
         super.validate(params, errorCollection);
 
-        String urlValue = params.getString(SVConsts.URL);
-        if (!validInput(urlValue))
+        String urlValue = params.getString(SVConstants.URL);
+        if (!SVExecutorUtil.validInput(urlValue))
         {
-            errorCollection.addError(SVConsts.URL,
-                    SVConsts.ERROR_URL);
+            errorCollection.addError(SVConstants.URL,
+                    SVConstants.ERROR_URL);
         }
-        if(SVConsts.SELECTED_SERVICE_ONLY.equals(params.getString(SVConsts.SERVICE_SELECTION)))
+        if(SVConstants.SELECTED_SERVICE_ONLY.equals(params.getString(SVConstants.SERVICE_SELECTION)))
         {
-            String serviceNameOrIdValue = params.getString(SVConsts.SERVICE_NAME_OR_ID);
-            if(!validInput(serviceNameOrIdValue)) {
-                errorCollection.addError(SVConsts.SERVICE_NAME_OR_ID, SVConsts.ERROR_SERVICE_NAME_OR_ID);
+            String serviceNameOrIdValue = params.getString(SVConstants.SERVICE_NAME_OR_ID);
+            if(!SVExecutorUtil.validInput(serviceNameOrIdValue)) {
+                errorCollection.addError(SVConstants.SERVICE_NAME_OR_ID, SVConstants.ERROR_SERVICE_NAME_OR_ID);
             }
-        }else if(SVConsts.ALL_SERVICES_FROM_PROJECT.equals(params.getString(SVConsts.SERVICE_SELECTION))){
-            String projectPathValue = params.getString(SVConsts.PROJECT_PATH);
-            if(!validInput(projectPathValue)) {
-                errorCollection.addError(SVConsts.PROJECT_PATH, SVConsts.ERROR_PROJECT_PATH);
-            }
-        }
-        if(SVConsts.DM_SPECIFIC.equals(params.getString(SVConsts.DATA_MODEL)))
-        {
-            String DMNameOrIdValue = params.getString(SVConsts.DM_NAME_OR_ID);
-            if(!validInput(DMNameOrIdValue)) {
-                errorCollection.addError(SVConsts.DM_NAME_OR_ID, SVConsts.ERROR_DM_NAME_OR_ID);
+        }else if(SVConstants.ALL_SERVICES_FROM_PROJECT.equals(params.getString(SVConstants.SERVICE_SELECTION))){
+            String projectPathValue = params.getString(SVConstants.PROJECT_PATH);
+            if(!SVExecutorUtil.validInput(projectPathValue)) {
+                errorCollection.addError(SVConstants.PROJECT_PATH, SVConstants.ERROR_PROJECT_PATH);
             }
         }
-        if(SVConsts.PM_SPECIFIC.equals(params.getString(SVConsts.PERFORMANCE_MODEL)))
+        if(SVConstants.DM_SPECIFIC.equals(params.getString(SVConstants.DATA_MODEL)))
         {
-            String PMNameOrIdValue = params.getString(SVConsts.PM_NAME_OR_ID);
-            if(!validInput(PMNameOrIdValue)) {
-                errorCollection.addError(SVConsts.PM_NAME_OR_ID, SVConsts.ERROR_PM_NAME_OR_ID);
+            String DMNameOrIdValue = params.getString(SVConstants.DM_NAME_OR_ID);
+            if(!SVExecutorUtil.validInput(DMNameOrIdValue)) {
+                errorCollection.addError(SVConstants.DM_NAME_OR_ID, SVConstants.ERROR_DM_NAME_OR_ID);
+            }
+        }
+        if(SVConstants.PM_SPECIFIC.equals(params.getString(SVConstants.PERFORMANCE_MODEL)))
+        {
+            String PMNameOrIdValue = params.getString(SVConstants.PM_NAME_OR_ID);
+            if(!SVExecutorUtil.validInput(PMNameOrIdValue)) {
+                errorCollection.addError(SVConstants.PM_NAME_OR_ID, SVConstants.ERROR_PM_NAME_OR_ID);
             }
         }
     }
@@ -96,10 +104,10 @@ public class SVChangeModeTaskConfigurator extends AbstractTaskConfigurator {
         super.populateContextForCreate(context);
         populateContextForLists(context);
 
-        context.put(SVConsts.SERVICE_SELECTION, SVConsts.SELECTED_SERVICE_ONLY);
-        context.put(SVConsts.SERVICE_MODE, SVConsts.STAND_BY);
-        context.put(SVConsts.DATA_MODEL, SVConsts.DM_DEFAULT);
-        context.put(SVConsts.PERFORMANCE_MODEL, SVConsts.NONE_PERFORMANCE_MODEL);
+        context.put(SVConstants.SERVICE_SELECTION, SVConstants.SELECTED_SERVICE_ONLY);
+        context.put(SVConstants.SERVICE_MODE, SVConstants.STAND_BY);
+        context.put(SVConstants.DATA_MODEL, SVConstants.DM_DEFAULT);
+        context.put(SVConstants.PERFORMANCE_MODEL, SVConstants.NONE_PERFORMANCE_MODEL);
     }
 
     @Override
@@ -110,28 +118,28 @@ public class SVChangeModeTaskConfigurator extends AbstractTaskConfigurator {
         populateContextForLists(context);
     }
 
-    private void populateContextForLists(@NotNull final Map<String, Object> context) {
+    private void populateContextForLists(final Map<String, Object> context) {
         I18nBean textProvider = getI18nBean();
         if(SERVICE_SELECTION.isEmpty()) {
-            SERVICE_SELECTION.put(SVConsts.SELECTED_SERVICE_ONLY, textProvider.getText("sv.param.label.selectedServiceOnly"));
-            SERVICE_SELECTION.put(SVConsts.ALL_SERVICES_FROM_PROJECT, textProvider.getText("sv.param.label.allServicesFromProject"));
-            SERVICE_SELECTION.put(SVConsts.ALL_SERVICES_DEPLOYED_ON_SERVER, textProvider.getText("sv.param.label.allServicesDeployedOnServer"));
+            SERVICE_SELECTION.put(SVConstants.SELECTED_SERVICE_ONLY, textProvider.getText("sv.param.label.selectedServiceOnly"));
+            SERVICE_SELECTION.put(SVConstants.ALL_SERVICES_FROM_PROJECT, textProvider.getText("sv.param.label.allServicesFromProject"));
+            SERVICE_SELECTION.put(SVConstants.ALL_SERVICES_DEPLOYED_ON_SERVER, textProvider.getText("sv.param.label.allServicesDeployedOnServer"));
         }
         if(DATA_MODEL.isEmpty()) {
-            DATA_MODEL.put(SVConsts.DM_DEFAULT, textProvider.getText("sv.param.label.dmDefault"));
-            DATA_MODEL.put(SVConsts.NONE_DATA_MODEL, textProvider.getText("sv.param.label.noneDataModel"));
-            DATA_MODEL.put(SVConsts.DM_SPECIFIC, textProvider.getText("sv.param.label.dmSpecific"));
+            DATA_MODEL.put(SVConstants.DM_DEFAULT, textProvider.getText("sv.param.label.dmDefault"));
+            DATA_MODEL.put(SVConstants.NONE_DATA_MODEL, textProvider.getText("sv.param.label.noneDataModel"));
+            DATA_MODEL.put(SVConstants.DM_SPECIFIC, textProvider.getText("sv.param.label.dmSpecific"));
         }
         if(PERFORMANCE_MODEL.isEmpty()) {
-            PERFORMANCE_MODEL.put(SVConsts.NONE_PERFORMANCE_MODEL, textProvider.getText("sv.param.label.nonePerformanceModel"));
-            PERFORMANCE_MODEL.put(SVConsts.OFFLINE, textProvider.getText("sv.param.label.offline"));
-            PERFORMANCE_MODEL.put(SVConsts.DEFAULT_PERFORMANCE_MODEL, textProvider.getText("sv.param.label.defaultPerformanceModel"));
-            PERFORMANCE_MODEL.put(SVConsts.PM_SPECIFIC, textProvider.getText("sv.param.label.pmSpecific"));
+            PERFORMANCE_MODEL.put(SVConstants.NONE_PERFORMANCE_MODEL, textProvider.getText("sv.param.label.nonePerformanceModel"));
+            PERFORMANCE_MODEL.put(SVConstants.OFFLINE, textProvider.getText("sv.param.label.offline"));
+            PERFORMANCE_MODEL.put(SVConstants.DEFAULT_PERFORMANCE_MODEL, textProvider.getText("sv.param.label.defaultPerformanceModel"));
+            PERFORMANCE_MODEL.put(SVConstants.PM_SPECIFIC, textProvider.getText("sv.param.label.pmSpecific"));
         }
         if(SERVICE_MODE.isEmpty()) {
-            SERVICE_MODE.put(SVConsts.STAND_BY, textProvider.getText("sv.param.label.standBy"));
-            SERVICE_MODE.put(SVConsts.SIMULATING, textProvider.getText("sv.param.label.simulate"));
-            SERVICE_MODE.put(SVConsts.LEARNING, textProvider.getText("sv.param.label.learn"));
+            SERVICE_MODE.put(SVConstants.STAND_BY, textProvider.getText("sv.param.label.standBy"));
+            SERVICE_MODE.put(SVConstants.SIMULATING, textProvider.getText("sv.param.label.simulate"));
+            SERVICE_MODE.put(SVConstants.LEARNING, textProvider.getText("sv.param.label.learn"));
         }
         context.put("SVServiceSelectionMap", SERVICE_SELECTION);
         context.put("SVDataModelMap", DATA_MODEL);
@@ -139,34 +147,26 @@ public class SVChangeModeTaskConfigurator extends AbstractTaskConfigurator {
         context.put("SVServiceModeMap", SERVICE_MODE);
     }
 
-    private void populateContext(@NotNull final Map<String, Object> context,
-                                 @NotNull final TaskDefinition taskDefinition) {
+    private void populateContext(final Map<String, Object> context,
+                                 final TaskDefinition taskDefinition) {
 
 
         Map<String, String> configuration = taskDefinition.getConfiguration();
-        context.put(SVConsts.URL, configuration.get(SVConsts.URL));
-        context.put(SVConsts.USERNAME, configuration.get(SVConsts.USERNAME));
-        context.put(SVConsts.PASSWORD, configuration.get(SVConsts.PASSWORD));
-        context.put(SVConsts.SERVICE_SELECTION, configuration.get(SVConsts.SERVICE_SELECTION));
-        context.put(SVConsts.SERVICE_NAME_OR_ID, configuration.get(SVConsts.SERVICE_NAME_OR_ID));
-        context.put(SVConsts.PROJECT_PATH, configuration.get(SVConsts.PROJECT_PATH));
-        context.put(SVConsts.PROJECT_PASSWORD, configuration.get(SVConsts.PROJECT_PASSWORD));
+        context.put(SVConstants.URL, configuration.get(SVConstants.URL));
+        context.put(SVConstants.USERNAME, configuration.get(SVConstants.USERNAME));
+        context.put(SVConstants.PASSWORD, configuration.get(SVConstants.PASSWORD));
+        context.put(SVConstants.SERVICE_SELECTION, configuration.get(SVConstants.SERVICE_SELECTION));
+        context.put(SVConstants.SERVICE_NAME_OR_ID, configuration.get(SVConstants.SERVICE_NAME_OR_ID));
+        context.put(SVConstants.PROJECT_PATH, configuration.get(SVConstants.PROJECT_PATH));
+        context.put(SVConstants.PROJECT_PASSWORD, configuration.get(SVConstants.PROJECT_PASSWORD));
 
-        context.put(SVConsts.SERVICE_MODE, configuration.get(SVConsts.SERVICE_MODE));
+        context.put(SVConstants.SERVICE_MODE, configuration.get(SVConstants.SERVICE_MODE));
 
-        context.put(SVConsts.DATA_MODEL, configuration.get(SVConsts.DATA_MODEL));
-        context.put(SVConsts.DM_NAME_OR_ID, configuration.get(SVConsts.DM_NAME_OR_ID));
+        context.put(SVConstants.DATA_MODEL, configuration.get(SVConstants.DATA_MODEL));
+        context.put(SVConstants.DM_NAME_OR_ID, configuration.get(SVConstants.DM_NAME_OR_ID));
 
-        context.put(SVConsts.PERFORMANCE_MODEL, configuration.get(SVConsts.PERFORMANCE_MODEL));
-        context.put(SVConsts.PM_NAME_OR_ID, configuration.get(SVConsts.PM_NAME_OR_ID));
-        context.put(SVConsts.FORCE, configuration.get(SVConsts.FORCE));
-    }
-
-    private boolean validInput(String input) {
-        boolean valid = true;
-        if(input == null || StringUtils.isEmpty(input)) {
-            valid = false;
-        }
-        return valid;
+        context.put(SVConstants.PERFORMANCE_MODEL, configuration.get(SVConstants.PERFORMANCE_MODEL));
+        context.put(SVConstants.PM_NAME_OR_ID, configuration.get(SVConstants.PM_NAME_OR_ID));
+        context.put(SVConstants.FORCE, configuration.get(SVConstants.FORCE));
     }
 }

@@ -1,8 +1,24 @@
+/*
+ *     Copyright 2017 Hewlett-Packard Development Company, L.P.
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ *
+ */
+
 package com.adm.bamboo.plugin.sv.task;
 
 import com.adm.bamboo.plugin.sv.model.*;
-import com.adm.utils.sv.SVConsts;
-import com.adm.utils.sv.SVExecutor;
+import com.adm.utils.sv.SVConstants;
+import com.adm.utils.sv.SVExecutorUtil;
 import com.atlassian.bamboo.build.logger.BuildLogger;
 import com.atlassian.bamboo.configuration.ConfigurationMap;
 import com.atlassian.bamboo.task.*;
@@ -15,43 +31,32 @@ import com.hp.sv.jsvconfigurator.processor.ChmodeProcessorInput;
 import com.hp.sv.jsvconfigurator.processor.IChmodeProcessor;
 import com.hp.sv.jsvconfigurator.serverclient.ICommandExecutor;
 import org.apache.commons.lang.BooleanUtils;
-import org.jetbrains.annotations.NotNull;
-
 import java.net.URL;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created with IntelliJ IDEA.
- * User: jingwei
- * Date: 12/4/17
- * Time: 10:18 PM
- * To change this template use File | Settings | File Templates.
- */
 public class SVChangeModeTask implements TaskType {
-    SVExecutor svExecutor = new SVExecutor();
-    @NotNull
     @Override
-    public TaskResult execute(@NotNull TaskContext taskContext) throws TaskException {
+    public TaskResult execute(final TaskContext taskContext) throws TaskException {
         Date startDate = new Date();
         final BuildLogger buildLogger = taskContext.getBuildLogger();
         final ConfigurationMap map = taskContext.getConfigurationMap();
 
-        String serverURL = map.get(SVConsts.URL);
-        String userName = map.get(SVConsts.USERNAME);
-        String userPassword = map.get(SVConsts.PASSWORD);
-        String projectPath = map.get(SVConsts.PROJECT_PATH);
-        String projectPassword = map.get(SVConsts.PROJECT_PASSWORD);
-        String serviceName = map.get(SVConsts.SERVICE_NAME_OR_ID);
+        String serverURL = map.get(SVConstants.URL);
+        String userName = map.get(SVConstants.USERNAME);
+        String userPassword = map.get(SVConstants.PASSWORD);
+        String projectPath = map.get(SVConstants.PROJECT_PATH);
+        String projectPassword = map.get(SVConstants.PROJECT_PASSWORD);
+        String serviceName = map.get(SVConstants.SERVICE_NAME_OR_ID);
         serviceName = (serviceName == null || serviceName.isEmpty()) ? null : serviceName;
-        String dmNameOrId = map.get(SVConsts.DM_NAME_OR_ID);
-        String pmNameOrId = map.get(SVConsts.PM_NAME_OR_ID);
-        String serviceSelection = map.get(SVConsts.SERVICE_SELECTION);
-        String serviceMode = map.get(SVConsts.SERVICE_MODE);
-        String dataModel = map.get(SVConsts.DATA_MODEL);
-        String pmModel = map.get(SVConsts.PERFORMANCE_MODEL);
-        boolean force = BooleanUtils.toBoolean(map.get(SVConsts.FORCE));
+        String dmNameOrId = map.get(SVConstants.DM_NAME_OR_ID);
+        String pmNameOrId = map.get(SVConstants.PM_NAME_OR_ID);
+        String serviceSelection = map.get(SVConstants.SERVICE_SELECTION);
+        String serviceMode = map.get(SVConstants.SERVICE_MODE);
+        String dataModel = map.get(SVConstants.DATA_MODEL);
+        String pmModel = map.get(SVConstants.PERFORMANCE_MODEL);
+        boolean force = BooleanUtils.toBoolean(map.get(SVConstants.FORCE));
 
         SvServerSettingsModel svServerSettingsModel = new SvServerSettingsModel(serverURL, userName, userPassword);
         SvServiceSelectionModel svServiceSelectionModel = new SvServiceSelectionModel(serviceName, projectPath, projectPassword);
@@ -66,17 +71,17 @@ public class SVChangeModeTask implements TaskType {
 
         SvChangeModeModel svChangeModeModel = new SvChangeModeModel(svServerSettingsModel, svServiceSelectionModel, runtimeMode, svDataModelSelection, svPerformanceModelSelection, force);
 
-        logConfig(buildLogger, svChangeModeModel, startDate, "    ");
+        logConfig(buildLogger, svChangeModeModel, startDate, SVConstants.PREFIX);
         ICommandExecutor commandExecutor = null;
         try {
-            commandExecutor = svExecutor.createCommandExecutor(new URL(svServerSettingsModel.getUrl()),
+            commandExecutor = SVExecutorUtil.createCommandExecutor(new URL(svServerSettingsModel.getUrl()),
                     new Credentials(svServerSettingsModel.getUsername(),svServerSettingsModel.getPassword()));
-            List<ServiceInfo> serviceInfoList = svExecutor.getServiceList(commandExecutor, svServiceSelectionModel, false, buildLogger);
+            List<ServiceInfo> serviceInfoList = SVExecutorUtil.getServiceList(commandExecutor, svServiceSelectionModel, false, buildLogger);
             for (ServiceInfo service : serviceInfoList) {
                 changeServiceMode(svChangeModeModel, service, buildLogger, commandExecutor);
             }
         } catch (Exception e) {
-            buildLogger.addErrorLogEntry("Build failed: " + e.getMessage());
+            buildLogger.addErrorLogEntry("Build failed: " + e.getMessage(), e);
             return TaskResultBuilder.create(taskContext).failedWithError().build();
         } finally {
             double duration = (new Date().getTime() - startDate.getTime()) / 1000.;
@@ -85,6 +90,14 @@ public class SVChangeModeTask implements TaskType {
         return TaskResultBuilder.create(taskContext).success().build();
     }
 
+    /**
+     * change the virtual service model
+     *
+     * @param svChangeModeModel
+     * @param serviceInfo
+     * @param buildLogger
+     * @return the command executor
+     */
     private void changeServiceMode(SvChangeModeModel svChangeModeModel, ServiceInfo serviceInfo, BuildLogger buildLogger, ICommandExecutor commandExecutor) throws Exception {
 
         String dataModel = svChangeModeModel.getDataModel().getSelectedModelName();
@@ -107,6 +120,12 @@ public class SVChangeModeTask implements TaskType {
         }
     }
 
+    /**
+     * get the virtual service mode
+     *
+     * @param svChangeModeModel
+     * @return the virtual service mode
+     */
     private ServiceRuntimeConfiguration.RuntimeMode getTargetMode(SvChangeModeModel svChangeModeModel) {
         // Set STAND_BY with PM in case of simulation without data model to be in accord with designer & SVM
         if (svChangeModeModel.getRuntimeMode() == ServiceRuntimeConfiguration.RuntimeMode.SIMULATING
@@ -139,6 +158,12 @@ public class SVChangeModeTask implements TaskType {
         }
     }
 
+    /**
+     * get the virtual service mode display name
+     *
+     * @param info
+     * @return the virtual service mode display name
+     */
     private ServiceRuntimeConfiguration.RuntimeMode getDisplayRuntimeMode(ServiceRuntimeConfiguration info) {
         // display SIMULATING in case of STAND_BY mode with PM set (as it is done in designer and SVM)
         return (info.getRuntimeMode() == ServiceRuntimeConfiguration.RuntimeMode.STAND_BY && info.getPerfModelId() != null)
@@ -146,6 +171,13 @@ public class SVChangeModeTask implements TaskType {
                 : info.getRuntimeMode();
     }
 
+    /**
+     * get the virtual service data/performance model
+     *
+     * @param models
+     * @param modelId
+     * @return the virtual service data/performance model
+     */
     private String getModelName(Collection<? extends IProjectElement> models, String modelId) {
         for (IProjectElement model : models) {
             if (model.getId().equals(modelId)) {
@@ -158,7 +190,7 @@ public class SVChangeModeTask implements TaskType {
     protected void logConfig(BuildLogger buildLogger, SvChangeModeModel svChangeModeModel, Date startDate, String prefix) {
         buildLogger.addBuildLogEntry(String.format("%nStarting Change Mode of Virtual Service for SV Server '%s' as %s on %s%n",
                 svChangeModeModel.getServerSettingsModel().getUrl(), svChangeModeModel.getServerSettingsModel().getUsername(), startDate));
-        svExecutor.logConfig(svChangeModeModel.getServiceSelectionModel(), buildLogger, prefix);
+        SVExecutorUtil.logConfig(svChangeModeModel.getServiceSelectionModel(), buildLogger, prefix);
         buildLogger.addBuildLogEntry(prefix + "Mode: " + svChangeModeModel.getRuntimeMode().toString());
         buildLogger.addBuildLogEntry(prefix + "Data model: " + svChangeModeModel.getDataModel().toString());
         buildLogger.addBuildLogEntry(prefix + "Performance model: " + svChangeModeModel.getPerformanceModel().toString());

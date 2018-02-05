@@ -1,42 +1,42 @@
+/*
+ *     Copyright 2017 Hewlett-Packard Development Company, L.P.
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ *
+ */
+
 package com.adm.bamboo.plugin.sv.ui;
 
-import com.adm.utils.sv.SVConsts;
+import java.util.Map;
+import com.adm.utils.sv.SVConstants;
+import com.adm.utils.sv.SVExecutorUtil;
 import com.atlassian.bamboo.collections.ActionParametersMap;
 import com.atlassian.bamboo.task.AbstractTaskConfigurator;
 import com.atlassian.bamboo.task.TaskDefinition;
-import com.atlassian.bamboo.task.TaskRequirementSupport;
 import com.atlassian.bamboo.utils.error.ErrorCollection;
-import com.atlassian.bamboo.utils.i18n.I18nBean;
-import com.atlassian.bamboo.v2.build.agent.capability.Requirement;
-import com.atlassian.bamboo.v2.build.agent.capability.RequirementImpl;
-import org.apache.commons.lang.StringUtils;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-/**
- * Created with IntelliJ IDEA.
- * User: jingwei
- * Date: 12/4/17
- * Time: 5:28 PM
- * To change this template use File | Settings | File Templates.
- */
 public class SVDeployTaskConfigurator extends AbstractTaskConfigurator {
 
     public Map<String, String> generateTaskConfigMap(final ActionParametersMap params, final TaskDefinition previousTaskDefinition)
     {
         final Map<String, String> config = super.generateTaskConfigMap(params, previousTaskDefinition);
-        config.put(SVConsts.URL, params.getString(SVConsts.URL));
-        config.put(SVConsts.USERNAME, params.getString(SVConsts.USERNAME));
-        config.put(SVConsts.PASSWORD, params.getString(SVConsts.PASSWORD));
-        config.put(SVConsts.SERVICE_NAME_OR_ID, params.getString(SVConsts.SERVICE_NAME_OR_ID));
-        config.put(SVConsts.PROJECT_PATH, params.getString(SVConsts.PROJECT_PATH));
-        config.put(SVConsts.PROJECT_PASSWORD, params.getString(SVConsts.PROJECT_PASSWORD));
-        config.put(SVConsts.FORCE, params.getString(SVConsts.FORCE));
-        config.put(SVConsts.FIRST_SUITABLE_AGENT_FALLBACK, params.getString(SVConsts.FIRST_SUITABLE_AGENT_FALLBACK));
+        config.put(SVConstants.URL, params.getString(SVConstants.URL));
+        config.put(SVConstants.USERNAME, params.getString(SVConstants.USERNAME));
+        config.put(SVConstants.PASSWORD, params.getString(SVConstants.PASSWORD));
+        config.put(SVConstants.SERVICE_NAME_OR_ID, params.getString(SVConstants.SERVICE_NAME_OR_ID));
+        config.put(SVConstants.PROJECT_PATH, params.getString(SVConstants.PROJECT_PATH));
+        config.put(SVConstants.PROJECT_PASSWORD, params.getString(SVConstants.PROJECT_PASSWORD));
+        config.put(SVConstants.FORCE, params.getString(SVConstants.FORCE));
+        config.put(SVConstants.FIRST_SUITABLE_AGENT_FALLBACK, params.getString(SVConstants.FIRST_SUITABLE_AGENT_FALLBACK));
 
         return config;
     }
@@ -45,17 +45,17 @@ public class SVDeployTaskConfigurator extends AbstractTaskConfigurator {
     {
         super.validate(params, errorCollection);
 
-        String urlValue = params.getString(SVConsts.URL);
-        if (!validInput(urlValue))
+        String urlValue = params.getString(SVConstants.URL);
+        if (!SVExecutorUtil.validInput(urlValue))
         {
-            errorCollection.addError(SVConsts.URL,
-                    SVConsts.ERROR_URL);
+            errorCollection.addError(SVConstants.URL,
+                    SVConstants.ERROR_URL);
         }
-        String projectPathValue = params.getString(SVConsts.PROJECT_PATH);
-        if (!validInput(projectPathValue))
+        String projectPathValue = params.getString(SVConstants.PROJECT_PATH);
+        if (!SVExecutorUtil.validInput(projectPathValue))
         {
-            errorCollection.addError(SVConsts.PROJECT_PATH,
-                    SVConsts.ERROR_PROJECT_PATH);
+            errorCollection.addError(SVConstants.PROJECT_PATH,
+                    SVConstants.ERROR_PROJECT_PATH);
         }
     }
 
@@ -72,26 +72,18 @@ public class SVDeployTaskConfigurator extends AbstractTaskConfigurator {
         populateContext(context, taskDefinition);
     }
 
-    private void populateContext(@NotNull final Map<String, Object> context,
-                                 @NotNull final TaskDefinition taskDefinition) {
+    private void populateContext(final Map<String, Object> context,
+                                 final TaskDefinition taskDefinition) {
 
 
         Map<String, String> configuration = taskDefinition.getConfiguration();
-        context.put(SVConsts.URL, configuration.get(SVConsts.URL));
-        context.put(SVConsts.USERNAME, configuration.get(SVConsts.USERNAME));
-        context.put(SVConsts.PASSWORD, configuration.get(SVConsts.PASSWORD));
-        context.put(SVConsts.SERVICE_NAME_OR_ID, configuration.get(SVConsts.SERVICE_NAME_OR_ID));
-        context.put(SVConsts.PROJECT_PATH, configuration.get(SVConsts.PROJECT_PATH));
-        context.put(SVConsts.PROJECT_PASSWORD, configuration.get(SVConsts.PROJECT_PASSWORD));
-        context.put(SVConsts.FORCE, configuration.get(SVConsts.FORCE));
-        context.put(SVConsts.FIRST_SUITABLE_AGENT_FALLBACK, configuration.get(SVConsts.FIRST_SUITABLE_AGENT_FALLBACK));
-    }
-
-    private boolean validInput(String input) {
-        boolean valid = true;
-        if(input == null || StringUtils.isEmpty(input)) {
-            valid = false;
-        }
-        return valid;
+        context.put(SVConstants.URL, configuration.get(SVConstants.URL));
+        context.put(SVConstants.USERNAME, configuration.get(SVConstants.USERNAME));
+        context.put(SVConstants.PASSWORD, configuration.get(SVConstants.PASSWORD));
+        context.put(SVConstants.SERVICE_NAME_OR_ID, configuration.get(SVConstants.SERVICE_NAME_OR_ID));
+        context.put(SVConstants.PROJECT_PATH, configuration.get(SVConstants.PROJECT_PATH));
+        context.put(SVConstants.PROJECT_PASSWORD, configuration.get(SVConstants.PROJECT_PASSWORD));
+        context.put(SVConstants.FORCE, configuration.get(SVConstants.FORCE));
+        context.put(SVConstants.FIRST_SUITABLE_AGENT_FALLBACK, configuration.get(SVConstants.FIRST_SUITABLE_AGENT_FALLBACK));
     }
 }

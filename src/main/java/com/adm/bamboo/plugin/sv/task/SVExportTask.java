@@ -1,11 +1,27 @@
+/*
+ *     Copyright 2017 Hewlett-Packard Development Company, L.P.
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ *
+ */
+
 package com.adm.bamboo.plugin.sv.task;
 
 import com.adm.bamboo.plugin.sv.model.ServiceInfo;
 import com.adm.bamboo.plugin.sv.model.SvExportModel;
 import com.adm.bamboo.plugin.sv.model.SvServerSettingsModel;
 import com.adm.bamboo.plugin.sv.model.SvServiceSelectionModel;
-import com.adm.utils.sv.SVConsts;
-import com.adm.utils.sv.SVExecutor;
+import com.adm.utils.sv.SVConstants;
+import com.adm.utils.sv.SVExecutorUtil;
 import com.atlassian.bamboo.build.logger.BuildLogger;
 import com.atlassian.bamboo.configuration.ConfigurationMap;
 import com.atlassian.bamboo.task.*;
@@ -24,8 +40,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.lang.BooleanUtils;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -33,51 +47,42 @@ import java.net.URL;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created with IntelliJ IDEA.
- * User: jingwei
- * Date: 12/4/17
- * Time: 10:18 PM
- * To change this template use File | Settings | File Templates.
- */
 public class SVExportTask implements TaskType {
-    SVExecutor svExecutor = new SVExecutor();
-    @NotNull
     @Override
-    public TaskResult execute(@NotNull TaskContext taskContext) throws TaskException {
+    public TaskResult execute(final TaskContext taskContext) throws TaskException {
         Date startDate = new Date();
         final BuildLogger buildLogger = taskContext.getBuildLogger();
         final ConfigurationMap map = taskContext.getConfigurationMap();
-        String serverURL = map.get(SVConsts.URL);
-        String userName = map.get(SVConsts.USERNAME);
-        String userPassword = map.get(SVConsts.PASSWORD);
-        String projectPath = map.get(SVConsts.PROJECT_PATH);
-        String projectPassword = map.get(SVConsts.PROJECT_PASSWORD);
-        String serviceName = map.get(SVConsts.SERVICE_NAME_OR_ID);
+        String serverURL = map.get(SVConstants.URL);
+        String userName = map.get(SVConstants.USERNAME);
+        String userPassword = map.get(SVConstants.PASSWORD);
+        String projectPath = map.get(SVConstants.PROJECT_PATH);
+        String projectPassword = map.get(SVConstants.PROJECT_PASSWORD);
+        String serviceName = map.get(SVConstants.SERVICE_NAME_OR_ID);
         serviceName = (serviceName == null || serviceName.isEmpty()) ? null : serviceName;
-        boolean force = BooleanUtils.toBoolean(map.get(SVConsts.FORCE));
-        boolean cleanTargetDirectory = BooleanUtils.toBoolean(map.get(SVConsts.CLEAN_TARGET_DIRECTORY));
-        boolean switchServiceToStandBy = BooleanUtils.toBoolean(map.get(SVConsts.SWITCH_SERVICE_TO_STANDBY));
-        String serviceSelection = map.get(SVConsts.SERVICE_SELECTION);
-        String targetDirectory = map.get(SVConsts.TARGET_DIRECTORY);
+        boolean force = BooleanUtils.toBoolean(map.get(SVConstants.FORCE));
+        boolean cleanTargetDirectory = BooleanUtils.toBoolean(map.get(SVConstants.CLEAN_TARGET_DIRECTORY));
+        boolean switchServiceToStandBy = BooleanUtils.toBoolean(map.get(SVConstants.SWITCH_SERVICE_TO_STANDBY));
+        String serviceSelection = map.get(SVConstants.SERVICE_SELECTION);
+        String targetDirectory = map.get(SVConstants.TARGET_DIRECTORY);
 
         SvServerSettingsModel svServerSettingsModel = new SvServerSettingsModel(serverURL, userName, userPassword);
         SvServiceSelectionModel svServiceSelectionModel = new SvServiceSelectionModel(serviceName, projectPath, projectPassword);
         svServiceSelectionModel.setSelectionType(serviceSelection);
         SvExportModel svExportModel = new SvExportModel(svServerSettingsModel, svServiceSelectionModel, targetDirectory, cleanTargetDirectory, switchServiceToStandBy, force);
-        logConfig(buildLogger, svExportModel, startDate, "    ");
+        logConfig(buildLogger, svExportModel, startDate, SVConstants.PREFIX);
 
         ExportProcessor exportProcessor = new ExportProcessor(null);
         IChmodeProcessor chmodeProcessor = new ChmodeProcessor(null);
 
         ICommandExecutor commandExecutor = null;
         try {
-            commandExecutor = svExecutor.createCommandExecutor(new URL(svServerSettingsModel.getUrl()),
+            commandExecutor = SVExecutorUtil.createCommandExecutor(new URL(svServerSettingsModel.getUrl()),
                     new Credentials(svServerSettingsModel.getUsername(),svServerSettingsModel.getPassword()));
             if (svExportModel.isCleanTargetDirectory()) {
                 cleanTargetDirectory(buildLogger, targetDirectory);
             }
-            List<ServiceInfo> serviceInfoList = svExecutor.getServiceList(commandExecutor, svServiceSelectionModel, false, buildLogger);
+            List<ServiceInfo> serviceInfoList = SVExecutorUtil.getServiceList(commandExecutor, svServiceSelectionModel, false, buildLogger);
             for (ServiceInfo serviceInfo : serviceInfoList) {
                 if (svExportModel.isSwitchToStandByFirst()) {
                     switchToStandBy(svExportModel, serviceInfo, chmodeProcessor, commandExecutor, buildLogger);
@@ -88,7 +93,7 @@ public class SVExportTask implements TaskType {
                 exportProcessor.process(commandExecutor, targetDirectory, serviceInfo.getId(), false);
             }
         } catch (Exception e) {
-            buildLogger.addErrorLogEntry("Build failed: " + e.getMessage());
+            buildLogger.addErrorLogEntry("Build failed: " + e.getMessage(), e);
             return TaskResultBuilder.create(taskContext).failedWithError().build();
         } finally {
             double duration = (new Date().getTime() - startDate.getTime()) / 1000.;
@@ -97,6 +102,14 @@ public class SVExportTask implements TaskType {
         return TaskResultBuilder.create(taskContext).success().build();
     }
 
+    /**
+     * check the virtual service learning mode before export
+     *
+     * @param buildLogger
+     * @param exec
+     * @param serviceInfo
+     * @return
+     */
     private void verifyNotLearningBeforeExport(BuildLogger buildLogger, ICommandExecutor exec, ServiceInfo serviceInfo)
             throws CommunicatorException, CommandExecutorException {
 
@@ -108,6 +121,16 @@ public class SVExportTask implements TaskType {
         }
     }
 
+    /**
+     * switch the virtual service to STAND_BY mode
+     *
+     * @param svExportModel
+     * @param service
+     * @param chmodeProcessor
+     * @param exec
+     * @param buildLogger
+     * @return
+     */
     private void switchToStandBy(SvExportModel svExportModel, ServiceInfo service, IChmodeProcessor chmodeProcessor, ICommandExecutor exec, BuildLogger buildLogger)
             throws CommandExecutorException, SVCParseException, CommunicatorException {
 
@@ -119,6 +142,10 @@ public class SVExportTask implements TaskType {
 
     /**
      * Cleans all sub-folders containing *.vproj file.
+     *
+     * @param buildLogger
+     * @param targetDirectory
+     * @return
      */
     private void cleanTargetDirectory(BuildLogger buildLogger, String targetDirectory) throws IOException {
         File target = new File(targetDirectory);
@@ -141,7 +168,7 @@ public class SVExportTask implements TaskType {
     private void logConfig(BuildLogger buildLogger, SvExportModel svExportModel, Date startDate, String prefix) {
         buildLogger.addBuildLogEntry(String.format("%nStarting UnDeploy Virtual Service for SV Server '%s' as %s on %s%n",
                 svExportModel.getServerSettingsModel().getUrl(), svExportModel.getServerSettingsModel().getUsername(), startDate));
-        svExecutor.logConfig(svExportModel.getServiceSelectionModel(), buildLogger, prefix);
+        SVExecutorUtil.logConfig(svExportModel.getServiceSelectionModel(), buildLogger, prefix);
         buildLogger.addBuildLogEntry(prefix + "Target Directory: " + svExportModel.getTargetDirectory());
         buildLogger.addBuildLogEntry(prefix + "Clean Target Directory: " + svExportModel.isCleanTargetDirectory());
         buildLogger.addBuildLogEntry(prefix + "Switch to Stand-By: " + svExportModel.isSwitchToStandByFirst());
