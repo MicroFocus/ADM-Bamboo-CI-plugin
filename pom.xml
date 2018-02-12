@@ -35,6 +35,11 @@
 			<email>amin.habash@hpe.com</email>
 			<organization>Micro Focus</organization>
 		</developer>
+		<developer>
+			<name>Anda Sorina Laakso</name>
+			<email>anda-sorina.laakso@microfocus.com</email>
+			<organization>Micro Focus</organization>
+		</developer>
 	</developers>
 
 	<issueManagement></issueManagement>
@@ -49,7 +54,7 @@
 	<properties>
 		<maven-javadoc-plugin.version>2.10.4</maven-javadoc-plugin.version>
 		<maven-gpg-plugin.version>1.5</maven-gpg-plugin.version>
-		<maven.compiler.plugin.version>1.7</maven.compiler.plugin.version>
+		<maven.compiler.plugin.version>1.8</maven.compiler.plugin.version>
 		<maven-source-plugin.version>2.2.1</maven-source-plugin.version>
 		<bamboo.version>5.9.10</bamboo.version>
 		<bamboo.data.version>5.9.10</bamboo.data.version>
@@ -70,6 +75,16 @@
 
 	<dependencies>
 		<!-- CONTAINER -->
+		<dependency>
+			<groupId>net.minidev</groupId>
+			<artifactId>json-smart</artifactId>
+			<version>2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jayway.jsonpath</groupId>
+			<artifactId>json-path</artifactId>
+			<version>1.1.0</version>
+		</dependency>
 		<dependency>
 			<artifactId>atlassian-bamboo-web</artifactId>
 			<groupId>com.atlassian.bamboo</groupId>
@@ -258,5 +273,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>
