@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.adm</groupId>
 	<artifactId>app-delivery-management-bamboo</artifactId>
-	<version>1.0-beta-SNAPSHOT</version>
+	<version>1.01-beta-SNAPSHOT</version>
 	<packaging>atlassian-plugin</packaging>
 
 	<name>Micro Focus Bamboo plugin</name>
@@ -26,9 +26,14 @@
 
 	<developers>
 		<developer>
+			<name>Yafim Kazak</name>
+			<email>kazak@hpe.com</email>
+			<organization>Micro Focus</organization>
+		</developer>
+		<developer>
 			<name>Amin Habash</name>
 			<email>amin.habash@hpe.com</email>
-			<organization>HPE</organization>
+			<organization>Micro Focus</organization>
 		</developer>
 		<developer>
 			<name>Anda Sorina Laakso</name>
