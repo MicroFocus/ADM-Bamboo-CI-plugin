@@ -17,9 +17,10 @@ import org.apache.http.protocol.HttpContext;
 import java.io.File;
 import java.io.IOException;
 
-import static com.adm.bamboo.plugin.performancecenter.impl.RunState.FINISHED;
-import static com.adm.bamboo.plugin.performancecenter.impl.RunState.RUN_FAILURE;
+import static com.microfocus.adm.performancecenter.plugins.common.pcEntities.RunState.FINISHED;
+import static com.microfocus.adm.performancecenter.plugins.common.pcEntities.RunState.RUN_FAILURE;
 
+import com.microfocus.adm.performancecenter.plugins.common.pcEntities.*;
 
 /**
  * Created by bemh on 7/23/2017.

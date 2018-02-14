@@ -1,8 +1,7 @@
 package com.adm.bamboo.plugin.performancecenter;
 
 import com.adm.bamboo.plugin.performancecenter.impl.PcComponentsImpl;
-import com.adm.bamboo.plugin.performancecenter.impl.PcException;
-import com.adm.bamboo.plugin.performancecenter.impl.PostRunAction;
+import com.microfocus.adm.performancecenter.plugins.common.pcEntities.*;
 import com.atlassian.bamboo.build.logger.BuildLogger;
 import com.atlassian.bamboo.task.*;
 
