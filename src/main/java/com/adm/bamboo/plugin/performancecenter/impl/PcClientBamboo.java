@@ -19,6 +19,8 @@ import java.util.zip.ZipInputStream;
 
 //import org.hibernate.cfg.beanvalidation.IntegrationException;
 
+import com.microfocus.adm.performancecenter.plugins.common.rest.*;
+import com.microfocus.adm.performancecenter.plugins.common.pcEntities.*;
 
 /**
  * Created by bemh on 8/6/2017.
