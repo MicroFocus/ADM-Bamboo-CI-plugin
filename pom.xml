@@ -56,7 +56,10 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
-
+	<scm>
+		<connection>scm:git:https://github.com/MicroFocus/ADM-Bamboo-CI-plugin</connection>
+		<developerConnection>scm:git:https://github.com/MicroFocus/ADM-Bamboo-CI-plugin</developerConnection>
+	</scm>
 	<developers>
 		<developer>
 			<name>Yafim Kazak</name>
