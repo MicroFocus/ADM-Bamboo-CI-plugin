@@ -1,50 +1,100 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<!--
+  ~ Copyright (c) EntIT Software LLC, a Micro Focus company
+  ~
+  ~ Certain versions of software and/or documents ("Material") accessible here may contain branding from
+  ~ Hewlett-Packard Company (now HP Inc.) and Hewlett Packard Enterprise Company.  As of September 1, 2017,
+  ~ the Material is now offered by Micro Focus, a separately owned and operated company.  Any reference to the HP
+  ~ and Hewlett Packard Enterprise/HPE marks is historical in nature, and the HP and Hewlett Packard Enterprise/HPE
+  ~ marks are the property of their respective owners.
+  ~ __________________________________________________________________
+  ~
+  ~ MIT License
+  ~
+  ~ Copyright (c) EntIT Software LLC, a Micro Focus company
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be included in all
+  ~ copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  ~ THE SOFTWARE.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.adm</groupId>
 	<artifactId>app-delivery-management-bamboo</artifactId>
-	<version>1.0-beta-SNAPSHOT</version>
+	<version>1.00</version>
 	<packaging>atlassian-plugin</packaging>
 
-	<name>HPE Bamboo plugin</name>
+	<name>Micro Focus Bamboo plugin</name>
 	<description>
-		This plugin allows users to use HPE Software products functionalists through Bamboo.
+		This plugin allows users to use MicroFocus Software products functionalists through Bamboo.
 	</description>
-	<url>https://github.com/HPSoftware/hpe-bamboo-plugin</url>
+	<url>https://github.com/MicroFocus/ADM-Bamboo-CI-plugin</url>
 	<organization>
-		<name>ENTCO</name>
+		<name>Micro Focus</name>
 	</organization>
 	<licenses>
 		<license>
-			<name>Apache License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<name>MIT</name>
+			<url>http://www.opensource.org/licenses/MIT</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
-
+	<scm>
+		<connection>scm:git:https://github.com/MicroFocus/ADM-Bamboo-CI-plugin</connection>
+		<developerConnection>scm:git:https://github.com/MicroFocus/ADM-Bamboo-CI-plugin</developerConnection>
+	  <tag>app-delivery-management-bamboo-1.00</tag>
+  </scm>
 	<developers>
+		<developer>
+			<name>Yafim Kazak</name>
+			<email>kazak@hpe.com</email>
+			<organization>Micro Focus</organization>
+		</developer>
 		<developer>
 			<name>Amin Habash</name>
 			<email>amin.habash@hpe.com</email>
-			<organization>HPE</organization>
+			<organization>Micro Focus</organization>
+		</developer>
+		<developer>
+			<name>Anda Sorina Laakso</name>
+			<email>anda-sorina.laakso@microfocus.com</email>
+			<organization>Micro Focus</organization>
 		</developer>
 	</developers>
 
-	<issueManagement></issueManagement>
+	<issueManagement />
 
-	<distributionManagement>
-		<repository>
-			<id>release-repository</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
-		</repository>
-	</distributionManagement>
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
 
 	<properties>
 		<maven-javadoc-plugin.version>2.10.4</maven-javadoc-plugin.version>
 		<maven-gpg-plugin.version>1.5</maven-gpg-plugin.version>
-		<maven.compiler.plugin.version>1.7</maven.compiler.plugin.version>
+		<maven.compiler.plugin.version>1.8</maven.compiler.plugin.version>
 		<maven-source-plugin.version>2.2.1</maven-source-plugin.version>
 		<bamboo.version>5.9.10</bamboo.version>
 		<bamboo.data.version>5.9.10</bamboo.data.version>
@@ -65,6 +115,16 @@
 
 	<dependencies>
 		<!-- CONTAINER -->
+		<dependency>
+			<groupId>net.minidev</groupId>
+			<artifactId>json-smart</artifactId>
+			<version>2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jayway.jsonpath</groupId>
+			<artifactId>json-path</artifactId>
+			<version>1.1.0</version>
+		</dependency>
 		<dependency>
 			<artifactId>atlassian-bamboo-web</artifactId>
 			<groupId>com.atlassian.bamboo</groupId>
@@ -128,6 +188,7 @@
 			<version>${plugin.testrunner.version}</version>
 			<scope>test</scope>
 		</dependency>
+<<<<<<< HEAD
 
         <dependency>
             <groupId>com.hp.sv</groupId>
@@ -140,6 +201,15 @@
                 </exclusion>
             </exclusions>
         </dependency>
+=======
+		<!-- https://mvnrepository.com/artifact/com.microfocus.adm.performancecenter/plugins-common -->
+		<dependency>
+			<groupId>com.microfocus.adm.performancecenter</groupId>
+			<artifactId>plugins-common</artifactId>
+			<version>1.0.1</version>
+		</dependency>
+
+>>>>>>> remotes/upstream/latest
 	</dependencies>
 
 	<repositories>
@@ -191,11 +261,22 @@
 						<target>${maven.compiler.plugin.version}</target>
 					</configuration>
 				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>2.10.4</version>
-				</plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>2.10.4</version>
+                    <executions>
+                        <execution>
+                            <id>attach-javadocs</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+							<configuration>
+								<additionalparam>-Xdoclint:none</additionalparam>
+							</configuration>
+                        </execution>
+                    </executions>
+                </plugin>
 			</plugins>
 		</pluginManagement>
 
@@ -269,109 +350,6 @@
 				</configuration>
 			</plugin>
 		</plugins>
+
 	</build>
-
-	<profiles>
-        <!--
-                <profile>
-                    <id>build-deployment</id>
-                    <build>
-                        <pluginManagement>
-                            <plugins>
-                                <plugin>
-                                    <groupId>org.apache.maven.plugins</groupId>
-                                    <artifactId>maven-javadoc-plugin</artifactId>
-                                    <version>${maven-javadoc-plugin.version}</version>
-                                    <executions>
-                                        <execution>
-                                            <id>attach-javadocs</id>
-                                            <goals>
-                                                <goal>jar</goal>
-                                            </goals>
-                                        </execution>
-                                    </executions>
-                                </plugin>
-                                <plugin>
-                                    <groupId>org.apache.maven.plugins</groupId>
-                                    <artifactId>maven-source-plugin</artifactId>
-                                    <version>${maven-source-plugin.version}</version>
-                                    <executions>
-                                        <execution>
-                                            <id>attach-sources</id>
-                                            <goals>
-                                                <goal>jar</goal>
-                                                <goal>test-jar</goal>
-                                            </goals>
-                                        </execution>
-                                    </executions>
-                                </plugin>
-                            </plugins>
-                        </pluginManagement>
-                    </build>
-
-                </profile>
-                <profile>
-                    <id>sign</id>
-                    <build>
-                        <pluginManagement>
-                            <plugins>
-                                <plugin>
-                                    <groupId>org.apache.maven.plugins</groupId>
-                                    <artifactId>maven-gpg-plugin</artifactId>
-                                    <version>${maven-gpg-plugin.version}</version>
-                                    <executions>
-                                        <execution>
-                                            <id>sign-artifacts</id>
-                                            <phase>verify</phase>
-                                            <goals>
-                                                <goal>sign</goal>
-                                            </goals>
-                                        </execution>
-                                    </executions>
-                                </plugin>
-                            </plugins>
-                        </pluginManagement>
-                        <plugins>
-                            <plugin>
-                                <groupId>org.apache.maven.plugins</groupId>
-                                <artifactId>maven-gpg-plugin</artifactId>
-                            </plugin>
-                        </plugins>
-                    </build>
-                </profile>
-
-
-                <profile>
-                    <id>release</id>
-                    <build>
-                        <plugins>
-                            <plugin>
-                                <groupId>org.sonatype.plugins</groupId>
-                                <artifactId>nexus-staging-maven-plugin</artifactId>
-                                <version>${nexus-staging-maven-plugin.version}</version>
-                                <extensions>true</extensions>
-                                <configuration>
-                                    <serverId>release-repository</serverId>
-                                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                                </configuration>
-                            </plugin>
-                        </plugins>
-                    </build>
-                </profile>
-
-                <profile>
-                    <id>snapshot</id>
-                    <distributionManagement>
-                        <snapshotRepository>
-                            <id>snapshot-repository</id>
-                            <name>Maven2 Snapshot Repository</name>
-                            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-                            <uniqueVersion>false</uniqueVersion>
-                        </snapshotRepository>
-                    </distributionManagement>
-                </profile>
-                -->
-	</profiles>
-
 </project>
