@@ -188,7 +188,6 @@
 			<version>${plugin.testrunner.version}</version>
 			<scope>test</scope>
 		</dependency>
-<<<<<<< HEAD
 
         <dependency>
             <groupId>com.hp.sv</groupId>
@@ -201,7 +200,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-=======
+
 		<!-- https://mvnrepository.com/artifact/com.microfocus.adm.performancecenter/plugins-common -->
 		<dependency>
 			<groupId>com.microfocus.adm.performancecenter</groupId>
@@ -209,7 +208,7 @@
 			<version>1.0.1</version>
 		</dependency>
 
->>>>>>> remotes/upstream/latest
+
 	</dependencies>
 
 	<repositories>
