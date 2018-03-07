@@ -188,12 +188,26 @@
 			<version>${plugin.testrunner.version}</version>
 			<scope>test</scope>
 		</dependency>
+
+        <dependency>
+            <groupId>com.hp.sv</groupId>
+            <artifactId>SVConfigurator</artifactId>
+            <version>4.10.1.48219</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
 		<!-- https://mvnrepository.com/artifact/com.microfocus.adm.performancecenter/plugins-common -->
 		<dependency>
 			<groupId>com.microfocus.adm.performancecenter</groupId>
 			<artifactId>plugins-common</artifactId>
 			<version>1.0.1</version>
 		</dependency>
+
 
 	</dependencies>
 
@@ -211,6 +225,11 @@
 				<checksumPolicy>warn</checksumPolicy>
 			</releases>
 		</repository>
+        <repository>
+            <id>bintray-adm-maven</id>
+            <name>bintray</name>
+            <url>http://dl.bintray.com/adm/maven</url>
+        </repository>
 	</repositories>
 
 	<pluginRepositories>
