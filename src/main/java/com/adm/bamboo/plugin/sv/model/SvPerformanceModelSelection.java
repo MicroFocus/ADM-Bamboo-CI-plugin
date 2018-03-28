@@ -54,7 +54,7 @@ public class SvPerformanceModelSelection {
             this.selectionType = SelectionType.BY_NAME;
         } else if(SVConstants.NONE_PERFORMANCE_MODEL.equals(selectionType)){
             this.selectionType = SelectionType.NONE;
-        } else if(SVConstants.NONE_PERFORMANCE_MODEL.equals(selectionType)){
+        } else if(SVConstants.DEFAULT_PERFORMANCE_MODEL.equals(selectionType)){
             this.selectionType = SelectionType.DEFAULT;
         } else if(SVConstants.OFFLINE.equals(selectionType)){
             this.selectionType = SelectionType.OFFLINE;
