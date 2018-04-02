@@ -55,6 +55,7 @@
     <resource type="i18n" name="english properties uft" location="/properties/uft/bamboo_uft_en"/>
     <resource type="i18n" name="english errors" location="/properties/uft/errors_en"/>
     <resource type="i18n" name="english messages" location="/properties/uft/messages_en"/>
+    <resource type="i18n" name="english properties sv" location="/properties/sv/bamboo_plugin_sv"/>
 
     <!--add our web resources -->
     <web-resource key="bamboo-plugin-resources" name="bamboo-plugin Web Resources">

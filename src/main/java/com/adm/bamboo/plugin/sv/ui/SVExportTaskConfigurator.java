@@ -61,6 +61,7 @@ public class SVExportTaskConfigurator extends AbstractTaskConfigurator {
         config.put(SVConstants.CLEAN_TARGET_DIRECTORY, params.getString(SVConstants.CLEAN_TARGET_DIRECTORY));
         config.put(SVConstants.SWITCH_SERVICE_TO_STANDBY, params.getString(SVConstants.SWITCH_SERVICE_TO_STANDBY));
         config.put(SVConstants.FORCE, params.getString(SVConstants.FORCE));
+        config.put(SVConstants.ARCHIVE, params.getString(SVConstants.ARCHIVE));
 
         return config;
     }
@@ -136,6 +137,7 @@ public class SVExportTaskConfigurator extends AbstractTaskConfigurator {
         context.put(SVConstants.PROJECT_PASSWORD, configuration.get(SVConstants.PROJECT_PASSWORD));
         context.put(SVConstants.TARGET_DIRECTORY, configuration.get(SVConstants.TARGET_DIRECTORY));
         context.put(SVConstants.FORCE, configuration.get(SVConstants.FORCE));
+        context.put(SVConstants.ARCHIVE, configuration.get(SVConstants.ARCHIVE));
         context.put(SVConstants.SWITCH_SERVICE_TO_STANDBY, configuration.get(SVConstants.SWITCH_SERVICE_TO_STANDBY));
         context.put(SVConstants.CLEAN_TARGET_DIRECTORY, configuration.get(SVConstants.CLEAN_TARGET_DIRECTORY));
     }

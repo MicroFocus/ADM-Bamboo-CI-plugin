@@ -127,6 +127,14 @@
         [@ww.text name='sv.param.tooltips.force'/]
     </div>
     <hr>
+
+    <div class="control">
+        [@ww.checkbox labelKey="sv.param.label.archive" name="archive" toggle="true" /]
+    </div>
+    <div class="helpIcon" onclick="javascript: toggle_visibility('sv.param.tooltips.archive');">?</div>
+    <div id ="sv.param.tooltips.archive" class="toolTip">
+        [@ww.text name='sv.param.tooltips.archive'/]
+    </div>
 [/@ui.bambooSection]
 
 <script type="text/javascript">

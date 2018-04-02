@@ -121,7 +121,7 @@ public class SVDeployTask implements TaskType {
      * @return
      */
     private void deployServiceFromProject(SvDeployModel svDeployModel, IProject project, BuildLogger buildLogger) throws Exception {
-        IDeployProcessor processor = new DeployProcessor(null, new ServiceAmendingServiceImpl());
+        IDeployProcessor processor = new DeployProcessor(null);
         ICommandExecutor commandExecutor = SVExecutorUtil.createCommandExecutor(new URL(svDeployModel.getServerSettingsModel().getUrl()),
                 new Credentials(svDeployModel.getServerSettingsModel().getUsername(),svDeployModel.getServerSettingsModel().getPassword()));
 
