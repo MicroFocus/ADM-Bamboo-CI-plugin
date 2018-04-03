@@ -59,7 +59,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -167,7 +166,7 @@ public class SVExportTask implements TaskType {
     }
 
     /**
-     * Cleans all sub-folders containing *.vproj file.
+     * Cleans all sub-folders containing *.vproj or *.vproja file.
      *
      * @param buildLogger
      * @param targetDirectory
@@ -177,8 +176,12 @@ public class SVExportTask implements TaskType {
         File target = new File(targetDirectory);
         if (target.exists()) {
             File[] subfolders = target.listFiles((FilenameFilter) DirectoryFileFilter.INSTANCE);
-            if (subfolders.length > 0) {
+            File[] files = target.listFiles((FilenameFilter) new SuffixFileFilter(".vproja"));
+            if (subfolders.length > 0 || files.length > 0) {
                 buildLogger.addBuildLogEntry("  Cleaning target directory...");
+            }
+            for(File file : files) {
+                FileUtils.forceDelete(file);
             }
             for (File subfolder : subfolders) {
                 if (subfolder.listFiles((FilenameFilter) new SuffixFileFilter(".vproj")).length > 0) {
