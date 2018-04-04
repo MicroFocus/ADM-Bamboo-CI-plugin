@@ -112,10 +112,14 @@ public class SVExportTask implements TaskType {
                 if (svExportModel.isSwitchToStandByFirst()) {
                     switchToStandBy(svExportModel, serviceInfo, chmodeProcessor, commandExecutor, buildLogger);
                 }
-
                 buildLogger.addBuildLogEntry(String.format("  Exporting service '%s' [%s] to %s %n", serviceInfo.getName(), serviceInfo.getId(), targetDirectory));
                 verifyNotLearningBeforeExport(buildLogger, commandExecutor, serviceInfo);
-                exportProcessor.process(commandExecutor, targetDirectory, serviceInfo.getId(), project, false, svExportModel.isArchive());
+                if (!svServiceSelectionModel.getSelectionType().equals(SvServiceSelectionModel.SelectionType.PROJECT)) {
+                    exportProcessor.process(commandExecutor, targetDirectory, serviceInfo.getId(), project, false, svExportModel.isArchive());
+                }
+            }
+            if (svServiceSelectionModel.getSelectionType().equals(SvServiceSelectionModel.SelectionType.PROJECT)) {
+                exportProcessor.process(commandExecutor, targetDirectory, null, project, false, svExportModel.isArchive());
             }
         } catch (Exception e) {
             buildLogger.addErrorLogEntry("Build failed: " + e.getMessage(), e);
