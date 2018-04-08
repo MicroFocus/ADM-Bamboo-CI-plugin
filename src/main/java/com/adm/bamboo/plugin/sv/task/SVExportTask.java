@@ -42,6 +42,8 @@ import com.adm.utils.sv.SVExecutorUtil;
 import com.atlassian.bamboo.build.logger.BuildLogger;
 import com.atlassian.bamboo.configuration.ConfigurationMap;
 import com.atlassian.bamboo.task.*;
+import com.hp.sv.jsvconfigurator.build.ProjectBuilder;
+import com.hp.sv.jsvconfigurator.core.IProject;
 import com.hp.sv.jsvconfigurator.core.IService;
 import com.hp.sv.jsvconfigurator.core.impl.exception.CommandExecutorException;
 import com.hp.sv.jsvconfigurator.core.impl.exception.CommunicatorException;
@@ -57,6 +59,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.lang.BooleanUtils;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -78,6 +81,7 @@ public class SVExportTask implements TaskType {
         String serviceName = map.get(SVConstants.SERVICE_NAME_OR_ID);
         serviceName = (serviceName == null || serviceName.isEmpty()) ? null : serviceName;
         boolean force = BooleanUtils.toBoolean(map.get(SVConstants.FORCE));
+        boolean archive = BooleanUtils.toBoolean(map.get(SVConstants.ARCHIVE));
         boolean cleanTargetDirectory = BooleanUtils.toBoolean(map.get(SVConstants.CLEAN_TARGET_DIRECTORY));
         boolean switchServiceToStandBy = BooleanUtils.toBoolean(map.get(SVConstants.SWITCH_SERVICE_TO_STANDBY));
         String serviceSelection = map.get(SVConstants.SERVICE_SELECTION);
@@ -86,28 +90,36 @@ public class SVExportTask implements TaskType {
         SvServerSettingsModel svServerSettingsModel = new SvServerSettingsModel(serverURL, userName, userPassword);
         SvServiceSelectionModel svServiceSelectionModel = new SvServiceSelectionModel(serviceName, projectPath, projectPassword);
         svServiceSelectionModel.setSelectionType(serviceSelection);
-        SvExportModel svExportModel = new SvExportModel(svServerSettingsModel, svServiceSelectionModel, targetDirectory, cleanTargetDirectory, switchServiceToStandBy, force);
+        SvExportModel svExportModel = new SvExportModel(svServerSettingsModel, svServiceSelectionModel, targetDirectory, cleanTargetDirectory, switchServiceToStandBy, force, archive);
         logConfig(buildLogger, svExportModel, startDate, SVConstants.PREFIX);
 
         ExportProcessor exportProcessor = new ExportProcessor(null);
         IChmodeProcessor chmodeProcessor = new ChmodeProcessor(null);
 
         ICommandExecutor commandExecutor = null;
+        IProject project = null;
         try {
             commandExecutor = SVExecutorUtil.createCommandExecutor(new URL(svServerSettingsModel.getUrl()),
                     new Credentials(svServerSettingsModel.getUsername(),svServerSettingsModel.getPassword()));
             if (svExportModel.isCleanTargetDirectory()) {
                 cleanTargetDirectory(buildLogger, targetDirectory);
             }
+            if (svServiceSelectionModel.getSelectionType().equals(SvServiceSelectionModel.SelectionType.PROJECT)) {
+                project = new ProjectBuilder().buildProject(new File(projectPath), projectPassword);
+            }
             List<ServiceInfo> serviceInfoList = SVExecutorUtil.getServiceList(commandExecutor, svServiceSelectionModel, false, buildLogger);
             for (ServiceInfo serviceInfo : serviceInfoList) {
                 if (svExportModel.isSwitchToStandByFirst()) {
                     switchToStandBy(svExportModel, serviceInfo, chmodeProcessor, commandExecutor, buildLogger);
                 }
-
                 buildLogger.addBuildLogEntry(String.format("  Exporting service '%s' [%s] to %s %n", serviceInfo.getName(), serviceInfo.getId(), targetDirectory));
                 verifyNotLearningBeforeExport(buildLogger, commandExecutor, serviceInfo);
-                exportProcessor.process(commandExecutor, targetDirectory, serviceInfo.getId(), false);
+                if (!svServiceSelectionModel.getSelectionType().equals(SvServiceSelectionModel.SelectionType.PROJECT)) {
+                    exportProcessor.process(commandExecutor, targetDirectory, serviceInfo.getId(), project, false, svExportModel.isArchive());
+                }
+            }
+            if (svServiceSelectionModel.getSelectionType().equals(SvServiceSelectionModel.SelectionType.PROJECT)) {
+                exportProcessor.process(commandExecutor, targetDirectory, null, project, false, svExportModel.isArchive());
             }
         } catch (Exception e) {
             buildLogger.addErrorLogEntry("Build failed: " + e.getMessage(), e);
@@ -158,7 +170,7 @@ public class SVExportTask implements TaskType {
     }
 
     /**
-     * Cleans all sub-folders containing *.vproj file.
+     * Cleans all sub-folders containing *.vproj or *.vproja file.
      *
      * @param buildLogger
      * @param targetDirectory
@@ -168,8 +180,12 @@ public class SVExportTask implements TaskType {
         File target = new File(targetDirectory);
         if (target.exists()) {
             File[] subfolders = target.listFiles((FilenameFilter) DirectoryFileFilter.INSTANCE);
-            if (subfolders.length > 0) {
+            File[] files = target.listFiles((FilenameFilter) new SuffixFileFilter(".vproja"));
+            if (subfolders.length > 0 || files.length > 0) {
                 buildLogger.addBuildLogEntry("  Cleaning target directory...");
+            }
+            for(File file : files) {
+                FileUtils.forceDelete(file);
             }
             for (File subfolder : subfolders) {
                 if (subfolder.listFiles((FilenameFilter) new SuffixFileFilter(".vproj")).length > 0) {
@@ -190,5 +206,6 @@ public class SVExportTask implements TaskType {
         buildLogger.addBuildLogEntry(prefix + "Clean Target Directory: " + svExportModel.isCleanTargetDirectory());
         buildLogger.addBuildLogEntry(prefix + "Switch to Stand-By: " + svExportModel.isSwitchToStandByFirst());
         buildLogger.addBuildLogEntry(prefix + "Force: " + svExportModel.isForce());
+        buildLogger.addBuildLogEntry(prefix + "Archive: " + svExportModel.isArchive());
     }
 }

@@ -42,14 +42,16 @@ public class SvExportModel {
     private boolean cleanTargetDirectory;
     private boolean switchToStandByFirst;
     private boolean force;
+    private boolean archive;
 
-    public SvExportModel(SvServerSettingsModel serverSettingsModel, SvServiceSelectionModel serviceSelectionModel, String targetDirectory, boolean cleanTargetDirectory, boolean switchToStandByFirst, boolean force) {
+    public SvExportModel(SvServerSettingsModel serverSettingsModel, SvServiceSelectionModel serviceSelectionModel, String targetDirectory, boolean cleanTargetDirectory, boolean switchToStandByFirst, boolean force, boolean archive) {
         this.serverSettingsModel = serverSettingsModel;
         this.serviceSelectionModel = serviceSelectionModel;
         this.targetDirectory = targetDirectory;
         this.cleanTargetDirectory = cleanTargetDirectory;
         this.switchToStandByFirst = switchToStandByFirst;
         this.force = force;
+        this.archive = archive;
     }
 
     public SvServerSettingsModel getServerSettingsModel() {
@@ -74,5 +76,9 @@ public class SvExportModel {
 
     public boolean isForce() {
         return force;
+    }
+
+    public boolean isArchive() {
+        return archive;
     }
 }

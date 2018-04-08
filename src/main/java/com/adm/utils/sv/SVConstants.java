@@ -45,6 +45,7 @@ public class SVConstants {
     public static final String PROJECT_PATH = "projectPath";
     public static final String PROJECT_PASSWORD = "projectPassword";
     public static final String FORCE = "force";
+    public static final String ARCHIVE = "archive";
     public static final String CONTINUE = "continue";
     public static final String FIRST_SUITABLE_AGENT_FALLBACK = "firstSuitableAgentFallback";
     public static final String TARGET_DIRECTORY = "targetDirectory";
