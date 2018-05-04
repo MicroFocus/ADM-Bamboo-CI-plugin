@@ -60,7 +60,7 @@
     </taskType>
 
     <taskType
-            name="HPE UFT File System Execution"
+            name="UFT File System Execution"
             class="com.adm.bamboo.plugin.uft.task.RunFromFileSystemUftTask"
             key="RunFromFileSystemUftTask">
         <description>Execute UFT tests from file system</description>
@@ -82,7 +82,7 @@
     </taskType>
 
     <taskType
-            name="HPE UFT ALM Execution"
+            name="UFT ALM Execution"
             class="com.adm.bamboo.plugin.uft.task.RunFromAlmUftTask"
             key="RunFromAlmUftTask">
         <description>Execute UFT tests from ALM</description>
@@ -99,10 +99,10 @@
     </taskType>
 
     <taskType
-            name="HPE UFT ALM Lab Management"
+            name="UFT ALM Lab Management"
             class="com.adm.bamboo.plugin.uft.task.RunFromAlmLabManagementUftTask"
             key="RunFromAlmLabManagementUftTask">
-        <description>Execute UFT tests using HPE ALM Lab Management</description>
+        <description>Execute UFT tests using ALM Lab Management</description>
         <category name="test"/>
         <configuration class="com.adm.bamboo.plugin.uft.ui.AlmLabManagementUftTaskConfigurator"/>
         <resource
@@ -116,10 +116,10 @@
     </taskType>
 
     <taskType
-            name="HPE UFT ALM Lab Management Environment Preparation"
+            name="UFT ALM Lab Management Environment Preparation"
             class="com.adm.bamboo.plugin.uft.task.AlmLabEnvPrepareUftTask"
             key="AlmLabEnvPrepareUftTask">
-        <description>Execute AUT Environment preparation using HPE ALM Lab Management</description>
+        <description>Execute AUT Environment preparation using ALM Lab Management</description>
         <category name="test"/>
         <configuration class="com.adm.bamboo.plugin.uft.ui.AlmLabEnvPrepareUftTaskConfigurator"/>
         <resource
@@ -133,7 +133,7 @@
     </taskType>
 
     <taskType
-            name="HPE MC Application Upload"
+            name="Mobile Center Application Upload"
             class="com.adm.bamboo.plugin.uft.task.UploadApplicationUftTask"
             key="UploadApplicationUftTask">
         <description>Uploads apps to Mobile Center</description>
