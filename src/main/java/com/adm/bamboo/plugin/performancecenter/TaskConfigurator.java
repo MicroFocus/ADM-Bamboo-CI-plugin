@@ -45,6 +45,7 @@ public class TaskConfigurator extends AbstractTaskConfigurator {
     public static final String    COLLATE         = "Collate Results";
     public static final String    COLLATE_ANALYZE = "Collate and Analyze";
     public static final String    DO_NOTHING      = "Do Not Collate";
+    private static final String REGEX =  "^\\$\\{.*\\}$|^[0-9]*$"; // regex for parameter or numeric
 
     ArrayList<String> localDAtaArray = new ArrayList<String>();
 
@@ -87,6 +88,8 @@ public class TaskConfigurator extends AbstractTaskConfigurator {
 
         super.validate(params, errorCollection);
 
+
+
         //final String PCServerValue = params.getString(PC_SERVER);
         for (String p : localDAtaArray) {
             String val = params.getString(p);
@@ -95,8 +98,8 @@ public class TaskConfigurator extends AbstractTaskConfigurator {
                     || (StringUtils.equals(p, TREND_REPORT_ID) && StringUtils.equals(params.getString("trendingRadio"), "USE_ID"))){
                 if (StringUtils.isEmpty(val)) {
                     errorCollection.addError(p, "Required!");
-                }else if(!StringUtils.isNumeric(val)){
-                    errorCollection.addError(p, "Must be numeric!");
+                }else if(!val.matches(REGEX)){
+                    errorCollection.addError(p, "Must be numeric or a variable (e.g. ${value}).");
                 }
             }else {
                 if (StringUtils.isEmpty(val) && !StringUtils.equals(p, PASSWORD) && !StringUtils.equals(p, TEST_INSTANCE_ID) && !StringUtils.equals(p, TREND_REPORT_ID)) {
