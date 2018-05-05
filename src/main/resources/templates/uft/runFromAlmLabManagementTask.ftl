@@ -14,7 +14,7 @@
 <div class="control">
     [@ww.textfield labelKey="RunFromAlmLabManagementTask.environmentId" name="environmentId"/]
 </div>
-<div class="helpIcon" onclick="javascript: toggle_visibility('RunFromAlmLabManagementUftTask.toolTip.environmentId');">?</div>
+<div class="helpIcon" onclick="javascript: toggle_visibility('RunFromAlmLabManagementTask.toolTip.environmentId');">?</div>
 <div id ="RunFromAlmLabManagementTask.toolTip.environmentId" class="toolTip">
     [@ww.text name='RunFromAlmLabManagementTask.toolTip.environmentId'/]
 </div>

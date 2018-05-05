@@ -23,7 +23,7 @@
 <div class="control">
     [@ww.textfield labelKey="AlmLabEnvPrepareTask.AUTEnvIDInputLbl" name="AUTEnvID" required='true'/]
 </div>
-<div class="helpIcon" onclick="javascript: toggle_visibility('AlmLabEnvPrepareUftTask.toolTip.AUTEnvConfID');">?</div>
+<div class="helpIcon" onclick="javascript: toggle_visibility('AlmLabEnvPrepareTask.toolTip.AUTEnvConfID');">?</div>
 <div id ="AlmLabEnvPrepareTask.toolTip.AUTEnvConfID" class="toolTip">
     [@ww.text name='AlmLabEnvPrepareTask.toolTip.AUTEnvConfID'/]
 </div>
@@ -38,7 +38,7 @@
         <div class="control">
             [@ww.textfield labelKey="AlmLabEnvPrepareTask.assignAUTEnvConfIDtoInputLbl" name="outEnvID"/]
         </div>
-        <div class="helpIcon" onclick="javascript: toggle_visibility('AlmLabEnvPrepareUftTask.toolTip.AUTEnvConfID');">?</div>
+        <div class="helpIcon" onclick="javascript: toggle_visibility('AlmLabEnvPrepareTask.toolTip.AUTEnvConfID');">?</div>
         <div id ="AlmLabEnvPrepareTask.toolTip.AUTEnvConfID" class="toolTip">
             [@ww.text name='AlmLabEnvPrepareTask.toolTip.AUTEnvConfID'/]
         </div>
@@ -52,7 +52,7 @@
 <div class="control">
     [@ww.textfield labelKey="AlmLabEnvPrepareTask.pathToJSONFileInputLbl" name="pathToJSONFile"/]
 </div>
-<div class="helpIcon" onclick="javascript: toggle_visibility('AlmLabEnvPrepareUftTask.toolTip.JSONPath');">?</div>
+<div class="helpIcon" onclick="javascript: toggle_visibility('AlmLabEnvPrepareTask.toolTip.JSONPath');">?</div>
 <div id ="AlmLabEnvPrepareTask.toolTip.JSONPath" class="toolTip">
     [@ww.text name='AlmLabEnvPrepareTask.toolTip.JSONPath'/]
 </div>

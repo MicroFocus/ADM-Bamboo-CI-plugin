@@ -51,7 +51,7 @@ import static com.adm.utils.uft.enums.UFTConstants.TASK_NAME;
 public final class FilesHandler {
     private static final String HpToolsLauncher_SCRIPT_NAME = "HpToolsLauncher.exe";
     private static final String HpToolsAborter_SCRIPT_NAME = "HpToolsAborter.exe";
-    private static final String HP_UFT_PREFIX = "HP_UFT_Build_";
+    private static final String HP_UFT_PREFIX = "UFT_Build_";
     private static final String FORMATTER_PATTERN = "ddMMyyyyHHmmssSSS";
 
     private FilesHandler() {

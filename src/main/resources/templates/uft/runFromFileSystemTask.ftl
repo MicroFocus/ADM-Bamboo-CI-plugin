@@ -9,7 +9,7 @@
 <div class="control">
 [@ww.textarea labelKey="FileSystemTaskConfigurator.testsPathInputLbl" id="testPathInput" name="testPathInput" required='true' rows="4"/]
 </div>
-<div class="helpIcon" onclick="javascript: toggle_visibility('FileSystemUftTaskConfigurator.toolTip.tests');">?</div>
+<div class="helpIcon" onclick="javascript: toggle_visibility('FileSystemTaskConfigurator.toolTip.tests');">?</div>
 <div id ="FileSystemTaskConfigurator.toolTip.tests" class="toolTip">
 [@ww.text name='FileSystemTaskConfigurator.toolTip.tests'/]
 </div>
@@ -17,7 +17,7 @@
 <div class="control">
 [@ww.textfield labelKey="FileSystemTaskConfigurator.timelineInputLbl" name="timeoutInput"/]
 </div>
-<div class="helpIcon" onclick="javascript: toggle_visibility('FileSystemUftTaskConfigurator.toolTip.timeOut');">?</div>
+<div class="helpIcon" onclick="javascript: toggle_visibility('FileSystemTaskConfigurator.toolTip.timeOut');">?</div>
 <div id ="FileSystemTaskConfigurator.toolTip.timeOut" class="toolTip">
 [@ww.text name='FileSystemTaskConfigurator.toolTip.timeOut'/]
 </div>
@@ -25,7 +25,7 @@
 <div class="control">
 [@ww.select labelKey="RunFromFileSystemTask.publishMode" name="publishMode" list="publishModeItems" emptyOption="false"/]
 </div>
-<div class="helpIcon" onclick="javascript: toggle_visibility('FileSystemUftTaskConfigurator.toolTip.viewResults');">?</div>
+<div class="helpIcon" onclick="javascript: toggle_visibility('FileSystemTaskConfigurator.toolTip.viewResults');">?</div>
 <div id ="FileSystemTaskConfigurator.toolTip.viewResults" class="toolTip">
 [@ww.text name='FileSystemTaskConfigurator.toolTip.viewResults'/]
 </div>
@@ -40,7 +40,7 @@
 <div class="control">
     [@ww.textfield labelKey="FileSystemTaskConfigurator.mcServerURLInputLbl" name="mcServerURLInput"/]
 </div>
-<div class="helpIcon" onclick="javascript: toggle_visibility('FileSystemUftTaskConfigurator.toolTip.mcServerURL');">?</div>
+<div class="helpIcon" onclick="javascript: toggle_visibility('FileSystemTaskConfigurator.toolTip.mcServerURL');">?</div>
 <div id ="FileSystemTaskConfigurator.toolTip.mcServerURL" class="toolTip">
     [@ww.text name='FileSystemTaskConfigurator.toolTip.mcServerURL'/]
 </div>
@@ -48,7 +48,7 @@
 <div class="control">
     [@ww.textfield labelKey="FileSystemTaskConfigurator.mcUserNameInputLbl" name="mcUserNameInput"/]
 </div>
-<div class="helpIcon" onclick="javascript: toggle_visibility('FileSystemUftTaskConfigurator.toolTip.mcUserName');">?</div>
+<div class="helpIcon" onclick="javascript: toggle_visibility('FileSystemTaskConfigurator.toolTip.mcUserName');">?</div>
 <div id ="FileSystemTaskConfigurator.toolTip.mcUserName" class="toolTip">
     [@ww.text name='FileSystemTaskConfigurator.toolTip.mcUserName'/]
 </div>
@@ -56,7 +56,7 @@
 <div class="control">
     [@ww.password labelKey="FileSystemTaskConfigurator.mcPasswordInputLbl" name="mcPasswordInput"/]
 </div>
-<div class="helpIcon" onclick="javascript: toggle_visibility('FileSystemUftTaskConfigurator.toolTip.mcPassword');">?</div>
+<div class="helpIcon" onclick="javascript: toggle_visibility('FileSystemTaskConfigurator.toolTip.mcPassword');">?</div>
 <div id ="FileSystemTaskConfigurator.toolTip.mcPassword" class="toolTip">
     [@ww.text name='FileSystemTaskConfigurator.toolTip.mcPassword'/]
 </div>
