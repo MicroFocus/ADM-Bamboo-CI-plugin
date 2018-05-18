@@ -25,6 +25,6 @@ The products currently supported are:
 8. A build wll start automatcally - make sure it's green, you can click on the link 'Details' for more information in case it fails.
 9. To get the artifact - please click on "Artifacts" under the approiate build.
 
-*** Now, if the build is green and the code is fine and matches the structure - It will be merged.
+**** Now, if the build is green and the code is fine and matches the structure - It will be merged.
 
 
