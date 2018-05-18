@@ -37,7 +37,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.adm</groupId>
 	<artifactId>app-delivery-management-bamboo</artifactId>
-	<version>1.00</version>
+	<version>1.1-SNAPSHOT</version>
 	<packaging>atlassian-plugin</packaging>
 
 	<name>Micro Focus Bamboo plugin</name>
@@ -58,7 +58,7 @@
 	<scm>
 		<connection>scm:git:https://github.com/MicroFocus/ADM-Bamboo-CI-plugin</connection>
 		<developerConnection>scm:git:https://github.com/MicroFocus/ADM-Bamboo-CI-plugin</developerConnection>
-	  <tag>app-delivery-management-bamboo-1.00</tag>
+	  <tag>HEAD</tag>
   </scm>
 	<developers>
 		<developer>
