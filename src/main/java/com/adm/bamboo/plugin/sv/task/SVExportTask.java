@@ -199,7 +199,7 @@ public class SVExportTask implements TaskType {
     }
 
     private void logConfig(BuildLogger buildLogger, SvExportModel svExportModel, Date startDate, String prefix) {
-        buildLogger.addBuildLogEntry(String.format("%nStarting UnDeploy Virtual Service for SV Server '%s' as %s on %s%n",
+        buildLogger.addBuildLogEntry(String.format("%nStarting Export of Virtual Service for SV Server '%s' as %s on %s%n",
                 svExportModel.getServerSettingsModel().getUrl(), svExportModel.getServerSettingsModel().getUsername(), startDate));
         SVExecutorUtil.logConfig(svExportModel.getServiceSelectionModel(), buildLogger, prefix);
         buildLogger.addBuildLogEntry(prefix + "Target Directory: " + svExportModel.getTargetDirectory());
