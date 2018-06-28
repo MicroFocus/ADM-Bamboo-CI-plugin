@@ -9,7 +9,7 @@
 
 <html>
 <head>
-    <title>Update Environments</title>
+    <title>Test Execution</title>
     <style>
         table td {
             padding:0 1rem 0 0;

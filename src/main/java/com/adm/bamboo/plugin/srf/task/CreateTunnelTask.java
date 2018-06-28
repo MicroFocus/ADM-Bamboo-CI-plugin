@@ -31,18 +31,21 @@
  * THE SOFTWARE.
  */
 
-package com.adm.bamboo.plugin.srf;
+package com.adm.bamboo.plugin.srf.task;
 
-import com.adm.bamboo.plugin.srf.impl.SrfComponentsImpl;
-import com.adm.utils.srf.SrfConfigParameter;
+import com.adm.bamboo.plugin.srf.configurator.CreateTunnelConfigurator;
+import com.adm.bamboo.plugin.srf.impl.CreateTunnelComponent;
 import com.atlassian.bamboo.build.logger.BuildLogger;
-import com.atlassian.bamboo.task.*;
 import com.atlassian.bamboo.configuration.ConfigurationMap;
+import com.atlassian.bamboo.task.TaskContext;
+import com.atlassian.bamboo.task.TaskResult;
+import com.atlassian.bamboo.task.TaskResultBuilder;
+import com.atlassian.bamboo.task.TaskType;
+
 import java.io.IOException;
-import java.util.List;
 
 
-public class TaskExecution implements TaskType
+public class CreateTunnelTask implements TaskType
 {
 
     @Override
@@ -51,37 +54,31 @@ public class TaskExecution implements TaskType
         final ConfigurationMap configurationMap = taskContext.getConfigurationMap();
         final BuildLogger buildLogger = taskContext.getBuildLogger();
 
-        final String SRF_ADDRESS = configurationMap.get(TaskConfigurator.SRF_ADDRESS);
-        final String TENANT_ID = configurationMap.get(TaskConfigurator.TENANT_ID);
-        final String CLIENT_ID = configurationMap.get(TaskConfigurator.SRF_CLIENT_ID);
-        final String CLIENT_SECRET = configurationMap.get(TaskConfigurator.SRF_CLIENT_SECRET);
-        final String TEST_ID = configurationMap.get(TaskConfigurator.TEST_ID);
-        final String TUNNEL = configurationMap.get(TaskConfigurator.TUNNEL);
-        final String SHOULD_CLOSE_TUNNEL = configurationMap.get(TaskConfigurator.SHOULD_CLOSE_TUNNEL);
-        final String PROXY = configurationMap.get(TaskConfigurator.PROXY);
-        final String BUILD = configurationMap.get(TaskConfigurator.BUILD);
-        final String RELEASE = configurationMap.get(TaskConfigurator.RELEASE);
-        final String TAGS = configurationMap.get(TaskConfigurator.TAGS);
-        final List<SrfConfigParameter> PARAMETERS = TaskConfigurator.fetchSrfParametersFromContext(configurationMap);
+        final String TUNNEL_CLIENT_PATH = configurationMap.get(CreateTunnelConfigurator.TUNNEL_CLIENT_PATH);
+        final String CONFIG_FILE_PATH = configurationMap.get(CreateTunnelConfigurator.CONFIG_FILE_PATH);
 
         try {
-            buildLogger.addBuildLogEntry("Executing SRF Test");
-            buildLogger.addBuildLogEntry("==================");
+            buildLogger.addBuildLogEntry("=======================");
+            buildLogger.addBuildLogEntry("== Create SRF Tunnel ==");
+            buildLogger.addBuildLogEntry("=======================");
 
-            buildLogger.addBuildLogEntry(String.format("Test ID: %s & Tags: %s", TEST_ID , TAGS));
+            // buildLogger.addBuildLogEntry(String.format("Test ID: %s & Tags: %s", TEST_ID , TAGS));
 
-            if (TEST_ID == null || TAGS == null)
+            if (TUNNEL_CLIENT_PATH == null || CONFIG_FILE_PATH == null)
             {
-                buildLogger.addBuildLogEntry("Please provide Test ID or Tags" );
+                buildLogger.addBuildLogEntry("Please provide Tunnel client path and config file path" );
                 return TaskResultBuilder.newBuilder(taskContext).failedWithError().build();
             }
 
-            SrfComponentsImpl srfComponentsImpl = new SrfComponentsImpl(taskContext,buildLogger,SRF_ADDRESS,TENANT_ID,CLIENT_ID,CLIENT_SECRET,TEST_ID,PROXY,BUILD,RELEASE,TAGS,PARAMETERS,TUNNEL,Boolean.parseBoolean(SHOULD_CLOSE_TUNNEL));
-            return srfComponentsImpl.startRun(taskContext, buildLogger);
+            CreateTunnelComponent createTunnelComponent = new CreateTunnelComponent(taskContext, buildLogger, TUNNEL_CLIENT_PATH, CONFIG_FILE_PATH);
+            return createTunnelComponent.startRun();
         } catch (IOException e) {
             e.printStackTrace();
-            buildLogger.addErrorLogEntry("Error while executing load test: " + e.toString());
-            return TaskResultBuilder.newBuilder(taskContext).failed().build();
+            buildLogger.addErrorLogEntry("Error while creating tunnel: " + e.toString());
+            return TaskResultBuilder.newBuilder(taskContext).failedWithError().build();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return TaskResultBuilder.newBuilder(taskContext).failedWithError().build();
         }
     }
 }

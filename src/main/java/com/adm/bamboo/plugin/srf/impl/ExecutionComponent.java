@@ -61,7 +61,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-public class SrfComponentsImpl implements Observer {
+public class ExecutionComponent implements Observer {
     private TaskContext taskContext;
     private SrfClient srfClient;
     private JSONArray jobIds;
@@ -89,8 +89,8 @@ public class SrfComponentsImpl implements Observer {
     private transient HttpURLConnection con;
 
 
-    public SrfComponentsImpl(TaskContext taskContext, BuildLogger buildLogger, String srfAddress, String tenant, String clientId, String clientSecret, String testId, String proxy, String build, String release, String tags,
-                             List<SrfConfigParameter> parameters, String tunnel, boolean shouldCloseTunnel) {
+    public ExecutionComponent(TaskContext taskContext, BuildLogger buildLogger, String srfAddress, String tenant, String clientId, String clientSecret, String testId, String proxy, String build, String release, String tags,
+                              List<SrfConfigParameter> parameters, String tunnel, boolean shouldCloseTunnel) {
 
         this.srfAddress =  srfAddress;
         this.tenant = tenant;
@@ -108,7 +108,7 @@ public class SrfComponentsImpl implements Observer {
         this.taskContext = taskContext;
     }
 
-    public TaskResult startRun(TaskContext taskContext, BuildLogger buildLogger) throws IOException {
+    public TaskResult startRun() throws IOException {
         String srfProxy =  proxy;
         handleSrfAddress(srfAddress);
         runningCount = new HashSet<>();
@@ -313,7 +313,8 @@ public class SrfComponentsImpl implements Observer {
             String status = getBuildStatus(testRes);
 
             SrfResultFileWriter resultWriter = new SrfResultFileWriter(taskContext, buildLogger);
-            resultWriter.writeUrlFileResults(testRes, tenant, srfAddress, workspaceId);
+            // resultWriter.writeUrlFileResults(testRes, tenant, srfAddress, workspaceId);
+            resultWriter.writeHtmlReport(testRes, tenant, srfAddress, workspaceId);
 
             ArtifactDefinitionContextImpl artifact = new ArtifactDefinitionContextImpl("Build_" + String.valueOf(taskContext.getBuildContext().getBuildNumber()) + "_reports",false,null);
             artifact.setCopyPattern("**/*");
@@ -335,7 +336,7 @@ public class SrfComponentsImpl implements Observer {
                     this.srfExecutionFuture.complete(TaskResultBuilder.newBuilder(taskContext).failed().build());
                     return;
                 default:
-                    buildLogger.addBuildLogEntry(String.format("SrfComponentsImpl.update: received undefined build result: %s", taskContext.getBuildContext().getBuildResult().toString()));
+                    buildLogger.addBuildLogEntry(String.format("ExecutionComponent.update: received undefined build result: %s", taskContext.getBuildContext().getBuildResult().toString()));
                     this.srfExecutionFuture.complete(TaskResultBuilder.newBuilder(taskContext).failedWithError().build());
                     break;
             }
@@ -381,12 +382,15 @@ public class SrfComponentsImpl implements Observer {
             con = null;
         }
 
-//        if(shouldCloseTunnel && CreateTunnelBuilder.Tunnels != null){
-//            for (Process p:CreateTunnelBuilder.Tunnels){
-//                p.destroy();
-//            }
-//            CreateTunnelBuilder.Tunnels.clear();
-//        }
+        try{
+            if(shouldCloseTunnel && CreateTunnelComponent.Tunnels != null && CreateTunnelComponent.Tunnels.size() > 0){
+                for (Process p:CreateTunnelComponent.Tunnels){
+                    p.destroy();
+                }
+                CreateTunnelComponent.Tunnels.clear();
+            }
+        } catch (Exception e){ }
+
     }
 
     private String getBuildStatus(JSONArray report) {

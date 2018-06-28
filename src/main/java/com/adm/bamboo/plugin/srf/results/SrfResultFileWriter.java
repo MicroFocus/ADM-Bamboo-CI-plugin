@@ -40,6 +40,8 @@ import net.sf.json.JSONObject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SrfResultFileWriter {
     private TaskContext taskContext;
@@ -54,26 +56,80 @@ public class SrfResultFileWriter {
         reportDir.mkdirs();
     }
 
-    public void writeUrlFileResults(JSONArray tests, String tenant, String srfAddress, String workspaceId) throws IOException {
+    public void writeHtmlReport(JSONArray tests, String tenant, String srfAddress, String workspaceId) throws IOException {
+        String path = reportDir.getPath().concat(File.separator).concat("report.html");
+        File htmlReportFile = new File(path);
+        Boolean fileCreated = htmlReportFile.createNewFile();
+
+        if (!fileCreated)
+            throw new IOException(String.format("Failed to create file: %s", path));
+
+        int testsCount = tests.size();
+
+        List<String> testsName = new ArrayList<>();
+        List<String> testsStatus = new ArrayList<>();
+        List<String> testsDuration = new ArrayList<>();
+        List<String> testsLink = new ArrayList<>();
+
+        for (int i = 0; i < testsCount; i++) {
+
+            JSONObject test = (JSONObject) (tests.get(i));
+
+            testsName.add(test.getString("name"));
+            testsStatus.add(test.getString("status").toUpperCase());
+            testsDuration.add(test.getString("durationMs"));
+
+            String testRunYac = test.getString("yac");
+            String srfTestRunResultUrl = String.format("%s/workspace/%s/results/%s/details?TENANTID=%s\n",srfAddress, workspaceId, testRunYac, tenant);
+            testsLink.add(srfTestRunResultUrl);
+        }
+
+        StringBuilder buf = new StringBuilder();
+        buf.append("<html>" +
+                "<style> " +
+                "body: {width: 100%; height: 100%; margin: 0; padding: 0;}" +
+                ".main-container {width: 100%; max-width: 1366px; height:100%; margin: 0 auto; padding-top: 5px}" +
+                "table {width: 80%;}" +
+                "table, th, td { border: 1px solid #f3f3f3; border-collapse: collapse; padding: 6px}" +
+                "thead { backgroud-color: #eee; font-size: 20px; color: #3b3b3b;}" +
+                "tbody { text-align: center; }" +
+                "h1 {font-size: 34px}" +
+                "</style>" +
+                "<body>" +
+                    "<div class=main-container>" +
+                        "<h1>Storm Runner Functional Result</h1>" +
+                        "<table>" +
+                            "<thead>" +
+                                "<tr>" +
+                                    "<th>Test Name</th>" +
+                                    "<th>Status</th>" +
+                                    "<th>Duration</th>" +
+                                "</tr>" +
+                            "</thead>"
+
+                );
+                for (int i = 0; i < testsName.size(); i++) {
+                    buf.append("<tr><td>")
+                            .append(testsName.get(i))
+                            .append("</td><td>")
+                            .append(String.format("<a href=%s target=_blank>%s</a>", testsLink.get(i), testsStatus.get(i)))
+                            .append("</td><td>")
+                            .append(testsDuration.get(i) + " ms")
+                            .append("</td></tr>");
+                }
+
+        buf.append("</table>" +
+                "</div>" +
+                "</body>" +
+                "</html>");
+
+        String html = buf.toString();
+
         FileOutputStream fs = null;
         try {
-            String path = reportDir.getPath().concat(File.separator).concat("srf-test-result-urls.txt");
-            File srfTestResultUrls = new File(path);
-            Boolean fileCreated = srfTestResultUrls.createNewFile();
-            fs = new FileOutputStream(srfTestResultUrls);
-
-            if (!fileCreated)
-                throw new IOException(String.format("Failed to create file: %s", path));
-
-            for (Object testObject : tests) {
-                JSONObject test = (JSONObject) testObject;
-                String testRunYac = test.getString("yac");
-                String srfTestRunResultUrl = String.format("%s/workspace/%s/results/%s/details?TENANTID=%s\n",srfAddress, workspaceId, testRunYac, tenant);
-                fs.write(srfTestRunResultUrl.getBytes());
-            }
-
+            fs = new FileOutputStream(htmlReportFile);
+            fs.write(html.getBytes());
         } catch (IOException e) {
-            buildLogger.addErrorLogEntry(String.format("WriteUrlFileResults error: %s", e.getMessage()));
             e.printStackTrace();
             throw e;
         } finally {

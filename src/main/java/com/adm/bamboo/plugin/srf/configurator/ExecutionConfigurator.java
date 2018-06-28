@@ -31,7 +31,7 @@
  * THE SOFTWARE.
  */
 
-package com.adm.bamboo.plugin.srf;
+package com.adm.bamboo.plugin.srf.configurator;
 
 import com.adm.utils.srf.SrfConfigParameter;
 import com.atlassian.bamboo.collections.ActionParametersMap;
@@ -45,7 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class TaskConfigurator extends AbstractTaskConfigurator {
+public class ExecutionConfigurator extends AbstractTaskConfigurator {
 
     public static final String SRF_ADDRESS = "Srf address";
     public static final String TENANT_ID = "Tenant id";
