@@ -28,11 +28,11 @@
     </tr>
     <tr>
         <td>
-            [@ww.textfield label="Client Id" name="Client Id" required='true'/]
+            [@ww.textfield label="SRF Client ID" name="Client Id" required='true'/]
         </td>
     </tr>
         <td>
-            [@ww.password label="Client Secret" name="Client Secret" required='true' showPassword='true'/]
+            [@ww.password label="SRF Client Secret" name="Client Secret" required='true' showPassword='true'/]
         </td>
     </tr>
 
@@ -43,13 +43,13 @@
     </tr>
     <tr>
         <td>
-            [@ww.text name='Please provide Test ID or Tags!'/]
+            [@ww.text name='Enter a Test ID or Tags'/]
             [@ww.textfield label="SRF Test ID" name="Test Id" required='false'/]
         </td>
     </tr>
     <tr>
         <td>
-            [@ww.textfield label="Tags" name="Tags" required='false'/]
+            [@ww.textfield label="SRF Tags" name="Tags" required='false'/]
         </td>
     </tr>
 
@@ -60,7 +60,7 @@
     </tr>
     <tr>
         <td>
-            [@ww.checkbox label='Close Tunnel When Job Completed' name='shouldCloseTunnel' toggle='false'/]
+            [@ww.checkbox label='Close tunnel when job completed' name='shouldCloseTunnel' toggle='false'/]
         </td>
     </tr>
     <tr>

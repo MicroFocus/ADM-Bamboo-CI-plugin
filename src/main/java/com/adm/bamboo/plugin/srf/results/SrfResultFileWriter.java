@@ -94,7 +94,7 @@ public class SrfResultFileWriter {
                 "</style>" +
                 "<body>" +
                     "<div class=main-container>" +
-                        "<h1>Storm Runner Functional Result</h1>" +
+                        "<h1>StormRunner Functional Result</h1>" +
                         "<table>" +
                             "<thead>" +
                                 "<tr>" +
