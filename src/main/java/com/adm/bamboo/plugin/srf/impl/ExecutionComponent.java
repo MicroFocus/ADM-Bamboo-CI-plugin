@@ -387,14 +387,14 @@ public class ExecutionComponent implements Observer {
         int testRunErrors = 0;
         int testRunCancellations = 0;
         int successfulTestRun = 0;
-        String buildStatus = "errored";
+        String buildStatus = "error";
 
         for (int i = 0; i < testsCnt; i++) {
 
             JSONObject test = (JSONObject) (report.get(i));
             String status = test.getString("status");
             if (status == null)
-                status = "errored";
+                status = "error";
 
             switch (status) {
                 case "success":
@@ -412,7 +412,7 @@ public class ExecutionComponent implements Observer {
             if (successfulTestRun == testsCnt) {
                 buildStatus = "success";
             } else if (testRunErrors > 0) {
-                buildStatus = "errored";
+                buildStatus = "error";
             } else if (testRunCancellations > 0) {
                 buildStatus = "canceled";
             }

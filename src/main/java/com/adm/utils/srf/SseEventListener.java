@@ -131,7 +131,7 @@ public class SseEventListener extends Observable implements EventHandler {
         buildLogger.addBuildLogEntry(delim);
         obj.discard("runningCount");
         JSONObject o1 = JSONObject.fromObject(obj.get("testRun"));
-        String str = String.format("%1s %2s Status:%3s\r\n",
+        String str = String.format("%1s %2s Status: %3s\r\n",
                 o1.get("name"),
                 eventName,
                 o1.get("status"));
@@ -156,7 +156,7 @@ public class SseEventListener extends Observable implements EventHandler {
         obj.put("environments", o2.get("environments"));
         obj.put("scripts", o2.get("scripts"));
 
-        String str = String.format("%1s %2s Status:%3s\r\n",
+        String str = String.format("%1s %2s Status: %3s\r\n",
                 o1.get("name"),
                 eventName,
                 o1.get("status")
