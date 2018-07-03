@@ -132,7 +132,6 @@ public class CreateTunnelComponent {
 
         @Override
         public  void run() {
-            buildLogger.addBuildLogEntry("In tracker!");
             int exitValue =0;
             while(true) {
                 try {

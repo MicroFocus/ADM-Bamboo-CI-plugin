@@ -39,6 +39,7 @@ import com.adm.utils.srf.SrfConfigParameter;
 import com.adm.utils.srf.SrfException;
 import com.adm.utils.srf.SrfSseEventNotification;
 import com.adm.utils.srf.SseEventListener;
+import com.adm.utils.srf.SrfTrustManager;
 import com.atlassian.bamboo.build.logger.BuildLogger;
 import com.atlassian.bamboo.plan.artifact.ArtifactDefinitionContextImpl;
 import com.atlassian.bamboo.task.TaskContext;
@@ -51,8 +52,6 @@ import org.apache.commons.httpclient.util.HttpURLConnection;
 import net.sf.json.JSONObject;
 import org.apache.maven.wagon.authorization.AuthorizationException;
 import javax.net.ssl.*;
-import javax.net.ssl.X509ExtendedTrustManager;
-import java.security.cert.*;
 import java.io.*;
 import java.net.*;
 import java.security.KeyManagementException;
@@ -89,11 +88,10 @@ public class ExecutionComponent implements Observer {
     private transient HttpURLConnection con;
 
 
-    public ExecutionComponent(TaskContext taskContext, BuildLogger buildLogger, String srfAddress, String tenant, String clientId, String clientSecret, String testId, String proxy, String build, String release, String tags,
+    public ExecutionComponent(TaskContext taskContext, BuildLogger buildLogger, String srfAddress, String clientId, String clientSecret, String testId, String proxy, String build, String release, String tags,
                               List<SrfConfigParameter> parameters, String tunnel, boolean shouldCloseTunnel) {
 
         this.srfAddress =  srfAddress;
-        this.tenant = tenant;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.testId = testId;
@@ -106,6 +104,7 @@ public class ExecutionComponent implements Observer {
         this.shouldCloseTunnel = shouldCloseTunnel;
         this.buildLogger = buildLogger;
         this.taskContext = taskContext;
+        this.tenant = (clientId.split("_")[0]).substring(1);
     }
 
     public TaskResult startRun() throws IOException {
@@ -120,13 +119,6 @@ public class ExecutionComponent implements Observer {
         URL proxy = null;
         if((srfProxy!= null) && (srfProxy.length() != 0)) {
             proxy = new URL(srfProxy);
-            String proxyHost = proxy.getHost();
-            String proxyPort = String.format("%d",proxy.getPort());
-            Properties systemProperties = System.getProperties();
-            systemProperties.setProperty("https.proxyHost", proxyHost);
-            systemProperties.setProperty("http.proxyHost", proxyHost);
-            systemProperties.setProperty("https.proxyPort", proxyPort);
-            systemProperties.setProperty("http.proxyPort", proxyPort);
         }
 
         try{
@@ -313,12 +305,10 @@ public class ExecutionComponent implements Observer {
             String status = getBuildStatus(testRes);
 
             SrfResultFileWriter resultWriter = new SrfResultFileWriter(taskContext, buildLogger);
-            // resultWriter.writeUrlFileResults(testRes, tenant, srfAddress, workspaceId);
             resultWriter.writeHtmlReport(testRes, tenant, srfAddress, workspaceId);
 
             ArtifactDefinitionContextImpl artifact = new ArtifactDefinitionContextImpl("Build_" + String.valueOf(taskContext.getBuildContext().getBuildNumber()) + "_reports",false,null);
             artifact.setCopyPattern("**/*");
-//            String location  = taskContext.getRootDirectory().getPath()  + File.separator + "Report_" + taskContext.getBuildContext().getBuildNumber();
             String location  = "Report_" + taskContext.getBuildContext().getBuildNumber();
             artifact.setLocation(location);
             taskContext.getBuildContext().getArtifactContext().getDefinitionContexts().add(artifact);
@@ -330,9 +320,8 @@ public class ExecutionComponent implements Observer {
                 case "errored":
                     this.srfExecutionFuture.complete(TaskResultBuilder.newBuilder(taskContext).failedWithError().build());
                     return;
-                case "aborted":
-                case "cancelled":
-                case "failure":
+                case "canceled":
+                case "failed":
                     this.srfExecutionFuture.complete(TaskResultBuilder.newBuilder(taskContext).failed().build());
                     return;
                 default:
@@ -412,14 +401,13 @@ public class ExecutionComponent implements Observer {
                 case "completed":
                     successfulTestRun++;
                     break;
-                case "cancelled":
+                case "canceled":
                     testRunCancellations++;
                     break;
                 default:
                     testRunErrors++;
                     break;
             }
-
 
             if (successfulTestRun == testsCnt) {
                 buildStatus = "success";
@@ -432,39 +420,6 @@ public class ExecutionComponent implements Observer {
 
         buildLogger.addBuildLogEntry(String.format("Returning build status: %s", buildStatus));
         return buildStatus;
-    }
-
-    static class SrfTrustManager extends X509ExtendedTrustManager implements X509TrustManager {
-
-        @Override
-        public void checkClientTrusted(X509Certificate[] x509Certificates, String s, SSLEngine engine) throws CertificateException {
-            // Empty body
-        }
-        @Override
-        public void checkClientTrusted(X509Certificate[] x509Certificates, String s, Socket socket) throws CertificateException {
-            // Empty body
-        }
-        @Override
-        public void checkServerTrusted(X509Certificate[] x509Certificates, String s, SSLEngine engine) throws CertificateException {
-            // Empty body
-        }
-        @Override
-        public void checkServerTrusted(X509Certificate[] x509Certificates, String s, Socket socket) throws CertificateException {
-            // Empty body
-        }
-        @Override
-        public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-            // Empty body
-        }
-        @Override
-        public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-            // Empty body
-        }
-
-        @Override
-        public X509Certificate[] getAcceptedIssuers() {
-            return new X509Certificate[0];
-        }
     }
 }
 

@@ -37,6 +37,7 @@ import com.adm.utils.srf.SrfConfigParameter;
 import com.atlassian.bamboo.collections.ActionParametersMap;
 import com.atlassian.bamboo.task.AbstractTaskConfigurator;
 import com.atlassian.bamboo.task.TaskDefinition;
+import com.atlassian.bamboo.utils.error.ErrorCollection;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -47,10 +48,9 @@ import java.util.Map;
 
 public class ExecutionConfigurator extends AbstractTaskConfigurator {
 
-    public static final String SRF_ADDRESS = "Srf address";
-    public static final String TENANT_ID = "Tenant id";
-    public static final String SRF_CLIENT_ID = "Client id";
-    public static final String SRF_CLIENT_SECRET = "Client secret";
+    public static final String SRF_ADDRESS = "SRF Address";
+    public static final String SRF_CLIENT_ID = "Client Id";
+    public static final String SRF_CLIENT_SECRET = "Client Secret";
     public static final String TEST_ID = "Test Id";
     public static final String PROXY = "Proxy";
     public static final String BUILD = "Test build";
@@ -67,14 +67,11 @@ public class ExecutionConfigurator extends AbstractTaskConfigurator {
     {
         final Map<String, String> config = super.generateTaskConfigMap(params, previousTaskDefinition);
 
-        config.put(SRF_ADDRESS, "${bamboo.srfAddress}");
-        config.put(TENANT_ID, "${bamboo.tenantId}");
-        config.put(SRF_CLIENT_ID, "${bamboo.clientId}");
-        config.put(SRF_CLIENT_SECRET, "${bamboo.clientSecret}");
-        config.put(PROXY, "${bamboo.proxy}");
-
+        config.put(SRF_ADDRESS, params.getString(SRF_ADDRESS));
+        config.put(SRF_CLIENT_ID, params.getString(SRF_CLIENT_ID));
+        config.put(SRF_CLIENT_SECRET, params.getString(SRF_CLIENT_SECRET));
+        config.put(PROXY, params.getString(PROXY));
         config.put(TEST_ID, params.getString(TEST_ID));
-
         config.put(BUILD, params.getString(BUILD));
         config.put(RELEASE, params.getString(RELEASE));
         config.put(TAGS, params.getString(TAGS));
@@ -102,6 +99,10 @@ public class ExecutionConfigurator extends AbstractTaskConfigurator {
     @Override
     public void populateContextForEdit(final Map<String, Object> context, final TaskDefinition taskDefinition)
     {
+        context.put(SRF_ADDRESS, taskDefinition.getConfiguration().get(SRF_ADDRESS));
+        context.put(SRF_CLIENT_ID, taskDefinition.getConfiguration().get(SRF_CLIENT_ID));
+        context.put(SRF_CLIENT_SECRET, taskDefinition.getConfiguration().get(SRF_CLIENT_SECRET));
+        context.put(PROXY, taskDefinition.getConfiguration().get(PROXY));
         context.put(TEST_ID, taskDefinition.getConfiguration().get(TEST_ID));
         context.put(BUILD, taskDefinition.getConfiguration().get(BUILD));
         context.put(RELEASE, taskDefinition.getConfiguration().get(RELEASE));
@@ -131,5 +132,27 @@ public class ExecutionConfigurator extends AbstractTaskConfigurator {
         }
 
         return srfParams;
+    }
+
+    @NotNull
+    public void validate(@NotNull final ActionParametersMap params, @NotNull final ErrorCollection errorCollection) {
+        super.validate(params, errorCollection);
+
+        if (StringUtils.isEmpty(params.getString(SRF_ADDRESS))) {
+            errorCollection.addError(SRF_ADDRESS, "SRF Address must be set");
+        }
+
+        if (StringUtils.isEmpty(params.getString(SRF_CLIENT_ID))) {
+            errorCollection.addError(SRF_CLIENT_ID, "Client Id must be set");
+        }
+
+        if (StringUtils.isEmpty(params.getString(SRF_CLIENT_SECRET))) {
+            errorCollection.addError(SRF_CLIENT_SECRET, "Client Secret must be set");
+        }
+
+        if (StringUtils.isEmpty(params.getString(TEST_ID)) && StringUtils.isEmpty(params.getString(TAGS))) {
+            errorCollection.addError(TAGS, "SRF Test ID or Tags must be set");
+            errorCollection.addError(TEST_ID, "SRF Test ID or Tags must be set");
+        }
     }
 }

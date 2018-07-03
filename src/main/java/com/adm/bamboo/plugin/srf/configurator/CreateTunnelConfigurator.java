@@ -36,12 +36,16 @@ package com.adm.bamboo.plugin.srf.configurator;
 import com.atlassian.bamboo.collections.ActionParametersMap;
 import com.atlassian.bamboo.task.AbstractTaskConfigurator;
 import com.atlassian.bamboo.task.TaskDefinition;
+import com.atlassian.bamboo.utils.error.ErrorCollection;
+import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Map;
 
 public class CreateTunnelConfigurator extends AbstractTaskConfigurator {
 
-    public static final String TUNNEL_CLIENT_PATH = "Tunnel client path";
-    public static final String CONFIG_FILE_PATH = "Config file path";
+    public static final String TUNNEL_CLIENT_PATH = "SRF Tunnel Client Path";
+    public static final String CONFIG_FILE_PATH = "SRF Tunnel Config File";
 
     // Convert the params from the ui into a config map to be stored in the database for being used by the task.
     public Map<String, String> generateTaskConfigMap(final ActionParametersMap params, final TaskDefinition previousTaskDefinition)
@@ -67,5 +71,18 @@ public class CreateTunnelConfigurator extends AbstractTaskConfigurator {
     public void populateContextForCreate(final Map<String, Object> context)
     {
         super.populateContextForCreate(context);
+    }
+
+    @NotNull
+    public void validate(@NotNull final ActionParametersMap params, @NotNull final ErrorCollection errorCollection) {
+        super.validate(params, errorCollection);
+
+        if (StringUtils.isEmpty(params.getString(TUNNEL_CLIENT_PATH))) {
+            errorCollection.addError(TUNNEL_CLIENT_PATH, "SRF Tunnel Client Path must be set");
+        }
+
+        if (StringUtils.isEmpty(params.getString(CONFIG_FILE_PATH))) {
+            errorCollection.addError(CONFIG_FILE_PATH, "SRF Tunnel Config File must be set");
+        }
     }
 }

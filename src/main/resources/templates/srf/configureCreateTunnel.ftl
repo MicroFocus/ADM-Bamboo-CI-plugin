@@ -14,19 +14,12 @@
 <table  class="t1" cellpadding="0" cellspacing="0" border="0">
     <tr>
         <td>
-            <span>SRF Tunnel Client Path</span>
-        </td>
-        <td>
-        [@ww.textfield name="Tunnel client path" required='false'/]
-
+        [@ww.textfield labelKey="SRF Tunnel Client Path" name="SRF Tunnel Client Path" required='true'/]
         </td>
     </tr>
     <tr>
         <td>
-            <span>SRF Tunnel Config File</span>
-        </td>
-        <td>
-        [@ww.textfield name="Config file path" required='false'/]
+        [@ww.textfield labelKey="SRF Tunnel Config File" name="SRF Tunnel Config File" required='true'/]
         </td>
     </tr>
 </table>

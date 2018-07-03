@@ -56,7 +56,6 @@ public class ExecutionTask implements TaskType
         this.buildLogger = taskContext.getBuildLogger();
 
         final String SRF_ADDRESS = configurationMap.get(ExecutionConfigurator.SRF_ADDRESS);
-        final String TENANT_ID = configurationMap.get(ExecutionConfigurator.TENANT_ID);
         final String CLIENT_ID = configurationMap.get(ExecutionConfigurator.SRF_CLIENT_ID);
         final String CLIENT_SECRET = configurationMap.get(ExecutionConfigurator.SRF_CLIENT_SECRET);
         final String TEST_ID = configurationMap.get(ExecutionConfigurator.TEST_ID);
@@ -73,35 +72,18 @@ public class ExecutionTask implements TaskType
             buildLogger.addBuildLogEntry("== Executing SRF Test ==");
             buildLogger.addBuildLogEntry("========================");
 
-            if (isValid(SRF_ADDRESS) || isValid(TENANT_ID) || isValid(CLIENT_ID) || isValid(CLIENT_SECRET))
-            {
-                return TaskResultBuilder.newBuilder(taskContext).failedWithError().build();
-            }
+            if (TEST_ID != null && !TEST_ID.isEmpty())
+                buildLogger.addBuildLogEntry(String.format("Test ID: %s", TEST_ID ));
+            else
+                buildLogger.addBuildLogEntry(String.format("Test Tags: %s", TAGS ));
 
-            buildLogger.addBuildLogEntry(String.format("Test ID: %s & Tags: %s", TEST_ID , TAGS));
-
-            if (TEST_ID == null || TAGS == null)
-            {
-                buildLogger.addErrorLogEntry("Please provide Test ID or Tags" );
-                return TaskResultBuilder.newBuilder(taskContext).failedWithError().build();
-            }
-
-            ExecutionComponent executionComponents = new ExecutionComponent(taskContext,buildLogger,SRF_ADDRESS,TENANT_ID,CLIENT_ID,CLIENT_SECRET,TEST_ID,PROXY,BUILD,RELEASE,TAGS,PARAMETERS,TUNNEL,Boolean.parseBoolean(SHOULD_CLOSE_TUNNEL));
+            ExecutionComponent executionComponents = new ExecutionComponent(taskContext,buildLogger,SRF_ADDRESS,CLIENT_ID,CLIENT_SECRET,TEST_ID,PROXY,BUILD,RELEASE,TAGS,PARAMETERS,TUNNEL,Boolean.parseBoolean(SHOULD_CLOSE_TUNNEL));
             return executionComponents.startRun();
         } catch (IOException e) {
             e.printStackTrace();
             buildLogger.addErrorLogEntry("Error while executing load test: " + e.toString());
             return TaskResultBuilder.newBuilder(taskContext).failed().build();
         }
-    }
-
-    private boolean isValid(String param) {
-        if (param.startsWith("${bamboo.")) {
-            buildLogger.addErrorLogEntry(String.format("Please provide: %s", param.substring(9, param.length()-1)) );
-            return true;
-        }
-
-        return false;
     }
 }
 

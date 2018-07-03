@@ -44,14 +44,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SrfResultFileWriter {
-    private TaskContext taskContext;
-    private BuildLogger buildLogger;
     private File reportDir;
 
     public SrfResultFileWriter(TaskContext taskContext, BuildLogger buildLogger){
-        this.buildLogger = buildLogger;
-        this.taskContext = taskContext;
-
         reportDir = new File(taskContext.getRootDirectory().getPath()  + File.separator + "Report_" + taskContext.getBuildContext().getBuildNumber());
         reportDir.mkdirs();
     }
@@ -70,6 +65,7 @@ public class SrfResultFileWriter {
         List<String> testsStatus = new ArrayList<>();
         List<String> testsDuration = new ArrayList<>();
         List<String> testsLink = new ArrayList<>();
+        List<String> testsEnvs = new ArrayList<>();
 
         for (int i = 0; i < testsCount; i++) {
 
@@ -78,6 +74,7 @@ public class SrfResultFileWriter {
             testsName.add(test.getString("name"));
             testsStatus.add(test.getString("status").toUpperCase());
             testsDuration.add(test.getString("durationMs"));
+            testsEnvs.add(getTestEnvironments(test));
 
             String testRunYac = test.getString("yac");
             String srfTestRunResultUrl = String.format("%s/workspace/%s/results/%s/details?TENANTID=%s\n",srfAddress, workspaceId, testRunYac, tenant);
@@ -91,8 +88,8 @@ public class SrfResultFileWriter {
                 ".main-container {width: 100%; max-width: 1366px; height:100%; margin: 0 auto; padding-top: 5px}" +
                 "table {width: 80%;}" +
                 "table, th, td { border: 1px solid #f3f3f3; border-collapse: collapse; padding: 6px}" +
-                "thead { backgroud-color: #eee; font-size: 20px; color: #3b3b3b;}" +
-                "tbody { text-align: center; }" +
+                "thead { background-color: #eee; font-size: 20px; color: #3b3b3b; text-align: left;}" +
+                "tbody { text-align: left; }" +
                 "h1 {font-size: 34px}" +
                 "</style>" +
                 "<body>" +
@@ -102,8 +99,9 @@ public class SrfResultFileWriter {
                             "<thead>" +
                                 "<tr>" +
                                     "<th>Test Name</th>" +
-                                    "<th>Status</th>" +
                                     "<th>Duration</th>" +
+                                    "<th>Environment</th>" +
+                                    "<th>Status</th>" +
                                 "</tr>" +
                             "</thead>"
 
@@ -112,9 +110,11 @@ public class SrfResultFileWriter {
                     buf.append("<tr><td>")
                             .append(testsName.get(i))
                             .append("</td><td>")
-                            .append(String.format("<a href=%s target=_blank>%s</a>", testsLink.get(i), testsStatus.get(i)))
-                            .append("</td><td>")
                             .append(testsDuration.get(i) + " ms")
+                            .append("</td><td>")
+                            .append(testsEnvs.get(i))
+                            .append("</td><td>")
+                            .append(String.format("<a href=%s target=_blank>%s</a>", testsLink.get(i), testsStatus.get(i)))
                             .append("</td></tr>");
                 }
 
@@ -135,6 +135,21 @@ public class SrfResultFileWriter {
         } finally {
             cleanUp(fs);
         }
+    }
+
+    private String getTestEnvironments(JSONObject test) {
+        String envs = "";
+        JSONArray scriptRunsJson = test.getJSONArray("scriptRuns");
+
+        for (int i = 0; i< scriptRunsJson.size(); i++){
+            JSONObject scriptRun = (JSONObject) (scriptRunsJson.get(i));
+            JSONObject environment = scriptRun.getJSONObject("environment");
+            JSONObject os = environment.getJSONObject("os");
+            JSONObject browser = environment.getJSONObject("browser");
+            envs += String.format("%1s %1s %1s %1s <br>", os.getString("name"), os.getString("version"), browser.getString("name"), browser.getString("version"));
+        }
+
+        return envs;
     }
 
     private static void cleanUp(FileOutputStream fs) {

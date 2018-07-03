@@ -23,52 +23,54 @@
 <table  class="t1" cellpadding="0" cellspacing="0" border="0">
     <tr>
         <td>
-            <span>SRF Test ID</span>
-        </td>
-        <td>
-        [@ww.text name='Please provide Test ID or Tags!'/]
-        [@ww.textfield name="Test Id" required='false'/]
+            [@ww.textfield label="SRF Address" name="SRF Address" required='true'/]
         </td>
     </tr>
     <tr>
         <td>
-            <span>Tags</span>
+            [@ww.textfield label="Client Id" name="Client Id" required='true'/]
         </td>
+    </tr>
         <td>
-        [@ww.textfield name="Tags" required='false'/]
+            [@ww.password label="Client Secret" name="Client Secret" required='true' showPassword='true'/]
+        </td>
+    </tr>
+
+	 <tr>
+        <td>
+            [@ww.textfield label="Proxy" name="Proxy" required='false'/]
+        </td>
+    </tr>
+    <tr>
+        <td>
+            [@ww.text name='Please provide Test ID or Tags!'/]
+            [@ww.textfield label="SRF Test ID" name="Test Id" required='false'/]
+        </td>
+    </tr>
+    <tr>
+        <td>
+            [@ww.textfield label="Tags" name="Tags" required='false'/]
         </td>
     </tr>
 
     <tr>
         <td>
-            <span>SRF Tunnel Name</span>
-        </td>
-        <td>
-        [@ww.textfield name="Tunnel" required='false'/]
+            [@ww.textfield label="SRF Tunnel Name" name="Tunnel" required='false'/]
         </td>
     </tr>
     <tr>
         <td>
-
-        </td>
-        <td>
-        [@ww.checkbox label='Close Tunnel When Job Completed' name='shouldCloseTunnel' toggle='false'/]
+            [@ww.checkbox label='Close Tunnel When Job Completed' name='shouldCloseTunnel' toggle='false'/]
         </td>
     </tr>
     <tr>
        <td>
-           <span>Build</span>
-       </td>
-       <td>
-       [@ww.textfield name="Test build" required='false'/]
+       [@ww.textfield label="Build" name="Test build" required='false'/]
        </td>
     </tr>
     <tr>
         <td>
-            <span>Release</span>
-        </td>
-        <td>
-        [@ww.textfield name="Test release" required='false'/]
+        [@ww.textfield label="Release" name="Test release" required='false'/]
         </td>
     </tr>
     <tr>

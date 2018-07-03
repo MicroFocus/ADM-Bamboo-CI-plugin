@@ -38,7 +38,6 @@ import com.adm.utils.srf.SrfException;
 import com.atlassian.bamboo.build.logger.BuildLogger;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.apache.http.HttpHost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.maven.wagon.authorization.AuthorizationException;
@@ -49,26 +48,34 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.MessageFormat;
-
+import java.util.Properties;
 
 public class SrfClient {
 
     CloseableHttpClient httpclient;
     private String srfServerAddress;
     private SSLSocketFactory sslSocketFactory;
-    private HttpHost proxyHost;
     private String accessToken;
     private String workspaceId;
     private String tenantId;
     private BuildLogger buildLogger;
 
-    public SrfClient(BuildLogger buildLogger, String srfServerAddress, String tenantId, SSLSocketFactory sslSocketFactory, URL proxyUrl) {
+    public SrfClient(BuildLogger buildLogger, String srfServerAddress, String tenantId, SSLSocketFactory sslSocketFactory, URL proxy) {
         this.srfServerAddress = srfServerAddress;
         this.tenantId = tenantId;
         httpclient = HttpClients.createDefault();
         this.sslSocketFactory = sslSocketFactory;
-        this.proxyHost = proxyUrl != null ? new HttpHost(proxyUrl.getHost(), proxyUrl.getPort()) : null;
         this.buildLogger = buildLogger;
+
+        if (proxy != null) {
+            String proxyHost = proxy.getHost();
+            String proxyPort = String.format("%d",proxy.getPort());
+            Properties systemProperties = System.getProperties();
+            systemProperties.setProperty("https.proxyHost", proxyHost);
+            systemProperties.setProperty("http.proxyHost", proxyHost);
+            systemProperties.setProperty("https.proxyPort", proxyPort);
+            systemProperties.setProperty("http.proxyPort", proxyPort);
+        }
     }
 
     public void login(String clientId, String clientSecret) throws AuthorizationException, IOException, SrfException {
@@ -243,5 +250,4 @@ public class SrfClient {
         }
 
     }
-
 }

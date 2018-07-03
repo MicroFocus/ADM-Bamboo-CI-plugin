@@ -62,14 +62,6 @@ public class CreateTunnelTask implements TaskType
             buildLogger.addBuildLogEntry("== Create SRF Tunnel ==");
             buildLogger.addBuildLogEntry("=======================");
 
-            // buildLogger.addBuildLogEntry(String.format("Test ID: %s & Tags: %s", TEST_ID , TAGS));
-
-            if (TUNNEL_CLIENT_PATH == null || CONFIG_FILE_PATH == null)
-            {
-                buildLogger.addBuildLogEntry("Please provide Tunnel client path and config file path" );
-                return TaskResultBuilder.newBuilder(taskContext).failedWithError().build();
-            }
-
             CreateTunnelComponent createTunnelComponent = new CreateTunnelComponent(taskContext, buildLogger, TUNNEL_CLIENT_PATH, CONFIG_FILE_PATH);
             return createTunnelComponent.startRun();
         } catch (IOException e) {

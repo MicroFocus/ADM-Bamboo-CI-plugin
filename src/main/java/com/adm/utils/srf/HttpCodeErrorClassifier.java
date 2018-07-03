@@ -44,7 +44,7 @@ public class HttpCodeErrorClassifier {
         buildLogger.addBuildLogEntry(String.format("Received http status code %d with response message %s", statusCode, responseMessage));
 
         switch (statusCode) {
-            case 401: throw new AuthenticationException("Login required, possibly wrong credentials supplied");
+            case 401: throw new AuthenticationException("Login failed, possibly wrong credentials supplied");
             case 403: throw new AuthorizationException("Operation is forbidden");
             default:
                 JSONObject srfError = JSONObject.fromObject(responseMessage);
