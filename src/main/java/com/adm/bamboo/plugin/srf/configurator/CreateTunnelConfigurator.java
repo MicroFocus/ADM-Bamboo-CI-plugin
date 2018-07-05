@@ -42,6 +42,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
+// controls what objects and values are available when rendering the User Interface, how input is persisted and validated
 public class CreateTunnelConfigurator extends AbstractTaskConfigurator {
 
     public static final String TUNNEL_CLIENT_PATH = "SRF Tunnel Client Path";
@@ -73,6 +74,7 @@ public class CreateTunnelConfigurator extends AbstractTaskConfigurator {
         super.populateContextForCreate(context);
     }
 
+    // Validate the params submitted from the UI for this task definition
     @NotNull
     public void validate(@NotNull final ActionParametersMap params, @NotNull final ErrorCollection errorCollection) {
         super.validate(params, errorCollection);

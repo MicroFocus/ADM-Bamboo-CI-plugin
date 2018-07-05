@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+// controls what objects and values are available when rendering the User Interface, how input is persisted and validated
 public class ExecutionConfigurator extends AbstractTaskConfigurator {
 
     public static final String SRF_ADDRESS = "SRF Address";
@@ -134,6 +135,7 @@ public class ExecutionConfigurator extends AbstractTaskConfigurator {
         return srfParams;
     }
 
+    // Validate the params submitted from the UI for this task definition
     @NotNull
     public void validate(@NotNull final ActionParametersMap params, @NotNull final ErrorCollection errorCollection) {
         super.validate(params, errorCollection);
