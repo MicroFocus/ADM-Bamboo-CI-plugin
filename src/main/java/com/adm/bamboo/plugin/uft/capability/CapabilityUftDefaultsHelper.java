@@ -44,8 +44,8 @@ import java.io.File;
 
 public class CapabilityUftDefaultsHelper implements CapabilityDefaultsHelper {
 
-    public static final String CAPABILITY_HP_ROOT = CapabilityDefaultsHelper.CAPABILITY_BUILDER_PREFIX + ".HP";
-    public static final String CAPABILITY_UFT = CAPABILITY_HP_ROOT + ".HP Unified Functional Testing";
+    public static final String CAPABILITY_HP_ROOT = CapabilityDefaultsHelper.CAPABILITY_BUILDER_PREFIX + ".Micro Focus";
+    public static final String CAPABILITY_UFT = CAPABILITY_HP_ROOT + ".Unified Functional Testing";
     private static final String UFT_REGISTRY_KEY = "SOFTWARE\\Mercury Interactive\\QuickTest Professional\\CurrentVersion";
     private static final String UFT_REGISTRY_VALUE = "QuickTest Professional";
     private static final String UFT_EXE_NAME = "bin\\UFT.exe";
