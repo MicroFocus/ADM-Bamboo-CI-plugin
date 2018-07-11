@@ -62,18 +62,23 @@
   </scm>
 	<developers>
 		<developer>
-			<name>Yafim Kazak</name>
-			<email>kazak@hpe.com</email>
+			<name>Daniel Gront</name>
+			<email>daniel.gront@microfocus.com</email>
 			<organization>Micro Focus</organization>
 		</developer>
 		<developer>
 			<name>Amin Habash</name>
-			<email>amin.habash@hpe.com</email>
+			<email>amin.habash@microfocus.com</email>
 			<organization>Micro Focus</organization>
 		</developer>
 		<developer>
 			<name>Anda Sorina Laakso</name>
 			<email>anda-sorina.laakso@microfocus.com</email>
+			<organization>Micro Focus</organization>
+		</developer>
+		<developer>
+			<name>Yafim Kazak (retired)</name>
+			<email>kazak@microfocus.com</email>
 			<organization>Micro Focus</organization>
 		</developer>
 	</developers>
