@@ -66,7 +66,7 @@ public class ExecutionComponent implements Observer {
     private JSONArray jobIds;
     private String srfAddress;
     private String tenant;
-    private String testId;
+    private String testIds;
     private String clientId;
     private String clientSecret;
     private String proxy;
@@ -88,13 +88,13 @@ public class ExecutionComponent implements Observer {
     private transient HttpURLConnection con;
 
 
-    public ExecutionComponent(TaskContext taskContext, BuildLogger buildLogger, String srfAddress, String clientId, String clientSecret, String testId, String proxy, String build, String release, String tags,
+    public ExecutionComponent(TaskContext taskContext, BuildLogger buildLogger, String srfAddress, String clientId, String clientSecret, String testIds, String proxy, String build, String release, String tags,
                               List<SrfConfigParameter> parameters, String tunnel, boolean shouldCloseTunnel) {
 
         this.srfAddress =  srfAddress;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
-        this.testId = testId;
+        this.testIds = testIds;
         this.proxy = proxy;
         this.build = build;
         this.release = release;
@@ -198,7 +198,7 @@ public class ExecutionComponent implements Observer {
         JSONObject requestBody = createExecutionReqBody();
         JSONArray jobs = srfClient.executeTestsSet(requestBody);
         if (jobs == null || jobs.size() == 0)
-            throw new SrfException(String.format("No tests found for %s", this.testId != null && !this.testId.equals("") ? "test id: " + this.testId : "test tags: " + this.tags));
+            throw new SrfException(String.format("No tests found for %s", this.testIds != null && !this.testIds.equals("") ? "test id: " + this.testIds : "test tags: " + this.tags));
         return getJobIds(jobs);
     }
 
@@ -206,13 +206,14 @@ public class ExecutionComponent implements Observer {
         JSONObject data = new JSONObject();
         JSONObject testParams = new JSONObject();
 
-        if (testId != null && testId.length() > 0) {
-            data.put("testYac", testId);
+        if (testIds != null && !testIds.isEmpty()) {
+            String[] normalizedTestIds = normalizeParam(this.testIds);
+            data.put("testYac", normalizedTestIds);
         } else if (tags != null && !tags.isEmpty()) {
-            String[] tagNames = normalizeTags();
+            String[] tagNames = normalizeParam(tags);
             data.put("tags", tagNames);
         } else
-            throw new SrfException("Both test id and test tags are empty");
+            throw new SrfException("Both test ids and test tags are empty");
 
         if (tunnel != null && tunnel.length() > 0) {
             data.put("tunnelName", tunnel);
@@ -253,14 +254,14 @@ public class ExecutionComponent implements Observer {
         return data;
     }
 
-    private String[] normalizeTags() {
-        String[] tagNames = tags.split(",");
-        for (int i = 0; i < tagNames.length; i++) {
-            // Normalize tag
-            String tag = tagNames[i];
-            tagNames[i] = tag.trim();
+    private String[] normalizeParam(String paramToNormalize) {
+        String[] params = paramToNormalize.split(",");
+        for (int i = 0; i < params.length; i++) {
+            // Normalize param
+            String param = params[i];
+            params[i] = param.trim();
         }
-        return tagNames;
+        return params;
     }
 
     private JSONArray getJobIds(JSONArray jobs) {

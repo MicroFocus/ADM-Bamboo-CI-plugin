@@ -52,7 +52,7 @@ public class ExecutionConfigurator extends AbstractTaskConfigurator {
     public static final String SRF_ADDRESS = "SRF Address";
     public static final String SRF_CLIENT_ID = "Client Id";
     public static final String SRF_CLIENT_SECRET = "Client Secret";
-    public static final String TEST_ID = "Test Id";
+    public static final String TEST_IDS = "Test Ids";
     public static final String PROXY = "Proxy";
     public static final String BUILD = "Test build";
     public static final String RELEASE = "Test release";
@@ -72,7 +72,7 @@ public class ExecutionConfigurator extends AbstractTaskConfigurator {
         config.put(SRF_CLIENT_ID, params.getString(SRF_CLIENT_ID));
         config.put(SRF_CLIENT_SECRET, params.getString(SRF_CLIENT_SECRET));
         config.put(PROXY, params.getString(PROXY));
-        config.put(TEST_ID, params.getString(TEST_ID));
+        config.put(TEST_IDS, params.getString(TEST_IDS));
         config.put(BUILD, params.getString(BUILD));
         config.put(RELEASE, params.getString(RELEASE));
         config.put(TAGS, params.getString(TAGS));
@@ -104,7 +104,7 @@ public class ExecutionConfigurator extends AbstractTaskConfigurator {
         context.put(SRF_CLIENT_ID, taskDefinition.getConfiguration().get(SRF_CLIENT_ID));
         context.put(SRF_CLIENT_SECRET, taskDefinition.getConfiguration().get(SRF_CLIENT_SECRET));
         context.put(PROXY, taskDefinition.getConfiguration().get(PROXY));
-        context.put(TEST_ID, taskDefinition.getConfiguration().get(TEST_ID));
+        context.put(TEST_IDS, taskDefinition.getConfiguration().get(TEST_IDS));
         context.put(BUILD, taskDefinition.getConfiguration().get(BUILD));
         context.put(RELEASE, taskDefinition.getConfiguration().get(RELEASE));
         context.put(TAGS, taskDefinition.getConfiguration().get(TAGS));
@@ -152,9 +152,9 @@ public class ExecutionConfigurator extends AbstractTaskConfigurator {
             errorCollection.addError(SRF_CLIENT_SECRET, "Client Secret must be set");
         }
 
-        if (StringUtils.isEmpty(params.getString(TEST_ID)) && StringUtils.isEmpty(params.getString(TAGS))) {
+        if (StringUtils.isEmpty(params.getString(TEST_IDS)) && StringUtils.isEmpty(params.getString(TAGS))) {
             errorCollection.addError(TAGS, "SRF Test ID or Tags must be set");
-            errorCollection.addError(TEST_ID, "SRF Test ID or Tags must be set");
+            errorCollection.addError(TEST_IDS, "SRF Test ID or Tags must be set");
         }
     }
 }

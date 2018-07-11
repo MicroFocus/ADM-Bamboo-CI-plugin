@@ -45,20 +45,18 @@ import java.util.List;
 
 public class ExecutionTask implements TaskType
 {
-    private TaskContext taskContext;
     private BuildLogger buildLogger;
 
     @Override
     public TaskResult execute(final TaskContext taskContext)
     {
-        this.taskContext = taskContext;
         final ConfigurationMap configurationMap = taskContext.getConfigurationMap();
         this.buildLogger = taskContext.getBuildLogger();
 
         final String SRF_ADDRESS = configurationMap.get(ExecutionConfigurator.SRF_ADDRESS);
         final String CLIENT_ID = configurationMap.get(ExecutionConfigurator.SRF_CLIENT_ID);
         final String CLIENT_SECRET = configurationMap.get(ExecutionConfigurator.SRF_CLIENT_SECRET);
-        final String TEST_ID = configurationMap.get(ExecutionConfigurator.TEST_ID);
+        final String TEST_IDS = configurationMap.get(ExecutionConfigurator.TEST_IDS);
         final String TUNNEL = configurationMap.get(ExecutionConfigurator.TUNNEL);
         final String SHOULD_CLOSE_TUNNEL = configurationMap.get(ExecutionConfigurator.SHOULD_CLOSE_TUNNEL);
         final String PROXY = configurationMap.get(ExecutionConfigurator.PROXY);
@@ -72,12 +70,12 @@ public class ExecutionTask implements TaskType
             buildLogger.addBuildLogEntry("== Executing SRF Test ==");
             buildLogger.addBuildLogEntry("========================");
 
-            if (TEST_ID != null && !TEST_ID.isEmpty())
-                buildLogger.addBuildLogEntry(String.format("Test ID: %s", TEST_ID ));
+            if (TEST_IDS != null && !TEST_IDS.isEmpty())
+                buildLogger.addBuildLogEntry(String.format("Test IDs: %s", TEST_IDS ));
             else
                 buildLogger.addBuildLogEntry(String.format("Test Tags: %s", TAGS ));
 
-            ExecutionComponent executionComponents = new ExecutionComponent(taskContext,buildLogger,SRF_ADDRESS,CLIENT_ID,CLIENT_SECRET,TEST_ID,PROXY,BUILD,RELEASE,TAGS,PARAMETERS,TUNNEL,Boolean.parseBoolean(SHOULD_CLOSE_TUNNEL));
+            ExecutionComponent executionComponents = new ExecutionComponent(taskContext,buildLogger,SRF_ADDRESS,CLIENT_ID,CLIENT_SECRET,TEST_IDS,PROXY,BUILD,RELEASE,TAGS,PARAMETERS,TUNNEL,Boolean.parseBoolean(SHOULD_CLOSE_TUNNEL));
             return executionComponents.startRun();
         } catch (IOException e) {
             e.printStackTrace();
