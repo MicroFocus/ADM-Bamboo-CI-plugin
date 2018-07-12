@@ -87,7 +87,7 @@
 </div>
 
  <div class="control">
-  [@ww.text name="Parameters"/]
+  [@ww.text name="SRF Test Parameters"/]
 </div>
 
  <div class="buttons-container">
@@ -124,6 +124,7 @@
 
         var strHtml5 = "<INPUT TYPE=\"Button\" CLASS=\"aui-button aui-button-primary\" onClick=\"javascript: delRow(this)\" VALUE=\"[@ww.text name='Delete'/]\">";
         td1.innerHTML = strHtml5;
+        td1.style.width = "100px";
 
         var divClone = divTemplate.cloneNode(true);
         td2.appendChild(divClone);
