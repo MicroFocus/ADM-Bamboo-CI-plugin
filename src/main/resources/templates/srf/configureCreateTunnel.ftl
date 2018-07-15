@@ -3,7 +3,7 @@
 </div>
 <div class="helpIcon" onclick="javascript: toggle_visibility('clientPathToolTip');">?</div>
 <div id ="clientPathToolTip" class="toolTip">
- [@ww.text name='Path to a SRF tunnel client executable.'/]
+ [@ww.text name='Path to an SRF tunnel client executable.'/]
 </div>
 
 <div class="control">

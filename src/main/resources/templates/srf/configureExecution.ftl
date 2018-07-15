@@ -1,8 +1,8 @@
 [#macro newSrfParam paramName='' paramValue=''
     tagNameName="srfParamName" tagNameValue="srfParamValue"]
     <div id = "ParamTemplate">
-        [@ww.textfield labelKey="Parameter name" name=tagNameName value=paramName/]
-        [@ww.textfield labelKey="Parameter value" name=tagNameValue value=paramValue/]
+        [@ww.textfield labelKey="Parameter name" name=tagNameName value=paramName descriptionKey="SRF parameter name"/]
+        [@ww.textfield labelKey="Parameter value" name=tagNameValue value=paramValue descriptionKey="Parameter value to use in this test run"/]
     </div>
 [/#macro]
 
@@ -47,11 +47,11 @@
 </div>
 <div class="helpIcon" onclick="javascript: toggle_visibility('testIdToolTip');">?</div>
 <div id ="testIdToolTip" class="toolTip">
-  [@ww.text name='One or more comma-separated SRF test ID.'/]
+  [@ww.text name='One or more SRF test IDs, separated by commas.'/]
 </div>
 
 <div class="control">
-  [@ww.textfield label="SRF Tags" name="Tags" required='false'/]
+  [@ww.textfield label="SRF Test Tags" name="Tags" required='false'/]
 </div>
 <div class="helpIcon" onclick="javascript: toggle_visibility('tagsToolTip');">?</div>
 <div id ="tagsToolTip" class="toolTip">
