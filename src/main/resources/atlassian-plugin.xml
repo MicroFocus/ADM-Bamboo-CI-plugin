@@ -205,7 +205,26 @@
         <resource type="freemarker" name="edit" location="templates/sv/svChangeMode.ftl"/>
         <resource type="download" name="icon" location="/images/task/sv/svChangeMode_icon.png"/>
     </taskType>
+
+    <taskType key="ExecutionTask" name="StormRunner Functional Execution Task" class="com.adm.bamboo.plugin.srf.task.ExecutionTask">
+        <description>Execute StormRunner Functional Test</description>
+        <configuration class="com.adm.bamboo.plugin.srf.configurator.ExecutionConfigurator"/>
+        <resource type="freemarker" name="edit" location="templates/srf/configureExecution.ftl"/>
+        <resource type="download" name="icon" location="/images/task/srf/srf_icon.png"/>
+    </taskType>
+
+    <taskType key="CreateTunnelTask" name="StormRunner Functional Create Tunnel Task" class="com.adm.bamboo.plugin.srf.task.CreateTunnelTask">
+        <description>StormRunner Functional - Create Tunnel</description>
+        <configuration class="com.adm.bamboo.plugin.srf.configurator.CreateTunnelConfigurator"/>
+        <resource type="freemarker" name="edit" location="templates/srf/configureCreateTunnel.ftl"/>
+        <resource type="download" name="icon" location="/images/task/srf/srf_icon.png"/>
+    </taskType>
+
     <!--
+
+
+
+
     <taskType key="PerformanceCenterTestTask" name="Performance Center Test Task" class="com.hpe.bamboo.plugin.performancecenter.task.PerformanceCenterTestTask">
         <description>Run Performance Center tests</description>
         <category name="test"/>
