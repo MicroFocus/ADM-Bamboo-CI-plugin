@@ -1,5 +1,5 @@
 /*
- * Copyright (c) EntIT Software LLC, a Micro Focus company
+ *
  *
  * Certain versions of software and/or documents ("Material") accessible here may contain branding from
  * Hewlett-Packard Company (now HP Inc.) and Hewlett Packard Enterprise Company.  As of September 1, 2017,
