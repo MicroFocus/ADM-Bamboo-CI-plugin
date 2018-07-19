@@ -136,7 +136,7 @@ namespace HpToolsLauncher
                                                  ? tagUnifiedLicenseType.qtUnifiedFunctionalTesting
                                                  : tagUnifiedLicenseType.qtNonUnified);
 
-            if (!HandleInputParameters(testPath, ref errorReason, testinf.GetParameterDictionaryForQTP()))
+            if (!HandleInputParameters(testPath, ref errorReason, testinf.GetParameterDictionaryForQTP(), testinf.DataTablePath))
             {
                 runDesc.TestState = TestState.Error;
                 runDesc.ErrorDesc = errorReason;
@@ -491,7 +491,7 @@ namespace HpToolsLauncher
             return legal;
         }
 
-        private bool HandleInputParameters(string fileName, ref string errorReason, Dictionary<string, object> inputParams)
+        private bool HandleInputParameters(string fileName, ref string errorReason, Dictionary<string, object> inputParams, string dataTablePath)
         {
             try
             {
@@ -532,6 +532,13 @@ namespace HpToolsLauncher
                             }
                         }
                     }
+                }
+
+                // specify data table path
+                if (dataTablePath != null)
+                {
+                    _qtpApplication.Test.Settings.Resources.DataTablePath = dataTablePath;
+                    ConsoleWriter.WriteLine("Using external data table: " + dataTablePath);
                 }
             }
             catch (Exception e)
