@@ -40,6 +40,8 @@ import com.atlassian.bamboo.build.logger.BuildLogger;
 import com.atlassian.bamboo.task.TaskContext;
 import com.atlassian.bamboo.task.TaskResult;
 import com.atlassian.bamboo.task.TaskResultBuilder;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.*;
 import java.time.LocalDateTime;
@@ -193,5 +195,30 @@ public final class FilesHandler {
                 .append(taskName).append("\\");
 
         return fileName.toString();
+    }
+
+    public static boolean isMtbxContent(String testContent) {
+        return StringUtils.isNotEmpty(testContent) && testContent.toLowerCase().contains("<mtbx>");
+    }
+
+    /**
+     * Save mtbx content to file in working directory
+     *
+     * @param taskContext
+     * @param mtbxContent
+     * @return return name of created file
+     */
+    public static String saveMtbxContent(TaskContext taskContext, String mtbxContent) {
+
+        String testsFileName = "tests_build_" + taskContext.getBuildContext().getResultKey().getResultNumber() + ".mtbx";
+
+
+        try {
+            File testFile = new File(taskContext.getWorkingDirectory(), testsFileName);
+            FileUtils.writeStringToFile(testFile, mtbxContent);
+            return testFile.getPath();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save mtbx file : " + e.getMessage());
+        }
     }
 }
