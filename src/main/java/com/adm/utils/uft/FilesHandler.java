@@ -201,13 +201,13 @@ public final class FilesHandler {
 
         String testsFileName = "tests_build_" + taskContext.getBuildContext().getResultKey().getResultNumber() + ".mtbx";
 
-
         try {
             File testFile = new File(taskContext.getWorkingDirectory(), testsFileName);
             FileUtils.writeStringToFile(testFile, mtbxContent);
             return testFile.getPath();
         } catch (IOException e) {
-            throw new RuntimeException("Failed to save mtbx file : " + e.getMessage());
+            TaskUtils.logErrorMessage("Failed to save mtbx file : " + e.getMessage(), taskContext.getBuildLogger(), taskContext);
+            return "";
         }
     }
 }
