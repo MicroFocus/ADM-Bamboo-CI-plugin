@@ -24,6 +24,7 @@ package com.adm.bamboo.plugin.uft.task;
 
 import com.adm.bamboo.plugin.uft.api.AbstractLauncherTask;
 import com.adm.bamboo.plugin.uft.helpers.LauncherParamsBuilder;
+import com.adm.utils.uft.FilesHandler;
 import com.adm.utils.uft.integration.HttpConnectionException;
 import com.adm.utils.uft.integration.JobOperation;
 import com.adm.utils.uft.enums.RunType;
@@ -91,7 +92,15 @@ public class RunFromFileSystemUftTask implements AbstractLauncherTask {
         }
 
         String tests = map.get(UFTConstants.TESTS_PATH.getValue());
-        String[] testNames = (tests == null) ? new String[0] : tests.split(splitMarker);
+        String[] testNames;
+        if (FilesHandler.isMtbxContent(tests)) {
+            //replace mtbx content by path to file
+            String filePath = FilesHandler.saveMtbxContent(taskContext, tests);
+            testNames = new String[]{filePath};
+        } else {
+            testNames = (tests == null) ? new String[0] : tests.split(splitMarker);
+        }
+
         for (int i = 0; i < testNames.length; i++) {
             builder.setTest(i + 1, testNames[i]);
         }
