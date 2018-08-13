@@ -67,6 +67,11 @@ public class SrfClient {
         this.sslSocketFactory = sslSocketFactory;
         this.buildLogger = buildLogger;
 
+        // Normalize SRF server URL string if needed
+        if (this.srfServerAddress.substring(this.srfServerAddress.length() - 1).equals("/")) {
+            this.srfServerAddress = this.srfServerAddress.substring(0, this.srfServerAddress.length() - 1);
+        }
+
         if (proxy != null) {
             String proxyHost = proxy.getHost();
             String proxyPort = String.format("%d",proxy.getPort());
