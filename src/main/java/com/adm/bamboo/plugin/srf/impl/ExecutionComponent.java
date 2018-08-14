@@ -174,6 +174,11 @@ public class ExecutionComponent implements Observer {
     }
 
     private void handleSrfAddress(String address) throws MalformedURLException {
+        // Normalize SRF server URL string if needed
+        if (address.substring(address.length() - 1).equals("/")) {
+            address = address.substring(0, address.length() - 1);
+        }
+
         boolean https = true;
         if (!address.startsWith("https://")) {
             if (!address.startsWith("http://")) {
