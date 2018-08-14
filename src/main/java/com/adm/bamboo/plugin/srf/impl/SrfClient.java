@@ -56,6 +56,8 @@ public class SrfClient {
         this.sslSocketFactory = sslSocketFactory;
         this.buildLogger = buildLogger;
 
+
+
         if (proxy != null) {
             String proxyHost = proxy.getHost();
             String proxyPort = String.format("%d",proxy.getPort());

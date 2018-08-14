@@ -163,6 +163,11 @@ public class ExecutionComponent implements Observer {
     }
 
     private void handleSrfAddress(String address) throws MalformedURLException {
+        // Normalize SRF server URL string if needed
+        if (address.substring(address.length() - 1).equals("/")) {
+            address = address.substring(0, address.length() - 1);
+        }
+
         boolean https = true;
         if (!address.startsWith("https://")) {
             if (!address.startsWith("http://")) {
@@ -258,17 +263,41 @@ public class ExecutionComponent implements Observer {
         int cnt = jobs.size();
         for (int k = 0; k < cnt; k++ ){
             JSONObject job = jobs.getJSONObject(k);
-            JSONObject jobExecutionError = job.getJSONObject("error");
-            if (jobExecutionError.size() != 0) {
-                JSONObject errorParameters = jobExecutionError.getJSONObject("parameters");
-                jobIds.add(errorParameters.getString("jobId"));
-                runningCount.add(errorParameters.getString("testRunId"));
-            } else {
-                jobIds.add(job.getString("jobId"));
-                runningCount.add(job.getString("testRunId"));
+            try {
+                if (job.has("error")) {
+                    String errorClassName = job.get("error").getClass().getSimpleName();
+                    switch (errorClassName) {
+                        case "JSONObject":
+                            JSONObject jobExecutionError = job.getJSONObject("error");
+                            handleJobError(jobIds, jobExecutionError);
+                            break;
+                        case "JSONArray":
+                            JSONArray jobExecutionErrors = job.getJSONArray("error");
+                            for (Object jobError : jobExecutionErrors) {
+                                JSONObject error = (JSONObject) jobError;
+                                handleJobError(jobIds, error);
+                            }
+                            break;
+                    }
+                } else {
+                    jobIds.add(job.getString("jobId"));
+                    runningCount.add(job.getString("testRunId"));
+                }
+            } catch (Exception e) {
+                e.getLocalizedMessage();
             }
         }
         return jobIds;
+    }
+
+    private void handleJobError(JSONArray jobIds, JSONObject jobExecutionError) {
+        JSONObject errorParameters = jobExecutionError.getJSONObject("parameters");
+        String testRunId = errorParameters.getString("testRunId");
+        // Make sure we won't add the same run in case job has multiple errors
+        if (!runningCount.contains(testRunId)) {
+            jobIds.add(errorParameters.getString("jobId"));
+            runningCount.add(testRunId);
+        }
     }
 
     @Override
