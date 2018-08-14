@@ -11,6 +11,7 @@ The products currently supported are:
 - Performance Center
 - UFT
 - SV
+- StormRunner Functional
 
 ### Development:
 1. Read https://developer.atlassian.com/server/bamboo/
