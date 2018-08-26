@@ -11,6 +11,7 @@ The products currently supported are:
 - Performance Center
 - UFT
 - SV
+- SRF
 
 ### Development:
 1. Read https://developer.atlassian.com/server/bamboo/
