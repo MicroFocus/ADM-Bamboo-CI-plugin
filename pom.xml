@@ -173,10 +173,10 @@
             <version>4.12</version>
         </dependency>
         <dependency>
-            <artifactId>mockito-core</artifactId>
             <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>2.23.0</version>
             <scope>test</scope>
-            <version>RELEASE</version>
         </dependency>
         <dependency>
             <artifactId>atlassian-plugins-osgi-testrunner</artifactId>
