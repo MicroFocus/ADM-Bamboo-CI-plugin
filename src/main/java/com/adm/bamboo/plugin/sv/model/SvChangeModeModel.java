@@ -22,7 +22,7 @@
 
 package com.adm.bamboo.plugin.sv.model;
 
-import com.microfocus.sv.jsvconfigurator.core.impl.jaxb.ServiceRuntimeConfiguration;
+import com.microfocus.sv.svconfigurator.core.impl.jaxb.ServiceRuntimeConfiguration;
 
 public class SvChangeModeModel {
     private SvServerSettingsModel serverSettingsModel;

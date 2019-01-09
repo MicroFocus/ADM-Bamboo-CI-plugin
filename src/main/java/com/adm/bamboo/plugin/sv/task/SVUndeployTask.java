@@ -31,11 +31,11 @@ import com.adm.utils.sv.SVExecutorUtil;
 import com.atlassian.bamboo.build.logger.BuildLogger;
 import com.atlassian.bamboo.configuration.ConfigurationMap;
 import com.atlassian.bamboo.task.*;
-import com.microfocus.sv.jsvconfigurator.core.impl.processor.Credentials;
-import com.microfocus.sv.jsvconfigurator.processor.IUndeployProcessor;
-import com.microfocus.sv.jsvconfigurator.processor.UndeployProcessor;
-import com.microfocus.sv.jsvconfigurator.processor.UndeployProcessorInput;
-import com.microfocus.sv.jsvconfigurator.serverclient.ICommandExecutor;
+import com.microfocus.sv.svconfigurator.core.impl.processor.Credentials;
+import com.microfocus.sv.svconfigurator.processor.IUndeployProcessor;
+import com.microfocus.sv.svconfigurator.processor.UndeployProcessor;
+import com.microfocus.sv.svconfigurator.processor.UndeployProcessorInput;
+import com.microfocus.sv.svconfigurator.serverclient.ICommandExecutor;
 import org.apache.commons.lang.BooleanUtils;
 
 import java.net.URL;
