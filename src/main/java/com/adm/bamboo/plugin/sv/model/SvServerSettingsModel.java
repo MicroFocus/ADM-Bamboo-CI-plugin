@@ -25,7 +25,7 @@ package com.adm.bamboo.plugin.sv.model;
 import org.apache.commons.lang.StringUtils;
 import java.net.MalformedURLException;
 import java.net.URL;
-import com.hp.sv.jsvconfigurator.core.impl.processor.Credentials;
+import com.microfocus.sv.jsvconfigurator.core.impl.processor.Credentials;
 
 public class SvServerSettingsModel {
     private final String url;
