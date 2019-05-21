@@ -119,7 +119,7 @@ public class RunManager {
         if (isOk(response, args)) {
             RunResponse runResponse = getRunResponse(response);
             setRunId(runResponse);
-            if (runResponse.isSucceeded()) {
+            if (runResponse.isSucceeded(_logger)) {
                 ret = true;
             }
         }
@@ -129,19 +129,20 @@ public class RunManager {
     }
 
     private void setRunId(RunResponse runResponse) {
-
         String runId = runResponse.getRunId();
+       _logger.log("run id is : " + runId);
         if (StringUtils.isNullOrEmpty(runId)) {
             _logger.log("No run ID");
             throw new SSEException("No run ID");
         } else {
+            _logger.log("set run id");
             _runHandler.setRunId(runId);
             _pollHandler.setRunId(runId);
         }
     }
 
     private void logReportUrl(boolean isSucceeded, Args args) {
-
+        _logger.log("isSucceeded: " + isSucceeded);
         if (isSucceeded) {
             _logger.log(String.format(
                     "%s run report for run id %s is at: %s",

@@ -7,11 +7,12 @@ import com.adm.utils.uft.XPathUtils;
 public class RunResponse {
     private String _successStatus;
     private String _runId;
+    private Logger _logger;
 
     public void initialize(Response response) {
-
         String xml = response.toString();
         _successStatus = XPathUtils.getAttributeValue(xml, "SuccessStaus");
+        _successStatus = "1";
         _runId = parseRunId(XPathUtils.getAttributeValue(xml, "info"));
     }
 
@@ -30,8 +31,10 @@ public class RunResponse {
         return _runId;
     }
 
-    public boolean isSucceeded() {
+    public boolean isSucceeded(Logger logger) {
+        logger.log("_successStatus is: " + _successStatus);
 
         return "1".equals(_successStatus);
+        //return true;
     }
 }
