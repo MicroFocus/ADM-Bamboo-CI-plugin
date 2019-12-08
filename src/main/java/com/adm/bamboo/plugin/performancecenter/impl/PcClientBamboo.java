@@ -149,7 +149,7 @@ public class PcClientBamboo {
                         testInstanceID = restProxy.createTestInstance(testID,testSetID);
                        buildLogger.addBuildLogEntry(String.format("Test Instance with ID : %s has been created successfully.", testInstanceID));
                     }else{
-                        String msg = "No TestSetID available in project, please create a testset from Performance Center UI";
+                        String msg = "No TestSetID available in project, please create a TestSet from LoadRunner Enterprise UI";
                        buildLogger.addBuildLogEntry(msg);
                         throw new PcException(msg);
                     }
@@ -170,7 +170,7 @@ public class PcClientBamboo {
                 model.setTrendReportId(String.valueOf(pcTest.getTrendReportId()));
             else{
                 String msg = "No trend report ID is associated with the test.\n" +
-                        "Please turn Automatic Trending on for the test through Performance Center UI.\n" +
+                        "Please turn Automatic Trending on for the test through LoadRunner Enterprise UI.\n" +
                         "Alternatively you can check 'Add run to trend report with ID' on configuration dialog.";
                 throw new PcException(msg);
             }
@@ -225,7 +225,7 @@ public class PcClientBamboo {
                 counter++;
                 Thread.sleep(1000);
                 if(counter > 60 ){
-                   buildLogger.addBuildLogEntry(String.format("RunID: %s  - Stopped from Performance Center side with state = %s", runId, currentState.value()));
+                   buildLogger.addBuildLogEntry(String.format("RunID: %s  - Stopped from LoadRunner Enterprise side with state = %s", runId, currentState.value()));
                     break;
                 }
             }else{

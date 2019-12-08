@@ -156,8 +156,8 @@
                 location="images/task/uft/upload_app.png"/>
     </taskType>
 
-    <taskType key="TaskExecution" name="Performance Center Task" class="com.adm.bamboo.plugin.performancecenter.TaskExecution">
-        <description>Execute Performance Center load test</description>
+    <taskType key="TaskExecution" name="LoadRunner Enterprise Task" class="com.adm.bamboo.plugin.performancecenter.TaskExecution">
+        <description>Execute LoadRunner Enterprise load test</description>
         <configuration class="com.adm.bamboo.plugin.performancecenter.TaskConfigurator"/>
         <resource type="download" name="icon" location="/images/pc/pc_64x64.png"/>
         <resource type="freemarker" name="edit" location="templates/performancecenter/configurePC.ftl"/>
@@ -214,8 +214,8 @@
 
 
 
-    <taskType key="PerformanceCenterTestTask" name="Performance Center Test Task" class="com.hpe.bamboo.plugin.performancecenter.task.PerformanceCenterTestTask">
-        <description>Run Performance Center tests</description>
+    <taskType key="PerformanceCenterTestTask" name="LoadRunner Enterprise Test Task" class="com.hpe.bamboo.plugin.performancecenter.task.PerformanceCenterTestTask">
+        <description>Run LoadRunner Enterprise tests</description>
         <category name="test"/>
         <configuration class="com.hpe.bamboo.plugin.performancecenter.ui.PerformanceCenterTaskConfigurator" />
         <resource type="freemarker" name="edit" location="templates/performancecenter/configurePCTest.ftl"/>

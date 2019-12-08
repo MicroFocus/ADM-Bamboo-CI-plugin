@@ -7,8 +7,8 @@
 This plugin contains the Micro Focus Software products capabilities.
 
 The products currently supported are:
-- Load Runner
-- Performance Center
+- LoadRunner
+- LoadRunner Enterprise
 - UFT
 - SV
 - SRF
