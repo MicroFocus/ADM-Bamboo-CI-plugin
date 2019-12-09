@@ -26,6 +26,8 @@ import com.adm.bamboo.plugin.uft.results.TestResultHelper;
 import com.atlassian.bamboo.build.Job;
 import com.atlassian.bamboo.plan.artifact.ArtifactDefinitionImpl;
 import com.atlassian.bamboo.plan.artifact.ArtifactDefinitionManager;
+import com.atlassian.bamboo.util.RequestCacheThreadLocal;
+import com.atlassian.bamboo.utils.XsrfUtils;
 import com.atlassian.bamboo.utils.i18n.I18nBean;
 import org.jetbrains.annotations.NotNull;
 
@@ -42,7 +44,20 @@ public class HpTasksArtifactRegistrator {
         if (artifactDefinitionManager.findArtifactDefinition(job, name) == null) {
             ArtifactDefinitionImpl artifactDefinition = new ArtifactDefinitionImpl(name, "", ARTIFACT_COPY_PATTERN);
             artifactDefinition.setProducerJob(job);
+
+            //workaround, if request is not mutative - saveArtifactDefinition will fail on XSRF exception
+            boolean isMutativeKeyWasChanged = false;
+            String HTTP_REQUEST_IS_MUTATIVE_KEY = "bamboo.http.request.isMutative";
+            if (XsrfUtils.areMutativeGetsForbiddenByConfig() && !XsrfUtils.noRequestOrRequestCanMutateState() && !RequestCacheThreadLocal.canRequestMutateState()) {
+                isMutativeKeyWasChanged = true;
+                RequestCacheThreadLocal.getRequestCache().put(HTTP_REQUEST_IS_MUTATIVE_KEY, true);
+            }
             artifactDefinitionManager.saveArtifactDefinition(artifactDefinition);
+
+            //revert workaround
+            if (isMutativeKeyWasChanged) {
+                RequestCacheThreadLocal.getRequestCache().put(HTTP_REQUEST_IS_MUTATIVE_KEY, false);
+            }
         }
     }
 }
