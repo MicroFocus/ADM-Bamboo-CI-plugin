@@ -61,6 +61,7 @@ public class XmlTestResultsReportCollector implements TestReportCollector {
                     testResult.setState(TestState.FAILED);
                     failingTestResults.add(testResult);
                 }
+                testResult.setSystemOut("Test result: " + testcase.getStatus());
             }
         }
 
