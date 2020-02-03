@@ -48,10 +48,11 @@ public class DirectoryZipHelper {
         } else {
             byte[] buf = new byte[1024];
             int len;
-            FileInputStream in = new FileInputStream(srcFile);
-            zip.putNextEntry(new ZipEntry(path + "/" + folder.getName()));
-            while ((len = in.read(buf)) > 0) {
-                zip.write(buf, 0, len);
+            try (FileInputStream in = new FileInputStream(srcFile)){
+                zip.putNextEntry(new ZipEntry(path + "/" + folder.getName()));
+                while ((len = in.read(buf)) > 0) {
+                    zip.write(buf, 0, len);
+                }
             }
         }
     }
