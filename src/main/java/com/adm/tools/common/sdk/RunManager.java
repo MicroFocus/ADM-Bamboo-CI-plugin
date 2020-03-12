@@ -118,7 +118,7 @@ public class RunManager {
         if (isOk(response, args)) {
             RunResponse runResponse = getRunResponse(response);
             setRunId(runResponse);
-            if (runResponse.isSucceeded(_logger )) {
+            if (runResponse.isSucceeded()) {
                 ret = true;
             }
         }

@@ -7,6 +7,7 @@ import com.adm.tools.common.XPathUtils;
 public class RunResponse {
     private String _successStatus;
     private String _runId;
+
     public void initialize(Response response) {
 
         String xml = response.toString();
@@ -29,9 +30,7 @@ public class RunResponse {
         return _runId;
     }
 
-    public boolean isSucceeded(Logger logger) {
-        logger.log("success status: " + _successStatus);
-       /// return "1".equals(_successStatus);
-        return true;
+    public boolean isSucceeded() {
+       return "1".equals(_successStatus);
     }
 }
