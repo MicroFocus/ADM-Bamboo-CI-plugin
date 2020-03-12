@@ -1,7 +1,7 @@
 [#--ftl attributes={"javascript":"/js/uft/runAppMC.js", "css":"../../css/uft/uploadAppMC.css"} /--]
 <!-- TODO - separate css and js from template -->
 
-[#macro newMCParam paramValue='' tagNameName="mcAppPath"]
+[#macro newMCParam paramValue='' tagNameName="mcApplicationPathInput"]
 <div id="ParamTemplate">
     [@ww.textfield labelKey="Application Path" name=tagNameName value=paramValue/]
 </div>
