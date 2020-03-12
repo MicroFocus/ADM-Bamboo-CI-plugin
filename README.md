@@ -7,10 +7,15 @@
 This plugin contains the Micro Focus Software products capabilities.
 
 The products currently supported are:
-- Load Runner
-- Performance Center
+- LoadRunner
+- LoadRunner Enterprise
+- UFT
+- SV
+- SRF
 
 ### Development:
+1. Read https://developer.atlassian.com/server/bamboo/
+1. Read (and install) https://developer.atlassian.com/server/framework/atlassian-sdk/set-up-the-atlassian-plugin-sdk-and-build-a-project/
 1. Fork the repository.
 2. Clone locally.
 3. Checkout the branch - "latest" : `git checkout -t origin/latest`
@@ -18,9 +23,9 @@ The products currently supported are:
 5. Make changes, commit, and push them to the remote.
 6. Now - Pull request it to my original repo. Simply click on "Pull request" and make sure it is placed vs. the 'latest' branch.
 7. Make sure each file has JavaDocs and licensing.
-8. A build wll start automitcally - make sure it's green, you can click on the link 'Details' for more information in case it fails.
-9. To get the artifact - please click on "Artifacts" under the approiate build.
+8. A build wll start automatically - make sure it's green, you can click on the link 'Details' for more information in case it fails.
+9. To get the artifact - please click on "Artifacts" under the appropriate build.
 
-*** Now, if the build is green, the code is fine and matches the structure - It will be merged.
+**** Now, if the build is green and the code is fine and matches the structure - It will be merged.
 
 

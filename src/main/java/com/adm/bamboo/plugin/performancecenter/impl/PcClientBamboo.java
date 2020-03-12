@@ -1,3 +1,23 @@
+/*
+ * Certain versions of software and/or documents ("Material") accessible here may contain branding from
+ * Hewlett-Packard Company (now HP Inc.) and Hewlett Packard Enterprise Company.  As of September 1, 2017,
+ * the Material is now offered by Micro Focus, a separately owned and operated company.  Any reference to the HP
+ * and Hewlett Packard Enterprise/HPE marks is historical in nature, and the HP and Hewlett Packard Enterprise/HPE
+ * marks are the property of their respective owners.
+ * __________________________________________________________________
+ * MIT License
+ *
+ * (c) Copyright 2012-2019 Micro Focus or one of its affiliates.
+ *
+ * The only warranties for products and services of Micro Focus and its affiliates
+ * and licensors ("Micro Focus") are set forth in the express warranty statements
+ * accompanying such products and services. Nothing herein should be construed as
+ * constituting an additional warranty. Micro Focus shall not be liable for technical
+ * or editorial errors or omissions contained herein.
+ * The information contained herein is subject to change without notice.
+ * ___________________________________________________________________
+ */
+
 package com.adm.bamboo.plugin.performancecenter.impl;
 
 import com.atlassian.bamboo.build.logger.BuildLogger;
@@ -19,6 +39,8 @@ import java.util.zip.ZipInputStream;
 
 //import org.hibernate.cfg.beanvalidation.IntegrationException;
 
+import com.microfocus.adm.performancecenter.plugins.common.rest.*;
+import com.microfocus.adm.performancecenter.plugins.common.pcEntities.*;
 
 /**
  * Created by bemh on 8/6/2017.
@@ -125,7 +147,7 @@ public class PcClientBamboo {
                         testInstanceID = restProxy.createTestInstance(testID,testSetID);
                        buildLogger.addBuildLogEntry(String.format("Test Instance with ID : %s has been created successfully.", testInstanceID));
                     }else{
-                        String msg = "No TestSetID available in project, please create a testset from Performance Center UI";
+                        String msg = "No TestSetID available in project, please create a TestSet from LoadRunner Enterprise UI";
                        buildLogger.addBuildLogEntry(msg);
                         throw new PcException(msg);
                     }
@@ -146,7 +168,7 @@ public class PcClientBamboo {
                 model.setTrendReportId(String.valueOf(pcTest.getTrendReportId()));
             else{
                 String msg = "No trend report ID is associated with the test.\n" +
-                        "Please turn Automatic Trending on for the test through Performance Center UI.\n" +
+                        "Please turn Automatic Trending on for the test through LoadRunner Enterprise UI.\n" +
                         "Alternatively you can check 'Add run to trend report with ID' on configuration dialog.";
                 throw new PcException(msg);
             }
@@ -201,7 +223,7 @@ public class PcClientBamboo {
                 counter++;
                 Thread.sleep(1000);
                 if(counter > 60 ){
-                   buildLogger.addBuildLogEntry(String.format("RunID: %s  - Stopped from Performance Center side with state = %s", runId, currentState.value()));
+                   buildLogger.addBuildLogEntry(String.format("RunID: %s  - Stopped from LoadRunner Enterprise side with state = %s", runId, currentState.value()));
                     break;
                 }
             }else{

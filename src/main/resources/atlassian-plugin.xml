@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-  ~     Copyright 2017 Hewlett-Packard Development Company, L.P.
-  ~     Licensed under the Apache License, Version 2.0 (the "License");
-  ~     you may not use this file except in compliance with the License.
-  ~     You may obtain a copy of the License at
+  ~ Certain versions of software and/or documents ("Material") accessible here may contain branding from
+  ~ Hewlett-Packard Company (now HP Inc.) and Hewlett Packard Enterprise Company.  As of September 1, 2017,
+  ~ the Material is now offered by Micro Focus, a separately owned and operated company.  Any reference to the HP
+  ~ and Hewlett Packard Enterprise/HPE marks is historical in nature, and the HP and Hewlett Packard Enterprise/HPE
+  ~ marks are the property of their respective owners.
+  ~ __________________________________________________________________
+  ~ MIT License
   ~
-  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~ (c) Copyright 2012-2019 Micro Focus or one of its affiliates.
   ~
-  ~     Unless required by applicable law or agreed to in writing, software
-  ~     distributed under the License is distributed on an "AS IS" BASIS,
-  ~     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~     See the License for the specific language governing permissions and
-  ~     limitations under the License.
-  ~
+  ~ The only warranties for products and services of Micro Focus and its affiliates
+  ~ and licensors ("Micro Focus") are set forth in the express warranty statements
+  ~ accompanying such products and services. Nothing herein should be construed as
+  ~ constituting an additional warranty. Micro Focus shall not be liable for technical
+  ~ or editorial errors or omissions contained herein.
+  ~ The information contained herein is subject to change without notice.
+  ~ ___________________________________________________________________
   -->
 
 <atlassian-plugin key="${atlassian.plugin.key}" name="${project.name}" plugins-version="2">
@@ -38,6 +42,7 @@
     <resource type="i18n" name="english properties uft" location="/properties/uft/bamboo_uft_en"/>
     <resource type="i18n" name="english errors" location="/properties/uft/errors_en"/>
     <resource type="i18n" name="english messages" location="/properties/uft/messages_en"/>
+    <resource type="i18n" name="english properties sv" location="/properties/sv/bamboo_plugin_sv"/>
 
     <!--add our web resources -->
     <web-resource key="bamboo-plugin-resources" name="bamboo-plugin Web Resources">
@@ -149,17 +154,42 @@
                 location="images/task/uft/upload_app.png"/>
     </taskType>
 
-    <taskType key="TaskExecution" name="Performance Center Task" class="com.adm.bamboo.plugin.performancecenter.TaskExecution">
-        <description>Execute Performance Center load test</description>
+    <taskType key="TaskExecution" name="LoadRunner Enterprise Task" class="com.adm.bamboo.plugin.performancecenter.TaskExecution">
+        <description>Execute LoadRunner Enterprise load test</description>
         <configuration class="com.adm.bamboo.plugin.performancecenter.TaskConfigurator"/>
         <resource type="download" name="icon" location="/images/pc/pc_64x64.png"/>
         <resource type="freemarker" name="edit" location="templates/performancecenter/configurePC.ftl"/>
     </taskType>
-    <!--
-    <taskType key="PerformanceCenterTestTask" name="Performance Center Test Task" class="com.hpe.bamboo.plugin.performancecenter.task.PerformanceCenterTestTask">
-        <description>Run Performance Center tests</description>
-        <category name="test"/>
-        <configuration class="com.hpe.bamboo.plugin.performancecenter.ui.PerformanceCenterTaskConfigurator" />
-        <resource type="freemarker" name="edit" location="templates/performancecenter/configurePCTest.ftl"/>
-    </taskType> -->
+
+    <taskType key="SVUndeployTask" name="SV: Undeploy Virtual Service Task"
+              class="com.adm.bamboo.plugin.sv.task.SVUndeployTask">
+        <description>Undeploy Virtual Service</description>
+        <configuration class="com.adm.bamboo.plugin.sv.ui.SVUndeployTaskConfigurator" />
+        <resource type="freemarker" name="edit" location="templates/sv/svUndeploy.ftl"/>
+        <resource type="download" name="icon" location="/images/task/sv/svUndeploy_icon.png"/>
+    </taskType>
+
+    <taskType key="SVDeployTask" name="SV: Deploy Virtual Service Task"
+              class="com.adm.bamboo.plugin.sv.task.SVDeployTask">
+        <description>Deploy Virtual Service</description>
+        <configuration class="com.adm.bamboo.plugin.sv.ui.SVDeployTaskConfigurator" />
+        <resource type="freemarker" name="edit" location="templates/sv/svDeploy.ftl"/>
+        <resource type="download" name="icon" location="/images/task/sv/svDeploy_icon.png"/>
+    </taskType>
+
+    <taskType key="SVExportTask" name="SV: Export Virtual Service Task"
+              class="com.adm.bamboo.plugin.sv.task.SVExportTask">
+        <description>Export Virtual Service</description>
+        <configuration class="com.adm.bamboo.plugin.sv.ui.SVExportTaskConfigurator" />
+        <resource type="freemarker" name="edit" location="templates/sv/svExport.ftl"/>
+        <resource type="download" name="icon" location="/images/task/sv/svExport_icon.png"/>
+    </taskType>
+
+    <taskType key="SVChangeModeTask" name="SV: Change Mode of Virtual Service Task"
+              class="com.adm.bamboo.plugin.sv.task.SVChangeModeTask">
+        <description>Change Mode of Virtual Service</description>
+        <configuration class="com.adm.bamboo.plugin.sv.ui.SVChangeModeTaskConfigurator" />
+        <resource type="freemarker" name="edit" location="templates/sv/svChangeMode.ftl"/>
+        <resource type="download" name="icon" location="/images/task/sv/svChangeMode_icon.png"/>
+    </taskType>
 </atlassian-plugin>
