@@ -21,10 +21,7 @@
 package com.adm.bamboo.plugin.uft.task;
 
 import com.adm.bamboo.plugin.uft.api.AbstractLauncherTask;
-import com.adm.bamboo.plugin.uft.helpers.LauncherParamsBuilder;
 import com.adm.utils.uft.SSEException;
-import com.adm.utils.uft.enums.AlmRunMode;
-import com.adm.utils.uft.enums.RunType;
 import com.adm.utils.uft.model.CdaDetails;
 import com.adm.utils.uft.rest.RestClient;
 import com.adm.utils.uft.result.ResultSerializer;
@@ -44,11 +41,8 @@ import com.atlassian.bamboo.utils.i18n.I18nBean;
 import com.atlassian.bamboo.utils.i18n.I18nBeanFactory;
 
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Properties;
 
 import static com.adm.bamboo.plugin.uft.results.TestResultHelper.collateTestResults;
@@ -65,22 +59,16 @@ public class RunFromAlmLabManagementUftTask implements AbstractLauncherTask {
         i18nBean = i18nBeanFactory.getI18nBean();
     }
 
+    @NotNull
     @Override
-    public Properties getTaskProperties(TaskContext taskContext) throws Exception {
+    public TaskResult execute(@NotNull final TaskContext taskContext) throws TaskException {
+        final BuildLogger buildLogger = taskContext.getBuildLogger();
+
         final ConfigurationMap map = taskContext.getConfigurationMap();
-        LauncherParamsBuilder builder = new LauncherParamsBuilder();
 
-        builder.setRunType(RunType.ALM_LAB_MANAGEMENT);
+        final String almServerPath = map.get(UFTConstants.ALM_SERVER.getValue());
 
-        builder.setAlmServerUrl(map.get(UFTConstants.ALM_SERVER.getValue()));
-        builder.setAlmUserName(map.get(UFTConstants.USER_NAME.getValue()));
-        builder.setAlmPassword(map.get(UFTConstants.PASSWORD.getValue()));
-        builder.setAlmDomain(map.get(UFTConstants.DOMAIN.getValue()));
-        builder.setAlmProject(map.get(UFTConstants.PROJECT.getValue()));
-        builder.setAlmRunMode(AlmRunMode.RUN_LOCAL);
-        builder.setTestSetId(1, map.get(UFTConstants.TEST_ID_PARAM.getValue()));
-        builder.setAlmTimeout(map.get(UFTConstants.DURATION_PARAM.getValue()));
-        builder.setAlmRunHost("");
+        RunManager runManager = new RunManager();
 
         CdaDetails cdaDetails = null;
         boolean useCda = BooleanUtils.toBoolean(map.get(UFTConstants.USE_SDA_PARAM.getValue()));
@@ -90,25 +78,56 @@ public class RunFromAlmLabManagementUftTask implements AbstractLauncherTask {
                     map.get(UFTConstants.DEPROVISIONING_ACTION_PARAM.getValue()));
         }
 
-        if(cdaDetails != null){
-            builder.setDeploymentAction(cdaDetails.getDeploymentAction());
-            builder.setDeployedEvironmentName(cdaDetails.getDeployedEnvironmentName());
-            builder.setDeprovisioningAction(cdaDetails.getDeprovisioningAction());
+        buildLogger.addBuildLogEntry("cdaDetails" + cdaDetails);
+
+        Args args = new Args(
+                almServerPath,
+                map.get(UFTConstants.DOMAIN_PARAM.getValue()),
+                map.get(UFTConstants.PROJECT_NAME_PARAM.getValue()),
+                map.get(UFTConstants.USER_NAME.getValue()),
+                map.get(UFTConstants.PASSWORD.getValue()),
+                map.get(UFTConstants.RUN_TYPE_PARAM.getValue()),
+                map.get(UFTConstants.TEST_ID_PARAM.getValue()),
+                map.get(UFTConstants.DURATION_PARAM.getValue()),
+                map.get(UFTConstants.DESCRIPTION_PARAM.getValue()),
+                null,
+                map.get(UFTConstants.ENVIRONMENT_ID_PARAM.getValue()),
+                cdaDetails);
+
+        RestClient restClient =
+                new RestClient(
+                        args.getUrl(),
+                        args.getDomain(),
+                        args.getProject(),
+                        args.getUsername());
+
+        try {
+            Logger logger = new Logger() {
+
+                public void log(String message) {
+                    buildLogger.addBuildLogEntry(message);
+                }
+            };
+            buildLogger.addBuildLogEntry("args: " + args);
+
+            //run task
+            Testsuites result = runManager.execute(restClient, args, logger);
+
+            buildLogger.addBuildLogEntry("test suite result: " + result);
+            ResultSerializer.saveResults(result, taskContext.getWorkingDirectory().getPath(), logger);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return TaskResultBuilder.newBuilder(taskContext).failed().build();
+        } catch (SSEException e) {
+            return TaskResultBuilder.newBuilder(taskContext).failed().build();
         }
 
-        return builder.getProperties();
-    }
-
-    @NotNull
-    @Override
-    public TaskResult execute(@NotNull final TaskContext taskContext) throws TaskException {
-        return AbstractLauncherTask.super.execute(taskContext);
+        return collateResults(taskContext, null);
     }
 
     @Override
-    public Integer runTask(final File workingDirectory, final String launcherPath,
-                           final String paramFile, final BuildLogger logger) throws IOException, InterruptedException {
-        return AbstractLauncherTask.super.runTask(workingDirectory, launcherPath, paramFile, logger);
+    public Properties getTaskProperties(TaskContext taskContext) throws Exception {
+        return null;
     }
 
     @Override

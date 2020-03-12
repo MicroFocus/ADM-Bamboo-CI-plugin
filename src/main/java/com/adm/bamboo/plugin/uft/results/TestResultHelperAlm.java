@@ -88,7 +88,7 @@ public class TestResultHelperAlm {
             }
             Integer linksAmount = links.size();
             if (linksAmount.equals(0)) {
-                taskContext.getBuildLogger().addErrorLogEntry("ERROR ****** " + i18nBean.getText(CAN_NOT_SAVE_RUN_LOG_MESSAGE));
+                taskContext.getBuildLogger().addErrorLogEntry(i18nBean.getText("ERROR ****** " + CAN_NOT_SAVE_RUN_LOG_MESSAGE));
                 return;
             }
 
