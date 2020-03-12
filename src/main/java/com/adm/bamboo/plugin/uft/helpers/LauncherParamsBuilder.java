@@ -134,10 +134,6 @@ public class LauncherParamsBuilder {
         setParamValue("TestSet" + index, testSet);
     }
 
-    public void setTestSetId(int index, String testSetId) {
-        setParamValue("almEntityId" + index, testSetId);
-    }
-
     public void setAlmTestSet(String testSets) {
         setParamValue("almTestSets", testSets);
     }
@@ -178,9 +174,4 @@ public class LauncherParamsBuilder {
         return properties;
     }
 
-    public void setDeploymentAction(String deploymentAction){ setParamValue("deploymentAction", deploymentAction);};
-
-    public void setDeployedEvironmentName(String deployedEvironmentName){ setParamValue("deployedEnvironmentName", deployedEvironmentName); }
-
-    public void setDeprovisioningAction(String deprovisioningAction) { setParamValue("deprovisioningAction", deprovisioningAction);}
 }
