@@ -114,7 +114,7 @@ public class SVDeployTask implements TaskType {
 
         for (IService service : getServiceList(svDeployModel, project)) {
             buildLogger.addBuildLogEntry(String.format("  Deploying service '%s' [%s] %n", service.getName(), service.getId()));
-            DeployProcessorInput deployInput = new DeployProcessorInput(svDeployModel.isForce(), false, project, svDeployModel.getServiceName(), null);
+            DeployProcessorInput deployInput = new DeployProcessorInput(svDeployModel.isForce(), false, project, svDeployModel.getServiceName(), null, false);
             deployInput.setFirstAgentFailover(svDeployModel.isFirstSuitableAgentFallback());
             processor.process(deployInput, commandExecutor);
         }
