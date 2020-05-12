@@ -138,7 +138,7 @@
     </taskType>
 
     <taskType
-            name="Mobile Center Application Upload"
+            name="UFT Mobile Application Upload"
             class="com.adm.bamboo.plugin.uft.task.UploadApplicationUftTask"
             key="UploadApplicationUftTask">
         <description>Uploads apps to Mobile Center</description>
