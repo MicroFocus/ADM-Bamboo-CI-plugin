@@ -13,15 +13,15 @@
 <hr>
 
 <div class="control">
-[@ww.textfield labelKey="MC URL" name="mcServerURLInput"/]
+[@ww.textfield labelKey="URL" name="mcServerURLInput"/]
 </div>
 <hr>
 <div class="control">
-[@ww.textfield labelKey="MC UserName" name="mcUserNameInput"/]
+[@ww.textfield labelKey="Username" name="mcUserNameInput"/]
 </div>
 <hr>
 <div class="control">
-[@ww.password labelKey="MC Password" name="mcPasswordInput"/]
+[@ww.password labelKey="Password" name="mcPasswordInput"/]
 </div>
 <hr>
 
@@ -183,5 +183,9 @@
 
     .extra-app-info .app-name {
         margin-right: 10px;
+    }
+
+    #ParamTemplate {
+        margin-top: -12px;
     }
 </style>
