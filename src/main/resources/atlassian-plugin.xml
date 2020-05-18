@@ -141,7 +141,7 @@
             name="UFT Mobile Application Upload"
             class="com.adm.bamboo.plugin.uft.task.UploadApplicationUftTask"
             key="UploadApplicationUftTask">
-        <description>Uploads apps to Mobile Center</description>
+        <description>Uploads apps to UFT Mobile</description>
         <category name="test"/>
         <configuration class="com.adm.bamboo.plugin.uft.ui.UploadApplicationUftTaskConfigurator"/>
         <resource
