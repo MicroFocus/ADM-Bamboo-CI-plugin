@@ -57,7 +57,6 @@ public final class TestResultHelperFileSystem {
                                                             @NotNull final String resultArtifactNameFormat,
                                                             @NotNull final TaskContext taskContext,
                                                             @NotNull final BuildLogger logger) {
-        logger.addBuildLogEntry("getTestResults method: " + results + " abs path: " + results.getAbsolutePath());
         Collection<ResultInfoItem> resultItems = new ArrayList<>();
         Map<String, Integer> testNames = new HashMap<>();
 

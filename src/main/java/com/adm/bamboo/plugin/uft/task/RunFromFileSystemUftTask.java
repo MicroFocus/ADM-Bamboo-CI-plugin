@@ -41,6 +41,8 @@ import com.atlassian.bamboo.task.TaskResultBuilder;
 import com.atlassian.bamboo.utils.i18n.I18nBean;
 import com.atlassian.bamboo.utils.i18n.I18nBeanFactory;
 
+import com.atlassian.bamboo.variable.CustomVariableContext;
+import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.commons.io.FileUtils;
@@ -51,6 +53,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 
 import static com.adm.bamboo.plugin.uft.results.TestResultHelper.collateTestResults;
@@ -60,11 +63,18 @@ import static com.adm.utils.uft.FilesHandler.zipResult;
 public class RunFromFileSystemUftTask implements AbstractLauncherTask {
     private final I18nBean i18nBean;
     private final TestCollationService testCollationService;
+    private final CustomVariableContext customVariableContext;
 
-    public RunFromFileSystemUftTask(@NotNull final TestCollationService testCollationService, @NotNull final I18nBeanFactory i18nBeanFactory) {
+    public RunFromFileSystemUftTask(@NotNull final TestCollationService testCollationService, @NotNull final I18nBeanFactory i18nBeanFactory, @ComponentImport CustomVariableContext customVariableContext) {
         this.i18nBean = i18nBeanFactory.getI18nBean();
         this.testCollationService = testCollationService;
+        this.customVariableContext = customVariableContext;
     }
+
+    public CustomVariableContext getCustomVariableContext() {
+        return customVariableContext;
+    }
+
 
     /**
      * Get task properties
@@ -222,7 +232,7 @@ public class RunFromFileSystemUftTask implements AbstractLauncherTask {
     @NotNull
     @Override
     public TaskResult execute(@NotNull final TaskContext taskContext) throws TaskException {
-        return AbstractLauncherTask.super.execute(taskContext);
+       return AbstractLauncherTask.super.execute(taskContext, customVariableContext);
     }
 
     /**

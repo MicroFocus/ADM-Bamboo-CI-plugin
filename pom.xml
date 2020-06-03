@@ -107,6 +107,7 @@
 
         <msbuild.exe>C:\Windows\Microsoft.NET\Framework\v4.0.30319\msbuild.exe</msbuild.exe>
         <msbuild.configuration>Release</msbuild.configuration>
+        <!--bamboo.buildTimestamp>${bamboo.buildTimestamp}</bamboo.buildTimestamp-->
     </properties>
 
     <dependencies>

@@ -27,12 +27,23 @@ import com.atlassian.bamboo.build.logger.BuildLogger;
 import com.atlassian.bamboo.task.TaskContext;
 import com.atlassian.bamboo.task.TaskResult;
 import com.atlassian.bamboo.task.TaskResultBuilder;
+import com.atlassian.bamboo.v2.build.BuildContext;
+import com.atlassian.bamboo.variable.CustomVariableContext;
+import com.atlassian.bamboo.variable.VariableContext;
+import com.atlassian.bamboo.variable.VariableDefinitionContext;
+import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.Map;
 import java.util.Properties;
 
 import static com.adm.utils.uft.enums.UFTConstants.TASK_NAME;
@@ -42,9 +53,9 @@ public final class FilesHandler {
     private static final String HpToolsAborter_SCRIPT_NAME = "HpToolsAborter.exe";
     private static final String HP_UFT_PREFIX = "UFT_Build_";
     private static final String FORMATTER_PATTERN = "ddMMyyyyHHmmssSSS";
+    private static final String BAMBOO_BUILD_TIMESTAMP_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
 
     private FilesHandler() {
-
     }
 
     /**
@@ -71,11 +82,20 @@ public final class FilesHandler {
      * @return the properties file
      */
     public static File buildPropertiesFile(final TaskContext taskContext, final File workingDirectory,
-                                           final Properties mergedProperties, final BuildLogger buildLogger) {
-        LocalDateTime dateTime = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(FORMATTER_PATTERN);
-        String paramFileName = "props" + dateTime.format(formatter) + ".txt";
-        String resultsFileName = "Results" + dateTime.format(formatter) + ".xml";
+                                           final Properties mergedProperties, String buildTimeStamp, final BuildLogger buildLogger) {
+
+        DateFormat sourceDateFormat = new SimpleDateFormat(BAMBOO_BUILD_TIMESTAMP_PATTERN);
+        try {
+            Date buildDateTime = sourceDateFormat.parse(buildTimeStamp);
+            DateFormat destDateFormat = new SimpleDateFormat(FORMATTER_PATTERN);
+            buildTimeStamp = destDateFormat.format(buildDateTime);
+        } catch (ParseException e) {
+            buildLogger.addBuildLogEntry("Unable to parse object");
+            e.printStackTrace();
+        }
+
+        String paramFileName = "props" + buildTimeStamp + ".txt";
+        String resultsFileName = "Results" + buildTimeStamp + ".xml";
         mergedProperties.put("resultsFilename", resultsFileName);
 
         File resultFile = new File(workingDirectory, resultsFileName);

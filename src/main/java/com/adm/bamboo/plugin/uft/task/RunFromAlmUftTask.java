@@ -35,6 +35,8 @@ import com.atlassian.bamboo.task.TaskResult;
 import com.atlassian.bamboo.task.TaskResultBuilder;
 import com.atlassian.bamboo.utils.i18n.I18nBean;
 import com.atlassian.bamboo.utils.i18n.I18nBeanFactory;
+import com.atlassian.bamboo.variable.CustomVariableContext;
+import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,10 +49,17 @@ import static com.adm.bamboo.plugin.uft.results.TestResultHelper.collateTestResu
 public class RunFromAlmUftTask implements AbstractLauncherTask {
     private final I18nBean i18nBean;
     private final TestCollationService testCollationService;
+    private final CustomVariableContext customVariableContext;
 
-    public RunFromAlmUftTask(final TestCollationService testCollationService, @NotNull final I18nBeanFactory i18nBeanFactory) {
+    public RunFromAlmUftTask(final TestCollationService testCollationService, @NotNull final I18nBeanFactory i18nBeanFactory,
+                             @ComponentImport CustomVariableContext customVariableContext) {
         this.i18nBean = i18nBeanFactory.getI18nBean();
         this.testCollationService = testCollationService;
+        this.customVariableContext = customVariableContext;
+    }
+
+    public CustomVariableContext getCustomVariableContext() {
+        return customVariableContext;
     }
 
     @Override
@@ -105,7 +114,7 @@ public class RunFromAlmUftTask implements AbstractLauncherTask {
     @NotNull
     @Override
     public TaskResult execute(@NotNull TaskContext taskContext) throws TaskException {
-        return AbstractLauncherTask.super.execute(taskContext);
+        return AbstractLauncherTask.super.execute(taskContext, customVariableContext);
     }
 
     @Override
