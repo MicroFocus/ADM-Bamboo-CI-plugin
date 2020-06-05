@@ -22,8 +22,11 @@ package com.adm.bamboo.plugin.uft.results;
 
 import com.adm.utils.uft.StringUtils;
 import com.adm.utils.uft.enums.UFTConstants;
+import com.adm.utils.uft.sdk.ALMRunReportUrlBuilder;
+import com.adm.utils.uft.sdk.Client;
 import com.atlassian.bamboo.build.LogEntry;
 import com.atlassian.bamboo.build.logger.BuildLogger;
+import com.atlassian.bamboo.build.logger.interceptors.StringMatchingInterceptor;
 import com.atlassian.bamboo.task.TaskContext;
 import com.atlassian.bamboo.utils.i18n.I18nBean;
 import com.google.common.collect.Lists;
@@ -65,26 +68,33 @@ public class TestResultHelperAlm {
     private static List<String> savedALMRunLogPaths = new ArrayList<String>();
     private static int currentBuildNumber;
 
+
     public static void AddALMArtifacts(final TaskContext taskContext, final File resultFile,
                                        final String linkSearchFilter, final I18nBean i18nBean) {
         clearSavedALMRunLogPaths(taskContext);
         String taskName = taskContext.getConfigurationMap().get(UFTConstants.TASK_NAME.getValue());
 
-        if (taskName.equals(i18nBean.getText(UFTConstants.ALM_LAB_TASK_NAME.getValue()))) {
+        if (taskName.equals(i18nBean.getText(UFTConstants.ALM_LAB_TASK_NAME.getValue()))) {//Run from Alm Lab Management
             String taskRunLogPath = findRequiredStringFromLog(taskContext, linkSearchFilter);
             if (StringUtils.isNullOrEmpty(taskRunLogPath)) {
                 taskContext.getBuildLogger().addErrorLogEntry(i18nBean.getText(CAN_NOT_SAVE_RUN_LOG_MESSAGE));
                 return;
             }
 
-            createResultFile(taskContext, taskRunLogPath, ".*processRunId=", i18nBean);
-        } else if (taskName.equals(i18nBean.getText(UFTConstants.ALM_TASK_NAME.getValue()))) {
+            if(taskRunLogPath.contains("processRunId")) {//old version of ALM
+                createResultFile(taskContext, taskRunLogPath, ".*processRunId=", i18nBean);
+            } else {//new version of ALM
+                createResultFile(taskContext, taskRunLogPath, ".*/", i18nBean);
+            }
+
+        } else if (taskName.equals(i18nBean.getText(UFTConstants.ALM_TASK_NAME.getValue()))) {//Run from ALM
             List<String> links = null;
             if (resultFile != null && resultFile.exists()) {
                 links = findRequiredStringsFromFile(taskContext.getBuildLogger(), resultFile);
             }
             if (links == null || links.size() < 1) {
                 links = findRequiredStringsFromLog(taskContext.getBuildLogger(), linkSearchFilter);
+                taskContext.getBuildLogger().addBuildLogEntry("link is: " + links.get(0));
             }
             Integer linksAmount = links.size();
             if (linksAmount.equals(0)) {
@@ -109,12 +119,14 @@ public class TestResultHelperAlm {
 
     //is used for Run from Alm Lab Management task
     private static String findRequiredStringFromLog(TaskContext taskContext, String searchFilter) {
-        //TODO - use log interceptors instead of getBuildLog()
         BuildLogger logger = taskContext.getBuildLogger();
-        List<LogEntry> buildLog = Lists.reverse(logger.getBuildLog());
+
+        StringMatchingInterceptor interceptor = new StringMatchingInterceptor(searchFilter, true);
+        List<LogEntry> buildLog = Lists.reverse(logger.getLastNLogEntries(100));
         for (LogEntry logEntry : buildLog) {
-            String log = logEntry.getLog();
-            if (log.contains(searchFilter)) {
+            interceptor.intercept(logEntry);
+            if(interceptor.hasMatched()){
+                String log = logEntry.getLog();
                 int pathBegin = log.indexOf("http");
                 if (pathBegin > -1) {
                     log = log.substring(pathBegin);
@@ -124,17 +136,19 @@ public class TestResultHelperAlm {
                 }
             }
         }
+
         return null;
     }
 
     //is used for Run from Alm task
     private static List<String> findRequiredStringsFromLog(BuildLogger logger, String searchFilter) {
-        //TODO - use log interceptors instead of getBuildLog()
-        List<LogEntry> buildLog = Lists.reverse(logger.getBuildLog());
+        StringMatchingInterceptor interceptor = new StringMatchingInterceptor(searchFilter, true);
+        List<LogEntry> buildLog = Lists.reverse(logger.getLastNLogEntries(100));
         List<String> results = new ArrayList<String>();
         for (LogEntry logEntry : buildLog) {
-            String log = logEntry.getLog();
-            if (log.contains(searchFilter)) {
+            interceptor.intercept(logEntry);
+            if(interceptor.hasMatched()){
+                String log = logEntry.getLog();
                 int pathBegin = log.indexOf("td:");
                 if (pathBegin > -1) {
                     String result = log.substring(pathBegin);
@@ -144,6 +158,7 @@ public class TestResultHelperAlm {
                 }
             }
         }
+
         return results;
     }
 
@@ -176,7 +191,6 @@ public class TestResultHelperAlm {
     private static void createResultFile(TaskContext taskContext, String link, String idFilter, I18nBean i18nBean) {
         savedALMRunLogPaths.add(link);
         String RunReportFileId = link.replaceAll(idFilter, "");
-
         if (StringUtils.isNullOrEmpty(RunReportFileId)) {
             return;
         }
@@ -184,6 +198,7 @@ public class TestResultHelperAlm {
         String workingDirectory = getOutputFilePath(taskContext);
         File resultFile = new File(workingDirectory + "/" + RunReportFileName);
         link = "\"" + link + "\"";
+
         String parameterizedResultsHtmlText = RUN_LOG_HTML_TEXT.replaceAll(ALM_RUN_RESULTS_LINK_PARAMETER, link);
         try {
             FileUtils.writeStringToFile(resultFile, parameterizedResultsHtmlText);

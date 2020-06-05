@@ -28,14 +28,17 @@ import com.atlassian.bamboo.task.TaskException;
 import com.atlassian.bamboo.task.TaskResult;
 import com.atlassian.bamboo.task.TaskType;
 import com.atlassian.bamboo.variable.CustomVariableContext;
+import com.atlassian.bamboo.variable.VariableDefinitionContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 public interface AbstractLauncherTask extends TaskType {
     public static final String BUILD_KEY = "buildTimeStamp";
@@ -58,7 +61,7 @@ public interface AbstractLauncherTask extends TaskType {
         }
 
         //retrieve bamboo buildTimeStamp
-        String buildTimeStamp = getBuildTimeStamp(taskContext, customVariableContext);
+        String buildTimeStamp = getBuildTimeStamp(customVariableContext);
 
         //build props file
         File workingDirectory = taskContext.getWorkingDirectory();
@@ -119,10 +122,14 @@ public interface AbstractLauncherTask extends TaskType {
         }
     }
 
-    default String getBuildTimeStamp(@NotNull TaskContext taskContext, CustomVariableContext customVariableContext){
-        Map<String, String> buildVariables = customVariableContext.getVariables(taskContext.getCommonContext());
+    default String getBuildTimeStamp(CustomVariableContext customVariableContext){
+        Map<String, VariableDefinitionContext> variables = customVariableContext.getVariableContexts();
+        String buildTimeStamp = "";
+        if(variables.containsKey(BUILD_KEY)) {
+           buildTimeStamp = variables.get(BUILD_KEY).getValue();
+        }
 
-        return buildVariables.get(BUILD_KEY);
+        return buildTimeStamp;
     }
 }
 
