@@ -40,7 +40,7 @@ import java.util.zip.ZipInputStream;
 //import org.hibernate.cfg.beanvalidation.IntegrationException;
 
 import com.microfocus.adm.performancecenter.plugins.common.rest.*;
-import com.microfocus.adm.performancecenter.plugins.common.pcEntities.*;
+import com.microfocus.adm.performancecenter.plugins.common.pcentities.*;
 
 /**
  * Created by bemh on 8/6/2017.
@@ -92,8 +92,8 @@ public class PcClientBamboo {
     public boolean login() {
         try {
             String user = model.getAlmUserName();
-            buildLogger.addBuildLogEntry(String.format("Trying to login\n[PCServer='%s://%s', User='%s']",model.isHTTPSProtocol(), model.getPcServerName(), user));
-            loggedIn = restProxy.authenticate(user, model.getAlmPassword().toString());
+            buildLogger.addBuildLogEntry(String.format("Trying to login [PCServer='%s://%s/%s', User='%s']",model.isHTTPSProtocol(), restProxy.GetPcServer(), restProxy.GetTenant(), user));
+            loggedIn = restProxy.authenticate(user, model.getAlmPassword());
         } catch (PcException e) {
             buildLogger.addBuildLogEntry(e.getMessage());
         } catch (Exception e) {

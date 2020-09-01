@@ -21,7 +21,7 @@
 package com.adm.bamboo.plugin.performancecenter;
 
 import com.adm.bamboo.plugin.performancecenter.impl.PcComponentsImpl;
-import com.microfocus.adm.performancecenter.plugins.common.pcEntities.*;
+import com.microfocus.adm.performancecenter.plugins.common.pcentities.*;
 import com.atlassian.bamboo.build.logger.BuildLogger;
 import com.atlassian.bamboo.task.*;
 
@@ -86,7 +86,11 @@ public class TaskExecution implements TaskType
             runID = r.startRun();
             buildLogger.addBuildLogEntry("====================");
 
-
+            if(Boolean.parseBoolean(SLA) == true && !r.isSlaStatusPassed())
+            {
+                buildLogger.addErrorLogEntry("Run measurements did not reach SLA criteria. Run SLA Status: " + r.getRunSLAStatus());
+                return TaskResultBuilder.newBuilder(taskContext).failed().build();
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
