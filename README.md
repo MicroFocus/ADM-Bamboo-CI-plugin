@@ -11,7 +11,6 @@ The products currently supported are:
 - LoadRunner Enterprise
 - UFT
 - SV
-- SRF
 
 ### Development:
 1. Read https://developer.atlassian.com/server/bamboo/
