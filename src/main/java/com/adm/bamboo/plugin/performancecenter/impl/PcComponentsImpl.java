@@ -37,10 +37,10 @@ import org.apache.http.protocol.HttpContext;
 import java.io.File;
 import java.io.IOException;
 
-import static com.microfocus.adm.performancecenter.plugins.common.pcEntities.RunState.FINISHED;
-import static com.microfocus.adm.performancecenter.plugins.common.pcEntities.RunState.RUN_FAILURE;
+import static com.microfocus.adm.performancecenter.plugins.common.pcentities.RunState.FINISHED;
+import static com.microfocus.adm.performancecenter.plugins.common.pcentities.RunState.RUN_FAILURE;
 
-import com.microfocus.adm.performancecenter.plugins.common.pcEntities.*;
+import com.microfocus.adm.performancecenter.plugins.common.pcentities.*;
 
 /**
  * Created by bemh on 7/23/2017.
@@ -80,7 +80,6 @@ public class PcComponentsImpl {
         pcModel = new PcModelBamboo(pcServerName, almUserName,almPassword, almDomain, almProject,testId,autoTestInstanceID, testInstanceId,timeslotDurationHours,timeslotDurationMinutes, postRunAction,vudsMode,sla, description,addRunToTrendReport,trendReportId,HTTPSProtocol,proxyOutURL,proxyUser,proxyPassword);
 //        PcModelBamboo pcModel = new PcModelBamboo(PC_SERVER_NAME, ALM_USER_NAME,ALM_PASSWORD, ALM_DOMAIN, ALM_PROJECT,TEST_ID,TESTINSTANCEID, TEST_INSTANCE_ID,TIMESLOT_DURATION_HOURS,TIMESLOT_DURATION_MINUTES, POST_RUN_ACTION,VUDS_MODE, DESCRIPTION,ADD_RUN_TO_TREND_REPORT,TREND_REPORT_ID,IS_HTTPS,PROXY_OUT_URL);
         pcClient = new PcClientBamboo(pcModel,taskContext,buildLogger);
-
     }
 
 
@@ -104,15 +103,15 @@ public class PcComponentsImpl {
 
             response = pcClient.waitForRunCompletion(runId);
 
-
-            if (response != null && RunState.get(response.getRunState()) == FINISHED) {
+            RunState runState = RunState.get(response.getRunState());
+            if (response != null && runState == FINISHED) {
                 DefaultBuildDirectoryManager defaultBuildDirectoryManager = new DefaultBuildDirectoryManager();
                 pcReportFile = pcClient.publishRunReport(runId,String.valueOf(taskContext.getWorkingDirectory()));
 
                 buildLogger.addBuildLogEntry("View analysis report of run: " + runId + ", in the Artifacts Tab.");
 
                 // Adding the trend report section if ID has been set
-                if(("USE_ID").equals(pcModel.getAddRunToTrendReport()) && pcModel.getTrendReportId() != null && RunState.get(response.getRunState()) != RUN_FAILURE){
+                if(("USE_ID").equals(pcModel.getAddRunToTrendReport()) && pcModel.getTrendReportId() != null && runState != RUN_FAILURE){
                     pcClient.addRunToTrendReport(runId, pcModel.getTrendReportId());
                     pcClient.waitForRunToPublishOnTrendReport(runId, pcModel.getTrendReportId());
                     pcClient.downloadTrendReportAsPdf(pcModel.getTrendReportId(),getTrendReportsDirectory(runId));
@@ -120,14 +119,14 @@ public class PcComponentsImpl {
                 }
 
                 // Adding the trend report if the Associated Trend report is selected.
-                if(("ASSOCIATED").equals(pcModel.getAddRunToTrendReport()) && RunState.get(response.getRunState()) != RUN_FAILURE){
+                if(("ASSOCIATED").equals(pcModel.getAddRunToTrendReport()) && runState != RUN_FAILURE){
                     pcClient.addRunToTrendReport(runId, pcModel.getTrendReportId());
                     pcClient.waitForRunToPublishOnTrendReport(runId, pcModel.getTrendReportId());
                     pcClient.downloadTrendReportAsPdf(pcModel.getTrendReportId(), getTrendReportsDirectory(runId));
                     trendReportReady = true;
                 }
 
-            } else if (response != null && RunState.get(response.getRunState()).ordinal() > FINISHED.ordinal()) {
+            } else if (response != null && runState.ordinal() > FINISHED.ordinal()) {
                 PcRunEventLog eventLog = pcClient.getRunEventLog(runId);
                 eventLogString = buildEventLogString(eventLog);
             }
@@ -145,6 +144,20 @@ public class PcComponentsImpl {
         }
 
         return String.valueOf(runId);
+    }
+
+    public Boolean isSlaStatusPassed()
+    {
+        if(response != null)
+            return response.getRunSLAStatus().equalsIgnoreCase("passed");
+        return false;
+    }
+
+    public String getRunSLAStatus()
+    {
+        if(response != null)
+            return response.getRunSLAStatus();
+		return "unknown";
     }
 
     private String getTrendReportsDirectory(int runId) {

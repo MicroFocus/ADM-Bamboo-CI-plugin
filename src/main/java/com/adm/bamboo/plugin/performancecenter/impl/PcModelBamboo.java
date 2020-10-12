@@ -23,7 +23,7 @@ package com.adm.bamboo.plugin.performancecenter.impl;
 
 import java.util.Arrays;
 import java.util.List;
-import com.microfocus.adm.performancecenter.plugins.common.pcEntities.*;
+import com.microfocus.adm.performancecenter.plugins.common.pcentities.*;
 
 /**
  * Created by bemh on 8/6/2017.
