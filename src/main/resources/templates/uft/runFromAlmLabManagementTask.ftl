@@ -4,7 +4,7 @@
 <div class="toolTip" style="display: block; float: none;">[@ww.text name='RunFromAlmLabManagementTask.taskDescription'/]</div>
 [@ww.textfield labelKey="RunFromAlmLabManagementTask.almServer" name="almServer" required='true'/]
 [@ww.textfield labelKey="RunFromAlmLabManagementTask.userName" name="userName" required='true'/]
-[@ww.textfield labelKey="RunFromAlmLabManagementTask.password" name="password" showPassword="false"/]
+[@ww.password labelKey="RunFromAlmLabManagementTask.password" name="password" showPassword="false"/]
 [@ww.textfield labelKey="RunFromAlmLabManagementTask.domain" name="domain" required='true'/]
 [@ww.textfield labelKey="RunFromAlmLabManagementTask.projectName" name="projectName" required='true'/]
 [@ww.select labelKey="RunFromAlmLabManagementTask.runType" name="runType" list="runTypeItems" emptyOption="false"/]

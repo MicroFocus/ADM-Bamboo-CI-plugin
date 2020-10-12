@@ -31,8 +31,8 @@ namespace HpToolsLauncher
             get { return _xmlName; }
             set { _xmlName = value; }
         }
-        //public const string ClassName = "uftRunner";
-        public const string ClassName = "HPToolsFileSystemRunner";
+
+        public const string ClassName = "MFToolsRunner";
         public const string RootName = "uftRunnerRoot";
 
         XmlSerializer _serializer = new XmlSerializer(typeof(testsuites));

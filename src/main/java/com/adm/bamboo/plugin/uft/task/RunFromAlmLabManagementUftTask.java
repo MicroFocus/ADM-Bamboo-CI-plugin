@@ -40,6 +40,8 @@ import com.atlassian.bamboo.task.TaskResultBuilder;
 import com.atlassian.bamboo.utils.i18n.I18nBean;
 import com.atlassian.bamboo.utils.i18n.I18nBeanFactory;
 
+import com.atlassian.bamboo.variable.CustomVariableContext;
+import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import org.apache.commons.lang.BooleanUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -51,12 +53,18 @@ import static com.adm.bamboo.plugin.uft.results.TestResultHelperAlm.AddALMArtifa
 public class RunFromAlmLabManagementUftTask implements AbstractLauncherTask {
     private final TestCollationService testCollationService;
     private static I18nBean i18nBean;
+    private final CustomVariableContext customVariableContext;
 
     private final String LINK_SEARCH_FILTER = "run report for run id";
 
-    public RunFromAlmLabManagementUftTask(final TestCollationService testCollationService, @NotNull final I18nBeanFactory i18nBeanFactory) {
+    public RunFromAlmLabManagementUftTask(final TestCollationService testCollationService, @NotNull final I18nBeanFactory i18nBeanFactory, @ComponentImport CustomVariableContext customVariableContext) {
         this.testCollationService = testCollationService;
         i18nBean = i18nBeanFactory.getI18nBean();
+        this.customVariableContext = customVariableContext;
+    }
+
+    public CustomVariableContext getCustomVariableContext() {
+        return customVariableContext;
     }
 
     @NotNull
@@ -114,7 +122,8 @@ public class RunFromAlmLabManagementUftTask implements AbstractLauncherTask {
             Testsuites result = runManager.execute(restClient, args, logger);
 
             buildLogger.addBuildLogEntry("test suite result: " + result);
-            ResultSerializer.saveResults(result, taskContext.getWorkingDirectory().getPath(), logger);
+            taskContext.getBuildLogger().addBuildLogEntry("Bamboo build timestamp variable has value: " + getBuildTimeStamp(customVariableContext));
+            ResultSerializer.saveResults(result, taskContext.getWorkingDirectory().getPath(), getBuildTimeStamp(customVariableContext), logger);
         } catch (InterruptedException e) {
             e.printStackTrace();
             return TaskResultBuilder.newBuilder(taskContext).failed().build();
