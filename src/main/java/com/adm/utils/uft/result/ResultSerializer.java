@@ -99,10 +99,6 @@ public class ResultSerializer {
     }
 
     private static String getFileName(String buildTimeStamp) {
-
-        //Format formatter = new SimpleDateFormat("ddMMyyyyHHmmssSSS");
-        //String time = formatter.format(new Date());
-        //return String.format("Results%s.xml", time);
         DateFormat sourceDateFormat = new SimpleDateFormat(BAMBOO_BUILD_TIMESTAMP_PATTERN);
         try {
             Date buildDateTime = sourceDateFormat.parse(buildTimeStamp);
