@@ -169,8 +169,10 @@ namespace HpToolsLauncher
                     string name = "<None>";
                     if (xname != null)
                         name = xname.Value;
-
-                    TestInfo col = new TestInfo(path, name, testGroupName);
+                    var testName = path.Substring(path.LastIndexOf("\\") + 1);
+                    
+                    //TestInfo col = new TestInfo(path, name, testGroupName);
+                    TestInfo col = new TestInfo(path, testName, testGroupName);
                     HashSet<string> paramNames = new HashSet<string>();
 
                     foreach (var param in GetElements(test, "Parameter"))

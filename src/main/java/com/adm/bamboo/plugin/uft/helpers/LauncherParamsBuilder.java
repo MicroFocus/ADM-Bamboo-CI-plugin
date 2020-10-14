@@ -109,7 +109,8 @@ public class LauncherParamsBuilder {
     public void setAlmPassword(String almPassword) {
         try {
             String encAlmPass = EncryptionUtils.Encrypt(almPassword, EncryptionUtils.getSecretKey());
-            properties.put("almPassword", encAlmPass);
+            setParamValue("almPassword", encAlmPass);
+            //properties.put("almPassword", encAlmPass);
         } catch (Exception e) {
         }
     }

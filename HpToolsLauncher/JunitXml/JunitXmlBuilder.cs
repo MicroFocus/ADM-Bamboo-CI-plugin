@@ -99,7 +99,7 @@ namespace HpToolsLauncher
                 systemerr = testRes.ConsoleErr,
                 report = testRes.ReportLocation,
                 classname = "All-Tests." + ((testRes.TestGroup == null) ? "" : testRes.TestGroup.Replace(".", "_")),
-                name = testRes.TestPath,
+                name = testRes.TestName,
                 type = testRes.TestType,
                 time = testRes.Runtime.TotalSeconds.ToString()
             };
