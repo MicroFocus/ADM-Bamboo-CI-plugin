@@ -62,7 +62,7 @@ public interface AbstractLauncherTask extends TaskType {
 
         //retrieve bamboo buildTimeStamp
         String buildTimeStamp = getBuildTimeStamp(customVariableContext);
-        taskContext.getBuildLogger().addBuildLogEntry("Bamboo build timestamp variable has value: " + buildTimeStamp);
+
         //build props file
         File workingDirectory = taskContext.getWorkingDirectory();
         File paramsFile = FilesHandler.buildPropertiesFile(taskContext, workingDirectory, mergedProperties, buildTimeStamp, buildLogger);
