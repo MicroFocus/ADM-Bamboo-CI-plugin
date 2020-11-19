@@ -21,7 +21,7 @@
 </div>
 <hr>
 <div class="control">
-[@ww.password labelKey="Password" name="mcPasswordInput"/]
+[@ww.password labelKey="Password" name="mcPasswordInput" showPassword='true'/]
 </div>
 <hr>
 
