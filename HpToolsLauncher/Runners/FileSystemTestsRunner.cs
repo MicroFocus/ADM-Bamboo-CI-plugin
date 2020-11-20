@@ -100,11 +100,11 @@ namespace HpToolsLauncher
                     //--handle directories which contain test subdirectories (recursively)
                     if (Helper.IsDirectory(source))
                     {
-
                         var testsLocations = Helper.GetTestsLocations(source);
                         foreach (var loc in testsLocations)
                         {
-                            var test = new TestInfo(loc, loc, source);
+                            var testName = loc.Substring(loc.LastIndexOf("\\") + 1);
+                            var test = new TestInfo(loc, testName, source);
                             testGroup.Add(test);
                         }
                     }
@@ -122,25 +122,31 @@ namespace HpToolsLauncher
                         //if (source.TrimEnd().EndsWith(".mtb", StringComparison.CurrentCultureIgnoreCase))
                         {
                             MtbManager manager = new MtbManager();
+
                             var paths = manager.Parse(source);
+                     
                             foreach (var p in paths)
                             {
                                 testGroup.Add(new TestInfo(p, p, source));
                             }
-                        }
-                        else if (fi.Extension == ".mtbx")
-                        //if (source.TrimEnd().EndsWith(".mtb", StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            testGroup = MtbxManager.Parse(source, _jenkinsEnvVariables, source);
-                            if (!string.IsNullOrEmpty(fsAppParamName) && !string.IsNullOrEmpty(appIdentifier))
+                        } else if (fi.Extension == ".mtbx")
+                            //if (source.TrimEnd().EndsWith(".mtb", StringComparison.CurrentCultureIgnoreCase))
                             {
-                                var testParam = new TestParameterInfo() { Name = fsAppParamName, Type = "string", Value = appIdentifier };
-                                foreach(TestInfo testInfo in testGroup)
-                                {
-                                    testInfo.ParameterList.Add(testParam);
-                                }
+                                testGroup = MtbxManager.Parse(source, _jenkinsEnvVariables, source);
+
+                            // set the test Id for each test from the group
+                            // this is important for parallel runner
+                            
+                            //testGroup = MtbxManager.Parse(source, _jenkinsEnvVariables, source);
+                           // if (!string.IsNullOrEmpty(fsAppParamName) && !string.IsNullOrEmpty(appIdentifier))
+                          //  {
+                              //  var testParam = new TestParameterInfo() { Name = fsAppParamName, Type = "string", Value = appIdentifier };
+                                //foreach(TestInfo testInfo in testGroup)
+                                //{
+                                //testInfo.ParameterList.Add(testParam);
+                                //testInfo.TestId = source.Id;
+                                //}
                             }
-                        }
                     }
                 }
                 catch (Exception)
@@ -318,6 +324,8 @@ namespace HpToolsLauncher
                 results.Runtime = s.Elapsed;
                 if (type == TestType.LoadRunner)
                     AppDomain.CurrentDomain.AssemblyResolve -= Helper.HPToolsAssemblyResolver;
+
+                results.TestName = testinf.TestName;
 
                 return results;
             }

@@ -16,8 +16,8 @@
 
 <div class="toolTip" style="display: block; float: none;">[@ww.text name='AlmLabEnvPrepareTask.taskDescription'/]</div>
 [@ww.textfield labelKey="AlmLabEnvPrepareTask.almServerInputLbl" name="almServer" required='true'/]
-[@ww.textfield labelKey="AlmLabEnvPrepareTask.userNameInputLbl" name="almUserName" required='true' required='true'/]
-[@ww.password labelKey="AlmLabEnvPrepareTask.passwordInputLbl" name="almUserPassword" showPassword="false"/]
+[@ww.textfield labelKey="AlmLabEnvPrepareTask.userNameInputLbl" name="almUserName" required='true'/]
+[@ww.password labelKey="AlmLabEnvPrepareTask.passwordInputLbl" name="password" showPassword='true'/]
 [@ww.textfield labelKey="AlmLabEnvPrepareTask.domainInputLbl" name="domain" required='true'/]
 [@ww.textfield labelKey="AlmLabEnvPrepareTask.projectInputLbl" name="almProject" required='true'/]
 <div class="control">
@@ -85,7 +85,7 @@
     var customWidth = "500px";
     document.getElementById('almServer').style.maxWidth=customWidth;
     document.getElementById('almUserName').style.maxWidth=customWidth;
-    document.getElementById('almUserPassword').style.maxWidth=customWidth;
+    document.getElementById('password').style.maxWidth=customWidth;
     document.getElementById('domain').style.maxWidth=customWidth;
     document.getElementById('almProject').style.maxWidth=customWidth;
     document.getElementById('AUTEnvID').style.maxWidth=customWidth;

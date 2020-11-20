@@ -428,7 +428,7 @@ namespace HpToolsLauncher
                     }
                 }
 
-                //ConsoleWriter.WriteLine("Returning " + runStatus + ".");
+                Environment.Exit((int)Launcher.ExitCode);
             }
             finally
             {

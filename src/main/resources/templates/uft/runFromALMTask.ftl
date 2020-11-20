@@ -3,7 +3,7 @@
 
 [@ww.textfield labelKey="RunFromAlmTask.almServerInputLbl" name="almServer" required='true'/]
 [@ww.textfield labelKey="RunFromAlmTask.userNameInputLbl" name="userName" required='true'/]
-[@ww.password labelKey="RunFromAlmTask.passwordInputLbl" name="password" showPassword="false"/]
+[@ww.password labelKey="RunFromAlmTask.passwordInputLbl" name="password" showPassword='true'/]
 [@ww.textfield labelKey="RunFromAlmTask.domainInputLbl" name="domain" required='true'/]
 [@ww.textfield labelKey="RunFromAlmTask.projectInputLbl" name="projectName" required='true'/]
 [@ww.textarea labelKey="RunFromAlmTask.testsPathInputLbl" name="testPathInput" required='true' rows="4"/]

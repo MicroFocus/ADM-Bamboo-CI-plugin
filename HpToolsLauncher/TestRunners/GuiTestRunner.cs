@@ -175,7 +175,6 @@ namespace HpToolsLauncher
 
             QTPTestCleanup();
 
-
             return runDesc;
         }
 

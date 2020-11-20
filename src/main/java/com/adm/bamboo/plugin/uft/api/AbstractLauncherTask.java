@@ -27,21 +27,27 @@ import com.atlassian.bamboo.task.TaskContext;
 import com.atlassian.bamboo.task.TaskException;
 import com.atlassian.bamboo.task.TaskResult;
 import com.atlassian.bamboo.task.TaskType;
+import com.atlassian.bamboo.variable.CustomVariableContext;
+import com.atlassian.bamboo.variable.VariableDefinitionContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 public interface AbstractLauncherTask extends TaskType {
+    public static final String BUILD_KEY = "buildTimeStamp";
 
     Properties getTaskProperties(final TaskContext taskContext) throws Exception;
 
     TaskResult collateResults(@NotNull final TaskContext taskContext, final Properties mergedProperties);
 
-    default TaskResult execute(@NotNull TaskContext taskContext) throws TaskException {
+    default TaskResult execute(@NotNull TaskContext taskContext,  CustomVariableContext customVariableContext) throws TaskException {
         final BuildLogger buildLogger = taskContext.getBuildLogger();
 
         Properties mergedProperties = new Properties();
@@ -54,9 +60,12 @@ public interface AbstractLauncherTask extends TaskType {
             TaskUtils.logErrorMessage(e, buildLogger, taskContext);
         }
 
+        //retrieve bamboo buildTimeStamp
+        String buildTimeStamp = getBuildTimeStamp(customVariableContext);
+
         //build props file
         File workingDirectory = taskContext.getWorkingDirectory();
-        File paramsFile = FilesHandler.buildPropertiesFile(taskContext, workingDirectory, mergedProperties, buildLogger);
+        File paramsFile = FilesHandler.buildPropertiesFile(taskContext, workingDirectory, mergedProperties, buildTimeStamp, buildLogger);
 
         //extract binary resources
         String launcherPath = null;
@@ -111,6 +120,16 @@ public interface AbstractLauncherTask extends TaskType {
             logger.addBuildLogEntry(t.getMessage());
             return -1;
         }
+    }
+
+    default String getBuildTimeStamp(CustomVariableContext customVariableContext){
+        Map<String, VariableDefinitionContext> variables = customVariableContext.getVariableContexts();
+        String buildTimeStamp = "";
+        if(variables.containsKey(BUILD_KEY)) {
+           buildTimeStamp = variables.get(BUILD_KEY).getValue();
+        }
+
+        return buildTimeStamp;
     }
 }
 

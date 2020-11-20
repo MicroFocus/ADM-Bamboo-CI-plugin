@@ -513,7 +513,7 @@ namespace HpToolsLauncher
                 ConsoleWriter.WriteLine(string.Format(Resources.AlmRunnerProblemWithHost, ex.Message));
             }
 
-            ConsoleWriter.WriteLine(Resources.AlmRunnerNumTests + tList.Count);
+            ConsoleWriter.WriteLine(Resources.AlmRunnerNumTests + " " + tList.Count);
 
             int i = 1;
             foreach (ITSTest3 test in tList)

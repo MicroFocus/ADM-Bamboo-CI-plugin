@@ -54,7 +54,7 @@
 </div>
 <hr>
 <div class="control">
-    [@ww.password labelKey="FileSystemTaskConfigurator.mcPasswordInputLbl" name="mcPasswordInput"/]
+    [@ww.password labelKey="FileSystemTaskConfigurator.mcPasswordInputLbl" name="mcPasswordInput" showPassword='true'/]
 </div>
 <div class="helpIcon" onclick="javascript: toggle_visibility('FileSystemTaskConfigurator.toolTip.mcPassword');">?</div>
 <div id ="FileSystemTaskConfigurator.toolTip.mcPassword" class="toolTip">
@@ -84,7 +84,7 @@
     </div>
     <hr>
     <div class="control">
-        [@ww.password labelKey="FileSystemTaskConfigurator.proxyPassword" name="proxyPassword" disabled="true"/]
+        [@ww.password labelKey="FileSystemTaskConfigurator.proxyPassword" name="proxyPassword" showPassword='true' disabled="true"/]
     </div>
     <hr>
     [/@ui.bambooSection]

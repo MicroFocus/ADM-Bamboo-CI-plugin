@@ -32,17 +32,23 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Paths;
+import java.text.DateFormat;
 import java.text.Format;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class ResultSerializer {
+
+    private static final String FORMATTER_PATTERN = "ddMMyyyyHHmmssSSS";
+    private static final String BAMBOO_BUILD_TIMESTAMP_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
+
     private ResultSerializer(){}
 
-    public static String saveResults(Testsuites testsuites, String workingDirectory, Logger logger)
+    public static String saveResults(Testsuites testsuites, String workingDirectory, String buildTimeStamp, Logger logger)
             throws SSEException
     {
-        String filePath = getFullFilePath(workingDirectory, getFileName());
+        String filePath = getFullFilePath(workingDirectory, getFileName(buildTimeStamp));
 
         try
         {
@@ -92,10 +98,18 @@ public class ResultSerializer {
         return Paths.get(workingDirectoryPath, fileName).toString();
     }
 
-    private static String getFileName() {
+    private static String getFileName(String buildTimeStamp) {
+        DateFormat sourceDateFormat = new SimpleDateFormat(BAMBOO_BUILD_TIMESTAMP_PATTERN);
+        try {
+            Date buildDateTime = sourceDateFormat.parse(buildTimeStamp);
+            DateFormat destDateFormat = new SimpleDateFormat(FORMATTER_PATTERN);
+            buildTimeStamp = destDateFormat.format(buildDateTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
-        Format formatter = new SimpleDateFormat("ddMMyyyyHHmmssSSS");
-        String time = formatter.format(new Date());
-        return String.format("Results%s.xml", time);
+        String resultsFileName = "Results" + buildTimeStamp + ".xml";
+
+        return  resultsFileName;
     }
 }
