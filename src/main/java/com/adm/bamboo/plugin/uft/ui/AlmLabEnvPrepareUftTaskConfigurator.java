@@ -31,6 +31,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,7 +47,7 @@ public class AlmLabEnvPrepareUftTaskConfigurator extends AbstractLauncherTaskCon
 
         config.put(UFTConstants.ALM_SERVER.getValue(), params.getString(UFTConstants.ALM_SERVER.getValue()));
         config.put(UFTConstants.USER_NAME_LAB_ENV.getValue(), params.getString(UFTConstants.USER_NAME_LAB_ENV.getValue()));
-        config.put(UFTConstants.PASSWORD.getValue(), params.getString(UFTConstants.PASSWORD.getValue()));
+        config.put(UFTConstants.PASSWORD_LAB_ENV.getValue(), params.getString(UFTConstants.PASSWORD_LAB_ENV.getValue()));
         config.put(UFTConstants.DOMAIN.getValue(), params.getString(UFTConstants.DOMAIN.getValue()));
         config.put(UFTConstants.PROJECT_LAB_ENV.getValue(), params.getString(UFTConstants.PROJECT_LAB_ENV.getValue()));
 
