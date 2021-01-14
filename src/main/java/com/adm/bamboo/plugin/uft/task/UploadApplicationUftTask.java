@@ -63,9 +63,9 @@ public class UploadApplicationUftTask implements AbstractLauncherTask {
         final ConfigurationMap map = taskContext.getConfigurationMap();
         final BuildLogger buildLogger = taskContext.getBuildLogger();
 
-        String mcServerUrl = map.get(UFTConstants.MC_SERVER_URL);
-        String mcUserName = map.get(UFTConstants.MC_USERNAME);
-        String mcPassword = map.get(UFTConstants.MC_PASSWORD);
+        String mcServerUrl = map.get(UFTConstants.MC_SERVER_URL.getValue());
+        String mcUserName = map.get(UFTConstants.MC_USERNAME.getValue());
+        String mcPassword = map.get(UFTConstants.MC_PASSWORD.getValue());
 
         //proxy info
         String proxyAddress = null;
@@ -103,11 +103,11 @@ public class UploadApplicationUftTask implements AbstractLauncherTask {
             } catch (IOException e) {
                 logErrorMessage(i18nBean.getText("UploadApplicationTask.error.uploadApp"), buildLogger, taskContext);
             }
-            buildLogger.addBuildLogEntry(i18nBean.getText("UploadApplicationTask.msg.uploadSuccefull"));
+            buildLogger.addBuildLogEntry(i18nBean.getText("UploadApplicationTask.msg.uploadSuccessful"));
         }
 
         if (applicationsPaths.size() > 1) {
-            buildLogger.addBuildLogEntry(i18nBean.getText("UploadApplicationTask.msg.allUploadSuccefull"));
+            buildLogger.addBuildLogEntry(i18nBean.getText("UploadApplicationTask.msg.allUploadSuccessful"));
         }
 
         return collateResults(taskContext, null);
