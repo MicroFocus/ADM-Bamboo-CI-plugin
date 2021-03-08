@@ -60,11 +60,12 @@ public class TaskExecution implements TaskType
         final String TIMESLOT_MINUTES = taskContext.getConfigurationMap().get(TaskConfigurator.TIMESLOT_MINUTES);
         final String VUDS = taskContext.getConfigurationMap().get(TaskConfigurator.VUDS);
         final String SLA = taskContext.getConfigurationMap().get(TaskConfigurator.SLA);
+        final String AUTHENTICATE_WITH_TOKEN = taskContext.getConfigurationMap().get(TaskConfigurator.AUTHENTICATE_WITH_TOKEN);
         //String workingDirPath = String.valueOf(taskContext.getWorkingDirectory());
         String runID;
 
 
-        PcComponentsImpl r = new PcComponentsImpl(taskContext,buildLogger,PC_SERVER,USER,PASSWORD,DOMAIN,PROJECT,TEST_ID,TEST_INSTANCE_ID_RADIO,TEST_INSTANCE_ID,TIMESLOT_HOURS,TIMESLOT_MINUTES, convertStringBackToPostRunAction(POST_RUN_ACTION),Boolean.parseBoolean(VUDS),Boolean.parseBoolean(SLA),"",TRENDING_RADIO,TREND_REPORT_ID,Boolean.parseBoolean(HTTPS),LOCAL_PROXY,PROXY_USER,PROXY_PASSWORD);
+        PcComponentsImpl r = new PcComponentsImpl(taskContext,buildLogger,PC_SERVER,USER,PASSWORD,DOMAIN,PROJECT,TEST_ID,TEST_INSTANCE_ID_RADIO,TEST_INSTANCE_ID,TIMESLOT_HOURS,TIMESLOT_MINUTES, convertStringBackToPostRunAction(POST_RUN_ACTION),Boolean.parseBoolean(VUDS),Boolean.parseBoolean(SLA),"",TRENDING_RADIO,TREND_REPORT_ID,Boolean.parseBoolean(HTTPS),LOCAL_PROXY,PROXY_USER,PROXY_PASSWORD, Boolean.parseBoolean(AUTHENTICATE_WITH_TOKEN));
 
 
         try {
