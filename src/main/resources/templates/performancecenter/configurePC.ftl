@@ -56,7 +56,7 @@ Password. Enter the password required to connect to the LoadRunner Enterprise se
 - SSO or LDAP authentication (LoadRunner Enterprise 2021 R1 and later)
 Select Authenticate with token.
 Enter the Client ID and Secret key obtained from your LoadRunner Enterprise site administrator in the Id Key and Secret key fields." >
-            [@ww.checkbox label='Use Authentication Token' name='authenticateWithToken' toggle='true'/]
+            [@ww.checkbox label='Use token for authentication' name='authenticateWithToken' toggle='true'/]
             </a>
         </td>
     </tr>
