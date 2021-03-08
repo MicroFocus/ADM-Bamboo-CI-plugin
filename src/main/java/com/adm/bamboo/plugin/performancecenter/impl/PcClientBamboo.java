@@ -81,7 +81,7 @@ public class PcClientBamboo {
             if(model.getProxyOutURL() != null && !model.getProxyOutURL().isEmpty()){
                 buildLogger.addBuildLogEntry("Using proxy: " + model.getProxyOutURL());
             }
-            restProxy = new PcRestProxy(model.isHTTPSProtocol(),model.getPcServerName(), model.getAlmDomain(), model.getAlmProject(), model.getProxyOutURL(),model.getProxyOutUser(),model.getProxyOutPassword());
+            restProxy = new PcRestProxy(model.isHTTPSProtocol(),model.getPcServerName(), model.isAuthenticateWithToken(), model.getAlmDomain(), model.getAlmProject(), model.getProxyOutURL(),model.getProxyOutUser(),model.getProxyOutPassword());
             this.buildLogger = buildLogger;
         }catch (PcException e){
             buildLogger.addBuildLogEntry(e.getMessage());
@@ -92,7 +92,7 @@ public class PcClientBamboo {
     public boolean login() {
         try {
             String user = model.getAlmUserName();
-            buildLogger.addBuildLogEntry(String.format("Trying to login [PCServer='%s://%s/%s', User='%s']",model.isHTTPSProtocol(), restProxy.GetPcServer(), restProxy.GetTenant(), user));
+            buildLogger.addBuildLogEntry(String.format("Trying to login LRE Server '%s://%s/%s' with credentials of %s '%s']",model.isHTTPSProtocol(), restProxy.GetPcServer(), restProxy.GetTenant(), model.isAuthenticateWithToken() ? "ClientIdKey" : "User" ,user));
             loggedIn = restProxy.authenticate(user, model.getAlmPassword());
         } catch (PcException e) {
             buildLogger.addBuildLogEntry(e.getMessage());
