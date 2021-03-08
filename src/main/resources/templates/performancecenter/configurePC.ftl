@@ -49,11 +49,13 @@ For example, using https://mypcserver/LoadTest will fail. Instead, just specify 
 
         </td>
         <td >
-            <a href="#" title="From LRE 2021 R1, you can use a token associated with your user for authentication.
-If LRE is defined to use SSO, this will be the only way for this plugin to authenticate to LRE.
-To use it, have a token issued to your user in LRE.
-In Jenkins, create new Jenkins credentials based on the LRE token you received: use the ClientIdKey in the Username and the ClientSecretKey key in the password.
-Then use the new Jenkins credentials with this checkbox switched on." >
+            <a href="#" title="Depending on the authentication type required by your LoadRunner Enterprise server, credentials can be a username and password, or an API key for SSO or LDAP authentication.
+•	Username and password:
+User name. Enter the user name required to connect to the LoadRunner Enterprise server.
+Password. Enter the password required to connect to the LoadRunner Enterprise server.
+•	SSO or LDAP authentication (LoadRunner Enterprise 2021 R1 and later)
+Select Authenticate with token.
+Enter the Client ID and Secret key obtained from your LoadRunner Enterprise site administrator in the Id Key and Secret key fields." >
             [@ww.checkbox label='Use Authentication Token' name='authenticateWithToken' toggle='true'/]
             </a>
         </td>
@@ -61,8 +63,8 @@ Then use the new Jenkins credentials with this checkbox switched on." >
 
     <tr>
         <td>
-            <a href="#" title="LoadRunner Enterprise User / Token's Credentials (username or ClientIdKey)." >
-            <span>User name*</span>
+            <a href="#" title="LoadRunner Enterprise User (username) or access Token's Credentials (ClientIdKey)." >
+            <span>User name / Id Key*</span>
             </a>
         </td>
         <td>
@@ -71,8 +73,8 @@ Then use the new Jenkins credentials with this checkbox switched on." >
     </tr>
     <tr>
         <td>
-            <a href="#" title="LoadRunner Enterprise User / Token's Credentials (password or ClientSecretKey)." >
-                <span>Password</span>
+            <a href="#" title="LoadRunner Enterprise User (password) or Token's Credentials ( or ClientSecretKey)." >
+                <span>Password / Secret key</span>
             </a>
         </td>
         <td>
