@@ -50,10 +50,10 @@ For example, using https://mypcserver/LoadTest will fail. Instead, just specify 
         </td>
         <td >
             <a href="#" title="Depending on the authentication type required by your LoadRunner Enterprise server, credentials can be a username and password, or an API key for SSO or LDAP authentication.
-•	Username and password:
+- Username and password:
 User name. Enter the user name required to connect to the LoadRunner Enterprise server.
 Password. Enter the password required to connect to the LoadRunner Enterprise server.
-•	SSO or LDAP authentication (LoadRunner Enterprise 2021 R1 and later)
+- SSO or LDAP authentication (LoadRunner Enterprise 2021 R1 and later)
 Select Authenticate with token.
 Enter the Client ID and Secret key obtained from your LoadRunner Enterprise site administrator in the Id Key and Secret key fields." >
             [@ww.checkbox label='Use Authentication Token' name='authenticateWithToken' toggle='true'/]
@@ -133,8 +133,8 @@ Enter the Client ID and Secret key obtained from your LoadRunner Enterprise site
         <td>
             <a href="#" title="Add your local proxy as following: http(s)://host:port
 or Leave empty if not using a local proxy. The following proxy configurations are not supported:
--PAC (proxy auto-config).
--Automatic configuration script." >
+- PAC (proxy auto-config).
+- Automatic configuration script." >
                 <span>Local Proxy</span>
             </a>
         </td>
