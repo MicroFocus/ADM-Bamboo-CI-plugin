@@ -109,6 +109,7 @@ public interface AbstractLauncherTask extends TaskType {
             builder.directory(workingDirectory);
 
             Process process = builder.start();
+            logger.addBuildLogEntry("launcher started");
             BufferedReader output = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line;
             while ((line = output.readLine()) != null) {

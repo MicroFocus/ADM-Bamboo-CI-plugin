@@ -34,6 +34,9 @@ public class SseModel {
 
     private final String _almServerName;
     private String _almServerUrl;
+    private final String _almSSO;
+    private final String _almClientID;
+    private final String _almApiKeySecret;
     private final String _almUserName;
     private final String _almPassword;
     private final String _almDomain;
@@ -72,6 +75,9 @@ public class SseModel {
     //@DataBoundConstructor
     public SseModel(
             String almServerName,
+            String almSSO,
+            String almClientID,
+            String almApiKeySecret,
             String almUserName,
             String almPassword,
             String almDomain,
@@ -85,6 +91,9 @@ public class SseModel {
             CdaDetails cdaDetails) {
 
         _almServerName = almServerName;
+        _almSSO = almSSO;
+        _almClientID = almClientID;
+        _almApiKeySecret = almApiKeySecret;
         _almDomain = almDomain;
         _almProject = almProject;
         _timeslotDuration = timeslotDuration;
@@ -120,6 +129,18 @@ public class SseModel {
     public void setAlmServerUrl(String almServerUrl) {
 
         _almServerUrl = almServerUrl;
+    }
+
+    public String getAlmSSO() {
+        return _almSSO;
+    }
+
+    public String getAlmClientID(){
+        return _almClientID;
+    }
+
+    public String getAlmApiKeySecret(){
+        return _almApiKeySecret;
     }
 
     public String getAlmUserName() {

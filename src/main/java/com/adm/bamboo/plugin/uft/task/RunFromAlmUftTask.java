@@ -72,9 +72,17 @@ public class RunFromAlmUftTask implements AbstractLauncherTask {
 
         final String almServerPath = map.get(UFTConstants.ALM_SERVER.getValue());
         builder.setAlmServerUrl(almServerPath);
-
-        builder.setAlmUserName(map.get(UFTConstants.USER_NAME.getValue()));
-        builder.setAlmPassword(map.get(UFTConstants.PASSWORD.getValue()));
+        builder.setAlmSSO(map.get(UFTConstants.ALM_SSO.getValue()));
+        if(Boolean.valueOf(map.get(UFTConstants.ALM_SSO.getValue())).equals(true)) {
+            builder.setAlmClientID(map.get(UFTConstants.CLIENT_ID.getValue()));
+            builder.setAlmApiKeySecret(map.get(UFTConstants.API_KEY_SECRET.getValue()));
+            builder.setAlmUserName("");
+            builder.setAlmPassword("");
+        } else
+        {
+            builder.setAlmUserName(map.get(UFTConstants.USER_NAME.getValue()));
+            builder.setAlmPassword(map.get(UFTConstants.PASSWORD.getValue()));
+        }
         builder.setAlmDomain(map.get(UFTConstants.DOMAIN.getValue()));
         builder.setAlmProject(map.get(UFTConstants.PROJECT.getValue()));
 
