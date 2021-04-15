@@ -3,8 +3,20 @@
 
 <div class="toolTip" style="display: block; float: none;">[@ww.text name='RunFromAlmLabManagementTask.taskDescription'/]</div>
 [@ww.textfield labelKey="RunFromAlmLabManagementTask.almServer" name="almServer" required='true'/]
-[@ww.textfield labelKey="RunFromAlmLabManagementTask.userName" name="userName" required='true'/]
-[@ww.password labelKey="RunFromAlmLabManagementTask.password" name="password" showPassword='true'/]
+[@ui.bambooSection titleKey='ALM Connectivity' collapsible=true]
+    [@ww.checkbox labelKey="RunFromAlmLabManagementTask.almSSOEnabledInputLbl" name="almSSO" toggle='true'/]
+
+    [@ui.bambooSection dependsOn='almSSO' showOn='true']
+        [@ww.textfield labelKey="RunFromAlmLabManagementTask.clientIDInputLbl" name="clientID" required='true' /]
+        [@ww.password labelKey="RunFromAlmLabManagementTask.apiKeySecretInputLbl" name="apiKeySecret" showPassword='true' required='true'/]
+    [/@ui.bambooSection]
+
+    [@ui.bambooSection dependsOn='almSSO' showOn='false']
+        [@ww.textfield labelKey="RunFromAlmLabManagementTask.userName" name="userName" required='true'/]
+        [@ww.password labelKey="RunFromAlmLabManagementTask.password" name="password" showPassword='true'/]
+    [/@ui.bambooSection]
+[/@ui.bambooSection]
+
 [@ww.textfield labelKey="RunFromAlmLabManagementTask.domain" name="domain" required='true'/]
 [@ww.textfield labelKey="RunFromAlmLabManagementTask.projectName" name="projectName" required='true'/]
 [@ww.select labelKey="RunFromAlmLabManagementTask.runType" name="runType" list="runTypeItems" emptyOption="false"/]
@@ -44,7 +56,7 @@
     document.getElementById('deployedEnvironmentName').style.maxWidth=customWidth;
     document.getElementById('deploymentAction').style.maxWidth=customWidth;
     document.getElementById('deprovisioningAction').style.maxWidth=customWidth;
-
+    document.getElementsByClassName('collapsible-section')[0].style.maxWidth=customWidth;
     function toggle_visibility(id) {
         var e = document.getElementById(id);
         if(e.style.display == 'block')

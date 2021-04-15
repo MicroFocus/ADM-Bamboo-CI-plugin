@@ -106,8 +106,8 @@ namespace HpToolsLauncher
             get { return m_runHost; }
             set { m_runHost = value; }
         }
+        public TestStorageType Storage { get; set; }
 
-        
         /// <summary>
         /// constructor
         /// </summary>
@@ -129,6 +129,7 @@ namespace HpToolsLauncher
                                 QcRunMode enmQcRunMode,
                                 string runHost,
                                 List<string> qcTestSets,
+                                TestStorageType testStorageType,
                                 bool isSSOEnabled,
                                 string qcClientId,
                                 string qcApiKey)
@@ -144,9 +145,10 @@ namespace HpToolsLauncher
             SSOEnabled = isSSOEnabled;
             ClientID = qcClientId;
             ApiKey = qcApiKey;
-            ConsoleWriter.WriteLine("inside constructor");
+          
             Connected = ConnectToProject(m_qcServer, m_qcUser, qcPassword, m_qcDomain, m_qcProject, SSOEnabled, ClientID, ApiKey);
             TestSets = qcTestSets;
+            Storage = testStorageType;
             if (!Connected)
             {
                 Environment.Exit((int)Launcher.ExitCodeEnum.Failed);
@@ -197,7 +199,7 @@ namespace HpToolsLauncher
                     tsName = testset1.Substring(pos, testset1.Length - pos).Trim("\\".ToCharArray());
                 }
 
-                TestSuiteRunResults desc = RunTestSet(tsDir, tsName, Timeout, RunMode, RunHost);
+                TestSuiteRunResults desc = RunTestSet(tsDir, tsName, Timeout, RunMode, RunHost, Storage);
                 if (desc != null)
                     activeRunDesc.AppendResults(desc);
             }
@@ -448,7 +450,8 @@ namespace HpToolsLauncher
         /// <param name="runMode">run on LocalMachine or remote</param>
         /// <param name="runHost">if run on remote machine - remote machine name</param>
         /// <returns></returns>
-        public TestSuiteRunResults RunTestSet(string tsFolderName, string tsName, double timeout, QcRunMode runMode, string runHost)
+        public TestSuiteRunResults RunTestSet(string tsFolderName, string tsName, double timeout, QcRunMode runMode, string runHost, 
+                                                TestStorageType testStorageType)
         {
             string currentTestSetInstances = "";
             TestSuiteRunResults runDesc = new TestSuiteRunResults();
@@ -631,6 +634,12 @@ namespace HpToolsLauncher
             ITSTest prevTest = null;
             ITSTest currentTest = null;
             string abortFilename = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\stop" + Launcher.UniqueTimeStamp + ".txt";
+            
+            if (testStorageType == TestStorageType.AlmLabManagement)
+            {
+                timeout = timeout * 60;
+            }
+
             //wait for the tests to end ("normally" or because of the timeout)
             while ((tsExecutionFinished == false) && (timeout == -1 || sw.Elapsed.TotalSeconds < timeout))
             {

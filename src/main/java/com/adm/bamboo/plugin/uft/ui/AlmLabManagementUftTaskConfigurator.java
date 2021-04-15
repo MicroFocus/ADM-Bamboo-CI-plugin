@@ -46,6 +46,9 @@ public class AlmLabManagementUftTaskConfigurator extends AbstractLauncherTaskCon
         final Map<String, String> config = super.generateTaskConfigMap(params, previousTaskDefinition);
 
         config.put(UFTConstants.ALM_SERVER.getValue(), params.getString(UFTConstants.ALM_SERVER.getValue()));
+        config.put(UFTConstants.ALM_SSO.getValue(), params.getString(UFTConstants.ALM_SSO.getValue()));
+        config.put(UFTConstants.CLIENT_ID.getValue(),  params.getString(UFTConstants.CLIENT_ID.getValue()));
+        config.put(UFTConstants.API_KEY_SECRET.getValue(),  params.getString(UFTConstants.API_KEY_SECRET.getValue()));
         config.put(UFTConstants.USER_NAME.getValue(), params.getString(UFTConstants.USER_NAME.getValue()));
         config.put(UFTConstants.PASSWORD.getValue(), params.getString(UFTConstants.PASSWORD.getValue()));
         config.put(UFTConstants.DOMAIN_PARAM.getValue(), params.getString(UFTConstants.DOMAIN_PARAM.getValue()));
@@ -75,9 +78,19 @@ public class AlmLabManagementUftTaskConfigurator extends AbstractLauncherTaskCon
             errorCollection.addError(UFTConstants.ALM_SERVER.getValue(), textProvider.getText(UFTConstants.ALM_SERVER_REQUIRED_STRING.getValue()));
         }
 
-        String userName = params.getString(UFTConstants.USER_NAME.getValue());
-        if (StringUtils.isEmpty(userName)) {
-            errorCollection.addError(UFTConstants.USER_NAME.getValue(), textProvider.getText(UFTConstants.USER_NAME_REQUIRED_STRING.getValue()));
+        //if SSO is enabled
+        if(Boolean.valueOf(params.getString(UFTConstants.ALM_SSO.getValue())).equals(true)) {
+            if (StringUtils.isEmpty(params.getString(UFTConstants.CLIENT_ID.getValue()))) {
+                errorCollection.addError(UFTConstants.CLIENT_ID.getValue(), textProvider.getText("error.clientIDIsEmpty"));
+            }
+            if (StringUtils.isEmpty(params.getString(UFTConstants.API_KEY_SECRET.getValue()))) {
+                errorCollection.addError(UFTConstants.API_KEY_SECRET.getValue(), textProvider.getText("error.apiKeySecretIsEmpty"));
+            }
+        } else {
+            String userName = params.getString(UFTConstants.USER_NAME.getValue());
+            if (StringUtils.isEmpty(userName)) {
+                errorCollection.addError(UFTConstants.USER_NAME.getValue(), textProvider.getText(UFTConstants.USER_NAME_REQUIRED_STRING.getValue()));
+            }
         }
 
         String domain = params.getString(UFTConstants.DOMAIN.getValue());
@@ -122,6 +135,9 @@ public class AlmLabManagementUftTaskConfigurator extends AbstractLauncherTaskCon
         super.populateContextForEdit(context, taskDefinition);
 
         context.put(UFTConstants.ALM_SERVER.getValue(), taskDefinition.getConfiguration().get(UFTConstants.ALM_SERVER.getValue()));
+        context.put(UFTConstants.ALM_SSO.getValue(), taskDefinition.getConfiguration().get(UFTConstants.ALM_SSO.getValue()));
+        context.put(UFTConstants.CLIENT_ID.getValue(), taskDefinition.getConfiguration().get(UFTConstants.CLIENT_ID.getValue()));
+        context.put(UFTConstants.API_KEY_SECRET.getValue(), taskDefinition.getConfiguration().get(UFTConstants.API_KEY_SECRET.getValue()));
         context.put(UFTConstants.USER_NAME.getValue(), taskDefinition.getConfiguration().get(UFTConstants.USER_NAME.getValue()));
         context.put(UFTConstants.PASSWORD.getValue(), taskDefinition.getConfiguration().get(UFTConstants.PASSWORD.getValue()));
         context.put(UFTConstants.DOMAIN.getValue(), taskDefinition.getConfiguration().get(UFTConstants.DOMAIN.getValue()));

@@ -98,10 +98,11 @@ public class AlmUftTaskConfigurator extends AbstractLauncherTaskConfigurator {
             if (StringUtils.isEmpty(params.getString(UFTConstants.USER_NAME.getValue()))) {
                 errorCollection.addError(UFTConstants.USER_NAME.getValue(), textProvider.getText("error.userNameIsEmpty"));
             }
-            if (StringUtils.isEmpty(params.getString(UFTConstants.DOMAIN.getValue()))) {
-                errorCollection.addError(UFTConstants.DOMAIN.getValue(), textProvider.getText("error.domainIsEmpty"));
-            }
         }
+        if (StringUtils.isEmpty(params.getString(UFTConstants.DOMAIN.getValue()))) {
+            errorCollection.addError(UFTConstants.DOMAIN.getValue(), textProvider.getText("error.domainIsEmpty"));
+        }
+
         if (StringUtils.isEmpty(params.getString(UFTConstants.PROJECT.getValue()))) {
             errorCollection.addError(UFTConstants.PROJECT.getValue(), textProvider.getText("RunFromAlmTask.error.projectIsEmpty"));
         }

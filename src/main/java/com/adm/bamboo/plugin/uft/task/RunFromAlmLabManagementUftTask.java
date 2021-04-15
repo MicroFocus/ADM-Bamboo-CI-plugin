@@ -86,10 +86,12 @@ public class RunFromAlmLabManagementUftTask implements AbstractLauncherTask {
                     map.get(UFTConstants.DEPROVISIONING_ACTION_PARAM.getValue()));
         }
 
-        buildLogger.addBuildLogEntry("cdaDetails" + cdaDetails);
 
         Args args = new Args(
                 almServerPath,
+                map.get(UFTConstants.ALM_SSO.getValue()),
+                map.get(UFTConstants.CLIENT_ID.getValue()),
+                map.get(UFTConstants.API_KEY_SECRET.getValue()),
                 map.get(UFTConstants.DOMAIN_PARAM.getValue()),
                 map.get(UFTConstants.PROJECT_NAME_PARAM.getValue()),
                 map.get(UFTConstants.USER_NAME.getValue()),
@@ -116,12 +118,10 @@ public class RunFromAlmLabManagementUftTask implements AbstractLauncherTask {
                     buildLogger.addBuildLogEntry(message);
                 }
             };
-            buildLogger.addBuildLogEntry("args: " + args);
 
             //run task
             Testsuites result = runManager.execute(restClient, args, logger);
 
-            buildLogger.addBuildLogEntry("test suite result: " + result);
             taskContext.getBuildLogger().addBuildLogEntry("Bamboo build timestamp variable has value: " + getBuildTimeStamp(customVariableContext));
             ResultSerializer.saveResults(result, taskContext.getWorkingDirectory().getPath(), getBuildTimeStamp(customVariableContext), logger);
         } catch (InterruptedException e) {

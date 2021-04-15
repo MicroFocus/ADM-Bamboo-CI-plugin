@@ -283,6 +283,7 @@ namespace HpToolsLauncher
                                      enmQcRunMode,
                                      _ciParams["almRunHost"],
                                      sets,
+                                     runType,
                                      isSSOEnabled,
                                      clientID,
                                      apiKey);
