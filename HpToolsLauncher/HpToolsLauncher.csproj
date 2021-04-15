@@ -51,7 +51,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="interop.OTAClient">
-      <HintPath>..\..\..\Jenkins\hpe-application-automation-tools-plugin\HpToolsLauncher\externals\interop.OTAClient.dll</HintPath>
+      <HintPath>externals\interop.OTAClient.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="Interop.Wlrun, Version=11.52.0.0, Culture=neutral, processorArchitecture=MSIL">
