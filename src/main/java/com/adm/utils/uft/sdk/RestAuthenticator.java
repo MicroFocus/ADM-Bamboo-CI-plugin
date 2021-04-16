@@ -23,6 +23,7 @@ package com.adm.utils.uft.sdk;
 import com.adm.utils.uft.SSEException;
 import com.adm.utils.uft.rest.HttpHeaders;
 import com.adm.utils.uft.rest.RestClient;
+import com.microfocus.adm.performancecenter.plugins.common.rest.RESTConstants;
 
 import java.net.HttpURLConnection;
 import java.util.HashMap;
@@ -32,8 +33,45 @@ public class RestAuthenticator {
     public static final String IS_AUTHENTICATED = "rest/is-authenticated";
     public static String AUTHENTICATE_HEADER = "WWW-Authenticate";
 
-    public boolean login(Client client, String username, String password, Logger logger) {
+    private static final String APIKEY_LOGIN_API = "rest/oauth2/login";
+    private static final String CLIENT_TYPE = "ALM-CLIENT-TYPE";
 
+    /**
+     * Logins to ALM server with SSO configured
+     * @param client
+     * @param clientId
+     * @param secret
+     * @param clientType
+     * @param logger
+     * @return
+     */
+    public boolean loginWithApiKey(Client client, String clientId, String secret, String clientType, Logger logger) {
+        logger.log("Start login to ALM server with APIkey...");
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put(CLIENT_TYPE, clientType);
+        headers.put(RESTConstants.ACCEPT, "application/json");
+        headers.put(RESTConstants.CONTENT_TYPE, "application/json");
+
+        Response response =
+                client.httpPost(
+                        client.build(APIKEY_LOGIN_API),
+                        String.format("{clientId:%s, secret:%s}", clientId, secret).getBytes(),
+                        headers,
+                        ResourceAccessLevel.PUBLIC);
+        boolean result = response.isOk();
+        logger.log(
+                result ? String.format(
+                        "Logged in successfully to ALM Server %s using %s",
+                        client.getServerUrl(),
+                        clientId)
+                        : String.format(
+                        "Login to ALM Server at %s failed. Status Code: %s",
+                        client.getServerUrl(),
+                        response.getStatusCode()));
+        return result;
+    }
+
+    public boolean login(Client client, String username, String password, Logger logger) {
         boolean ret = true;
         String authenticationPoint = isAuthenticated(client, logger);
         if (authenticationPoint != null) {
@@ -47,6 +85,8 @@ public class RestAuthenticator {
                         response.getStatusCode()));
                 ret = false;
             }
+        } else{
+            logger.log("not authenticated");
         }
 
         return ret;
@@ -97,7 +137,7 @@ public class RestAuthenticator {
      *             if error such as 404, or 500
      */
     public String isAuthenticated(Client client, Logger logger) {
-
+        logger.log("isAuthenticated method");
         String ret;
         Response response =
                 client.httpGet(
@@ -132,7 +172,6 @@ public class RestAuthenticator {
     }
 
     private void logLoggedInSuccessfully(String username, String loginServerUrl, Logger logger) {
-
         logger.log(String.format(
                 "Logged in successfully to ALM Server %s using %s",
                 loginServerUrl,

@@ -78,6 +78,9 @@ public enum UFTConstants {
 
     //Run from Alm server
     ALM_SERVER("almServer"),
+    ALM_SSO("almSSO"),
+    CLIENT_ID("clientID"),
+    API_KEY_SECRET("apiKeySecret"),
     USER_NAME("userName"),
     PASSWORD("password"),
     DOMAIN("domain"),

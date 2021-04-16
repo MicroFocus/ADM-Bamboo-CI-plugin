@@ -24,6 +24,9 @@ import com.adm.utils.uft.model.CdaDetails;
 
 public class Args {
     private final String _url;
+    private final String _almSSO;
+    private final String _clientID;
+    private final String _apiKeySecret;
     private final String _domain;
     private final String _project;
     private final String _username;
@@ -39,6 +42,9 @@ public class Args {
 
     public Args(
             String url,
+            String almSSO,
+            String clientID,
+            String apiKeySecret,
             String domain,
             String project,
             String username,
@@ -52,6 +58,9 @@ public class Args {
             CdaDetails cdaDetails) {
 
         _url = url;
+        _almSSO = almSSO;
+        _clientID = clientID;
+        _apiKeySecret = apiKeySecret;
         _domain = domain;
         _project = project;
         _username = username;
@@ -68,6 +77,18 @@ public class Args {
     public String getUrl() {
 
         return _url;
+    }
+
+    public String getAlmSSO() {
+        return _almSSO;
+    }
+
+    public String getClientId() {
+        return _clientID;
+    }
+
+    public String getApiKeySecret() {
+        return _apiKeySecret;
     }
 
     public String getDomain() {

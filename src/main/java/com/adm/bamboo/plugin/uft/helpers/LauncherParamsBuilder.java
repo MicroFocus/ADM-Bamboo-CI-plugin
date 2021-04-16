@@ -32,7 +32,15 @@ import java.util.Properties;
 
 public class LauncherParamsBuilder {
 
-    private final List<String> requiredParameters = Arrays.asList("almRunHost");
+    private final List<String> requiredParameters = Arrays.asList("almRunHost",
+                                                                    "almServerUrl",
+                                                                    "almUserName",
+                                                                    "almPassword",
+                                                                    "almDomain",
+                                                                    "almProject",
+                                                                    "almRunMode",
+                                                                    "almTimeout",
+                                                                    "almRunHost");
 
     private Properties properties;
 
@@ -100,6 +108,18 @@ public class LauncherParamsBuilder {
 
     public void setAlmServerUrl(String almServerUrl) {
         setParamValue("almServerUrl", almServerUrl);
+    }
+
+    public void setAlmSSO(String almSSO) { setParamValue("almSSO", almSSO); }
+
+    public void setAlmClientID(String almClientID){ setParamValue("clientID", almClientID);}
+
+    public void setAlmApiKeySecret(String almApiKeySecret){
+        try {
+            setParamValue("apiKeySecret", EncryptionUtils.Encrypt(almApiKeySecret, EncryptionUtils.getSecretKey()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void setAlmUserName(String almUserName) {

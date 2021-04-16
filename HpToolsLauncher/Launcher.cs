@@ -232,7 +232,7 @@ namespace HpToolsLauncher
                     //check that all required parameters exist
                     foreach (string param1 in requiredParamsForQcRun)
                     {
-                        if (!_ciParams.ContainsKey(param1))
+                        if (!ciParams.ContainsKey(param1))
                         {
                             ConsoleWriter.WriteLine(string.Format(Resources.LauncherParamRequired, param1));
                             return null;
@@ -247,7 +247,7 @@ namespace HpToolsLauncher
                         dblQcTimeout = int.MaxValue;
                     }
 
-                    ConsoleWriter.WriteLine(string.Format(Resources.LuancherDisplayTimout, dblQcTimeout));
+                    ConsoleWriter.WriteLine(string.Format(Resources.LauncherDisplayTimeout, dblQcTimeout));
 
                     QcRunMode enmQcRunMode = QcRunMode.RUN_LOCAL;
                     if (!Enum.TryParse<QcRunMode>(_ciParams["almRunMode"], true, out enmQcRunMode))
@@ -259,23 +259,34 @@ namespace HpToolsLauncher
 
                     //go over testsets in the parameters, and collect them
                     List<string> sets = GetParamsWithPrefix("TestSet");
-
+                   
                     if (sets.Count == 0)
                     {
                         ConsoleWriter.WriteLine(Resources.LauncherNoTests);
                         return null;
                     }
 
+                   
+                    bool isSSOEnabled = ciParams.ContainsKey("almSSO") && Convert.ToBoolean(ciParams["almSSO"]);
+                    string clientID = ciParams.ContainsKey("clientID") ? ciParams["clientID"] : "";
+                    string apiKey = ciParams.ContainsKey("apiKeySecret") ? Decrypt(ciParams["apiKeySecret"], secretkey) : "";
+                    string almUserName = ciParams.ContainsKey("almUserName") ? ciParams["almUserName"] : "";
+                    string almPassword = ciParams.ContainsKey("almPassword") ? Decrypt(ciParams["almPassword"], secretkey) : "";
+         
                     //create an Alm runner
                     runner = new AlmTestSetsRunner(_ciParams["almServerUrl"],
-                                     _ciParams["almUserName"],
-                                     Decrypt(_ciParams["almPassword"], secretkey),
+                                      almUserName,
+                                      almPassword,
                                      _ciParams["almDomain"],
                                      _ciParams["almProject"],
                                      dblQcTimeout,
                                      enmQcRunMode,
                                      _ciParams["almRunHost"],
-                                     sets);
+                                     sets,
+                                     runType,
+                                     isSSOEnabled,
+                                     clientID,
+                                     apiKey);
                     break;
                 case TestStorageType.FileSystem:
 
