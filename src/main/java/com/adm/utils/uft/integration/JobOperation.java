@@ -34,7 +34,7 @@ import net.minidev.json.JSONValue;
 
 public class JobOperation {
     public static final String LOGIN_SECRET = "x-hp4msecret";
-    public static final String SPLIT_COMMA = ";";
+    public static final String SPLIT_COMMA = ",";
     public static final String JSESSIONID = "JSESSIONID";
     public static final String ACCEPT = "Accept";
     public static final String CONTENT_TYPE = "Content-Type";
@@ -205,7 +205,7 @@ public class JobOperation {
             List<String> setCookieList = headerFields.get(SET_COOKIE);
             String setCookie = null;
             if (setCookieList != null && setCookieList.size() != 0) {
-                setCookie = setCookieList.get(0);
+                setCookie = setCookieList.toString();
             }
 
             String jsessionId = getJSESSIONID(setCookie);
@@ -479,7 +479,8 @@ public class JobOperation {
         for (int i = 0; i < cookies.length; i++) {
             if (cookies[i].contains(JSESSIONID)) {
                 int index = cookies[i].indexOf(EQUAL);
-                id = cookies[i].substring(index + 1);
+                int endIndex = cookies[i].indexOf(";");
+                id = cookies[i].substring(index + 1,endIndex);
                 break;
             }
         }
