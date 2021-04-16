@@ -51,12 +51,13 @@ public class PcModelBamboo {
     private final String proxyOutURL;
     private final String proxyOutUser;
     private final String proxyOutPassword;
+    private final boolean authenticateWithToken;
 
 
 
     public PcModelBamboo(String pcServerName, String almUserName, String almPassword, String almDomain, String almProject,
                          String testId, String autoTestInstanceID, String testInstanceId, String timeslotDurationHours, String timeslotDurationMinutes,
-                         PostRunAction postRunAction, boolean vudsMode, boolean sla, String description, String addRunToTrendReport, String trendReportId, boolean HTTPSProtocol, String proxyOutURL, String proxyOutUser, String proxyOutPassword) {
+                         PostRunAction postRunAction, boolean vudsMode, boolean sla, String description, String addRunToTrendReport, String trendReportId, boolean HTTPSProtocol, String proxyOutURL, String proxyOutUser, String proxyOutPassword, boolean authenticateWithToken) {
 
         this.pcServerName = pcServerName;
         this.almUserName = almUserName;
@@ -77,6 +78,7 @@ public class PcModelBamboo {
         this.proxyOutURL = proxyOutURL;
         this.proxyOutUser = proxyOutUser;
         this.proxyOutPassword = proxyOutPassword;
+        this.authenticateWithToken = authenticateWithToken;
     }
 
 //    protected SecretContainer setPassword(String almPassword) {
@@ -160,6 +162,8 @@ public class PcModelBamboo {
         return this.proxyOutPassword;
     }
 
+    public boolean isAuthenticateWithToken() { return this.authenticateWithToken; }
+
     public static List<PostRunAction> getPostRunActions() {
         return Arrays.asList(PostRunAction.values());
     }
@@ -168,7 +172,7 @@ public class PcModelBamboo {
     @Override
     public String toString() {
 
-        return String.format("[PCServer='%s', User='%s', %s", runParamsToString().substring(1));
+        return String.format("[LREServer='%s', User='%s', %s", runParamsToString().substring(1));
     }
 
     public String runParamsToString() {

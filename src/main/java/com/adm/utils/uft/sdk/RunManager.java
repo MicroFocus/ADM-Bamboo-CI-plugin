@@ -37,6 +37,8 @@ public class RunManager {
     private boolean _running = false;
     private boolean _polling = false;
 
+    private static final String CLIENT_TYPE = "ALM-CLIENT-TYPE";
+
     public Testsuites execute(RestClient client, Args args, Logger logger)
             throws InterruptedException {
 
@@ -107,15 +109,24 @@ public class RunManager {
     }
 
     private boolean login(Client client, Args args) {
-
         boolean ret = true;
         try {
-            ret =
-                    new RestAuthenticator().login(
-                            client,
-                            args.getUsername(),
-                            args.getPassword(),
-                            _logger);
+            if(Boolean.valueOf(args.getAlmSSO()).equals(true)){
+                ret =
+                        new RestAuthenticator().loginWithApiKey(
+                        client,
+                        args.getClientId(),
+                        args.getApiKeySecret(),
+                        CLIENT_TYPE,
+                        _logger);
+            } else {
+                ret =
+                        new RestAuthenticator().login(
+                                client,
+                                args.getUsername(),
+                                args.getPassword(),
+                                _logger);
+            }
         } catch (Throwable cause) {
             ret = false;
             _logger.log(String.format(

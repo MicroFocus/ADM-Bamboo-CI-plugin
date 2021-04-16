@@ -298,7 +298,7 @@ Save the test in QuickTest and then run it again.</value>
   <data name="LauncherTimeoutNotNumeric" xml:space="preserve">
     <value>almTimeout should be an integer!</value>
   </data>
-  <data name="LuancherDisplayTimout" xml:space="preserve">
+  <data name="LauncherDisplayTimeout" xml:space="preserve">
     <value>Timeout is set to: {0}</value>
   </data>
   <data name="SingleSeperator" xml:space="preserve">

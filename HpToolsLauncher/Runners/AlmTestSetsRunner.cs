@@ -35,16 +35,47 @@ namespace HpToolsLauncher
 {
     public class AlmTestSetsRunner : RunnerBase, IDisposable
     {
+        private ITDConnection13 _tdConnection;
+        private ITDConnection2 _tdConnectionOld;
+
+        public ITDConnection13 TdConnection
+        {
+            get
+            {
+                if (_tdConnection == null)
+                {
+                    CreateTdConnection();
+                }
+                return _tdConnection;
+            }
+        }
+
+        public ITDConnection2 TdConnectionOld
+        {
+            get
+            {
+                if (_tdConnectionOld == null)
+                    CreateTdConnectionOld();
+                return _tdConnectionOld;
+            }
+        }
+
         QcRunMode m_runMode = QcRunMode.RUN_LOCAL;
         double m_timeout = -1;
         bool m_blnConnected = false;
-        ITDConnection2 tdConnection = null;
+        //ITDConnection2 tdConnection = null;
         List<string> colTestSets = new List<string>();
         string m_runHost = null;
         string m_qcServer = null;
         string m_qcUser = null;
         string m_qcProject = null;
         string m_qcDomain = null;
+
+        public bool SSOEnabled { get; set; }
+
+        public string ClientID { get; set; }
+
+        public string ApiKey { get; set; }
 
         public bool Connected
         {
@@ -75,19 +106,7 @@ namespace HpToolsLauncher
             get { return m_runHost; }
             set { m_runHost = value; }
         }
-
-        public ITDConnection2 TdConnection
-        {
-            get
-            {
-                if (tdConnection == null)
-                    CreateTdConnection();
-
-                return tdConnection;
-            }
-            set { tdConnection = value; }
-        }
-
+        public TestStorageType Storage { get; set; }
 
         /// <summary>
         /// constructor
@@ -109,7 +128,11 @@ namespace HpToolsLauncher
                                 double intQcTimeout,
                                 QcRunMode enmQcRunMode,
                                 string runHost,
-                                List<string> qcTestSets)
+                                List<string> qcTestSets,
+                                TestStorageType testStorageType,
+                                bool isSSOEnabled,
+                                string qcClientId,
+                                string qcApiKey)
         {
             Timeout = intQcTimeout;
             RunMode = enmQcRunMode;
@@ -119,9 +142,13 @@ namespace HpToolsLauncher
             m_qcUser = qcUser;
             m_qcProject = qcProject;
             m_qcDomain = qcDomain;
-
-            Connected = ConnectToProject(qcServer, qcUser, qcPassword, qcDomain, qcProject);
+            SSOEnabled = isSSOEnabled;
+            ClientID = qcClientId;
+            ApiKey = qcApiKey;
+          
+            Connected = ConnectToProject(m_qcServer, m_qcUser, qcPassword, m_qcDomain, m_qcProject, SSOEnabled, ClientID, ApiKey);
             TestSets = qcTestSets;
+            Storage = testStorageType;
             if (!Connected)
             {
                 Environment.Exit((int)Launcher.ExitCodeEnum.Failed);
@@ -172,7 +199,7 @@ namespace HpToolsLauncher
                     tsName = testset1.Substring(pos, testset1.Length - pos).Trim("\\".ToCharArray());
                 }
 
-                TestSuiteRunResults desc = RunTestSet(tsDir, tsName, Timeout, RunMode, RunHost);
+                TestSuiteRunResults desc = RunTestSet(tsDir, tsName, Timeout, RunMode, RunHost, Storage);
                 if (desc != null)
                     activeRunDesc.AppendResults(desc);
             }
@@ -181,9 +208,35 @@ namespace HpToolsLauncher
         }
 
         /// <summary>
-        /// creats a connection to Qc
+        /// Creates a connection to QC (for ALM 12.60 and 15)
         /// </summary>
         private void CreateTdConnection()
+        {
+            Type type = Type.GetTypeFromProgID("TDApiOle80.TDConnection");
+
+            if (type == null)
+            {
+                ConsoleWriter.WriteLine(GetAlmNotInstalledError());
+                Environment.Exit((int)Launcher.ExitCodeEnum.Failed);
+            }
+
+            try
+            {
+                object conn = Activator.CreateInstance(type);
+                _tdConnection = conn as ITDConnection13;
+            }
+            catch (FileNotFoundException ex)
+            {
+                ConsoleWriter.WriteLine(GetAlmNotInstalledError());
+                ConsoleWriter.WriteLine(ex.Message);
+                Environment.Exit((int)Launcher.ExitCodeEnum.Failed);
+            }
+        }
+
+        /// <summary>
+        /// creats a connection to Qc
+        /// </summary>
+        private void CreateTdConnectionOld()
         {
 
             Type type = Type.GetTypeFromProgID("TDApiOle80.TDConnection");
@@ -197,7 +250,7 @@ namespace HpToolsLauncher
             try
             {
                 object conn = Activator.CreateInstance(type);
-                this.tdConnection = conn as ITDConnection2;
+                this._tdConnectionOld = conn as ITDConnection2;
 
             }
             catch (FileNotFoundException ex)
@@ -215,7 +268,18 @@ namespace HpToolsLauncher
         {
             List<string> extraSetsList = new List<string>();
             List<string> removeSetsList = new List<string>();
-            var tsTreeManager = (ITestSetTreeManager)tdConnection.TestSetTreeManager;
+            // var tsTreeManager = (ITestSetTreeManager)tdConnection.TestSetTreeManager;
+            ITestSetTreeManager tsTreeManager;
+            if (TdConnection != null)
+            {
+                _tdConnection.KeepConnection = true;
+                tsTreeManager = (ITestSetTreeManager)_tdConnection.TestSetTreeManager;
+            }
+            else
+            {
+                _tdConnectionOld.KeepConnection = true;
+                tsTreeManager = (ITestSetTreeManager)_tdConnectionOld.TestSetTreeManager;
+            }
 
             //go over all the testsets / testSetFolders and check which is which
             foreach (string testsetOrFolder in TestSets)
@@ -279,7 +343,7 @@ namespace HpToolsLauncher
         /// <returns>the folder object</returns>
         private ITestSetFolder GetFolder(string testset)
         {
-            var tsTreeManager = (ITestSetTreeManager)tdConnection.TestSetTreeManager;
+            var tsTreeManager = (ITestSetTreeManager)_tdConnection.TestSetTreeManager;
             ITestSetFolder tsFolder = null;
             try
             {
@@ -386,14 +450,26 @@ namespace HpToolsLauncher
         /// <param name="runMode">run on LocalMachine or remote</param>
         /// <param name="runHost">if run on remote machine - remote machine name</param>
         /// <returns></returns>
-        public TestSuiteRunResults RunTestSet(string tsFolderName, string tsName, double timeout, QcRunMode runMode, string runHost)
+        public TestSuiteRunResults RunTestSet(string tsFolderName, string tsName, double timeout, QcRunMode runMode, string runHost, 
+                                                TestStorageType testStorageType)
         {
             string currentTestSetInstances = "";
             TestSuiteRunResults runDesc = new TestSuiteRunResults();
             TestRunResults activeTestDesc = null;
+            ITestSetTreeManager tsTreeManager;
 
-            var tsFactory = tdConnection.TestSetFactory;
-            var tsTreeManager = (ITestSetTreeManager)tdConnection.TestSetTreeManager;
+            if (TdConnection != null)
+            {
+                var tsFactory = _tdConnection.TestSetFactory;
+                tsTreeManager = (ITestSetTreeManager)_tdConnection.TestSetTreeManager;
+            }
+            else
+            {
+                var tsFactory = _tdConnectionOld.TestSetFactory;
+                tsTreeManager = (ITestSetTreeManager)_tdConnectionOld.TestSetTreeManager;
+            }
+           // var tsFactory = _tdConnection.TestSetFactory;
+            //var tsTreeManager = (ITestSetTreeManager)_tdConnection.TestSetTreeManager;
             List tsList = null;
             string tsPath = "Root\\" + tsFolderName;
             ITestSetFolder tsFolder = null;
@@ -558,6 +634,12 @@ namespace HpToolsLauncher
             ITSTest prevTest = null;
             ITSTest currentTest = null;
             string abortFilename = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\stop" + Launcher.UniqueTimeStamp + ".txt";
+            
+            if (testStorageType == TestStorageType.AlmLabManagement)
+            {
+                timeout = timeout * 60;
+            }
+
             //wait for the tests to end ("normally" or because of the timeout)
             while ((tsExecutionFinished == false) && (timeout == -1 || sw.Elapsed.TotalSeconds < timeout))
             {
@@ -706,6 +788,15 @@ namespace HpToolsLauncher
         private void WriteTestRunSummary(ITSTest prevTest)
         {
             int prevRunId = ConsoleWriter.ActiveTestRun.PrevRunId;
+
+            if (TdConnection != null)
+            {
+                _tdConnection.KeepConnection = true;
+            }
+            else
+            {
+                _tdConnectionOld.KeepConnection = true;
+            }
 
             int runid = GetTestRunId(prevTest);
             if (runid > prevRunId)
@@ -1021,61 +1112,136 @@ namespace HpToolsLauncher
         /// <param name="QCDomain"></param>
         /// <param name="QCProject"></param>
         /// <returns></returns>
-        public bool ConnectToProject(string QCServerURL, string QCLogin, string QCPass, string QCDomain, string QCProject)
+        public bool ConnectToProject(string QCServerURL, string QCLogin, string QCPass, string QCDomain, string QCProject,
+                                    bool SSOEnabled, string qcClientID, string qcApiKey)
         {
+             
             if (string.IsNullOrWhiteSpace(QCServerURL)
-                || string.IsNullOrWhiteSpace(QCLogin)
+                || (string.IsNullOrWhiteSpace(QCLogin) && !SSOEnabled)
                 || string.IsNullOrWhiteSpace(QCDomain)
-                || string.IsNullOrWhiteSpace(QCProject))
+                || string.IsNullOrWhiteSpace(QCProject)
+                || (SSOEnabled && (string.IsNullOrWhiteSpace(qcClientID)
+                || string.IsNullOrWhiteSpace(qcApiKey))))
             {
                 ConsoleWriter.WriteLine(Resources.AlmRunnerConnParamEmpty);
                 return false;
             }
 
-            try
-            {
-                TdConnection.InitConnectionEx(QCServerURL);
-            }
-            catch (Exception ex)
-            {
-                ConsoleWriter.WriteLine(ex.Message);
-            }
 
-            if (!TdConnection.Connected)
+            if (TdConnection != null)
             {
-                ConsoleWriter.WriteErrLine(string.Format(Resources.AlmRunnerServerUnreachable, QCServerURL));
+                try
+                {
+                    if (!SSOEnabled)
+                    {
+                       TdConnection.InitConnectionEx(QCServerURL);
+                    }
+                    else
+                    {
+                        TdConnection.InitConnectionWithApiKey(QCServerURL, qcClientID, qcApiKey);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ConsoleWriter.WriteLine(ex.Message);
+                }
+                if (TdConnection.Connected)
+                {
+                    try
+                    {
+                        if (!SSOEnabled)
+                        {
+                            TdConnection.Login(QCLogin, QCPass);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        ConsoleWriter.WriteLine(ex.Message);
+                    }
+
+                    if (TdConnection.LoggedIn)
+                    {
+                        try
+                        {
+                            TdConnection.Connect(QCDomain, QCProject);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
+
+                        if (TdConnection.ProjectConnected)
+                        {
+                            return true;
+                        }
+
+                        ConsoleWriter.WriteErrLine(Resources.AlmRunnerErrorConnectToProj);
+                    }
+                    else
+                    {
+                        ConsoleWriter.WriteErrLine(Resources.AlmRunnerErrorAuthorization);
+                    }
+
+                }
+                else
+                {
+                    ConsoleWriter.WriteErrLine(string.Format(Resources.AlmRunnerServerUnreachable, QCServerURL));
+                }
+
                 return false;
             }
-            try
+            else //older versions of ALM (< 12.60) 
             {
-                TdConnection.Login(QCLogin, QCPass);
-            }
-            catch (Exception ex)
-            {
-                ConsoleWriter.WriteLine(ex.Message);
-            }
+                try
+                {
+                    TdConnectionOld.InitConnectionEx(QCServerURL);
+                }
+                catch (Exception ex)
+                {
+                    ConsoleWriter.WriteLine(ex.Message);
+                }
 
-            if (!TdConnection.LoggedIn)
-            {
-                ConsoleWriter.WriteErrLine(Resources.AlmRunnerErrorAuthorization);
+                if (TdConnectionOld.Connected)
+                {
+                    try
+                    {
+                        TdConnectionOld.Login(QCLogin, QCPass);
+                    }
+                    catch (Exception ex)
+                    {
+                        ConsoleWriter.WriteLine(ex.Message);
+                    }
+
+                    if (TdConnectionOld.LoggedIn)
+                    {
+                        try
+                        {
+                            TdConnectionOld.Connect(QCDomain, QCProject);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
+
+                        if (TdConnectionOld.ProjectConnected)
+                        {
+                            return true;
+                        }
+
+                        ConsoleWriter.WriteErrLine(Resources.AlmRunnerErrorConnectToProj);
+                    }
+                    else
+                    {
+                        ConsoleWriter.WriteErrLine(Resources.AlmRunnerErrorAuthorization);
+                    }
+                }
+                else
+                {
+                    ConsoleWriter.WriteErrLine(string.Format(Resources.AlmRunnerServerUnreachable, QCServerURL));
+                }
+
                 return false;
             }
-
-            try
-            {
-                TdConnection.Connect(QCDomain, QCProject);
-            }
-            catch (Exception ex)
-            {
-
-            }
-
-            if (!TdConnection.ProjectConnected)
-            {
-                ConsoleWriter.WriteErrLine(Resources.AlmRunnerErrorConnectToProj);
-                return false;
-            }
-            return true;
         }
 
         private string GetQcCommonInstallationURl(string QCServerURL)
@@ -1089,8 +1255,16 @@ namespace HpToolsLauncher
         {
             if (Connected)
             {
-                tdConnection.Disconnect();
-                Marshal.ReleaseComObject(tdConnection);
+                if (TdConnection != null)
+                {
+                    _tdConnection.Disconnect();
+                    Marshal.ReleaseComObject(_tdConnection);
+                }
+                else
+                {
+                    _tdConnectionOld.Disconnect();
+                    Marshal.ReleaseComObject(_tdConnectionOld);
+                }
             }
         }
 

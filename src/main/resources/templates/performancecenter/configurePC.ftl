@@ -6,6 +6,11 @@
             padding:0 1rem 0 0;
             vertical-align:middle;}
         .t1 td{min-width:7rem;}
+
+        td:hover .tooltip{
+            display: block;
+            margin-left: 30px;
+        }
     </style>
 </head>
 <body>
@@ -15,10 +20,20 @@
 <table  class="t1" cellpadding="0" cellspacing="0" border="0">
     <tr>
         <td>
-            <span>PC Server*</span>
+            <a href="#" title=" Hostname or IP address
+The LoadRunner Enterprise Hostname or IP address. If the port of the LRE server is different than the default one, mention it by adding a collon (:) and then the port number
+Example: mypcserver.mycompany.net or 182.138.255.1 or mypcserver.mycompany.net:81
+
+If the LRE server requires to be accessed via a tenant, you can specify it by adding the tenant details to the LRE Server field.
+Example: mypcserver.mycompany.net/?tenant=fa128c06-5436-413d-9cfa-9f04bb738df3 or 182.138.255.1/?tenant=fa128c06-5436-413d-9cfa-9f04bb738df3 or mypcserver.mycompany.net:81/?tenant=fa128c06-5436-413d-9cfa-9f04bb738df3
+
+Important: Do not use the full URL of LoadRunner Enterprise server.
+For example, using https://mypcserver/LoadTest will fail. Instead, just specify 'mypcserver' value in 'LRE Server' field and switch on the 'Use HTTPS Protocol' if secured protocol is required.">
+                <span>PC Server*</span>
+            </a>
         </td>
         <td>
-            <span>[@ww.textfield name="PC Server" required='true'/]</span>
+            <span>[@ww.textfield name="LRE Server" required='true'/]</span>
         </td>
     </tr>
     <tr>
@@ -26,20 +41,41 @@
 
         </td>
         <td>
-        [@ww.checkbox label='Use HTTPS Protocol' name='https' toggle='false'/]
+            [@ww.checkbox label='Use HTTPS Protocol' name='https' toggle='false'/]
         </td>
     </tr>
     <tr>
         <td>
-            <span>User name*</span>
+
+        </td>
+        <td >
+            <a href="#" title="Depending on the authentication type required by your LoadRunner Enterprise server, credentials can be a username and password, or an API key for SSO or LDAP authentication.
+- Username and password:
+User name. Enter the user name required to connect to the LoadRunner Enterprise server.
+Password. Enter the password required to connect to the LoadRunner Enterprise server.
+- SSO or LDAP authentication (LoadRunner Enterprise 2021 R1 and later)
+Select Authenticate with token.
+Enter the Client ID and Secret key obtained from your LoadRunner Enterprise site administrator in the Id Key and Secret key fields." >
+            [@ww.checkbox label='Use token for authentication' name='authenticateWithToken' toggle='true'/]
+            </a>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <a href="#" title="LoadRunner Enterprise User (username) or access Token's Credentials (ClientIdKey)." >
+            <span>User name / Id Key*</span>
+            </a>
         </td>
         <td>
-        [@ww.textfield name="User name" required='true'/]
+            [@ww.textfield name="User name" required='true'/]
         </td>
     </tr>
     <tr>
         <td>
-            <span>Password</span>
+            <a href="#" title="LoadRunner Enterprise User (password) or Token's Credentials ( or ClientSecretKey)." >
+                <span>Password / Secret key</span>
+            </a>
         </td>
         <td>
         [@ww.password name="Password" required='false' showPassword='true'/]
@@ -63,18 +99,22 @@
     </tr>
     <tr>
         <td>
-            <span>Test ID*</span>
+            <a href="#" title="You can get the ID from My LoadRunner Enterprise > Test Management > Test Lab > Performance Test Set view. If the column is not visible, you can select it by clicking the Select Columns button" >
+                <span>Test ID*</span>
+            </a>
         </td>
         <td>
-        [@ww.textfield name="Test ID" required='true'/]
+            [@ww.textfield name="Test ID" required='true'/]
         </td>
     </tr>
     <tr>
         <td style="vertical-align: top;">
-            <span>Test Instance ID</span>
+            <a href="#" title="Represents an instance of a performance test within an ALM Test Set. In order to find the test instance id go to: LoadRunner Enterprise Application > Test Lab perspective > Performance Test Set table and look for the ID column" >
+                <span>Test Instance ID</span>
+            </a>
         </td>
         <td >
-        [@ww.radio  listKey="key" listValue="value" name="TestInstanceIDRadio" list="testInstanceList" toggle="true" /]
+            [@ww.radio  listKey="key" listValue="value" name="TestInstanceIDRadio" list="testInstanceList" toggle="true" /]
         </td>
     </tr>
     <tr>
@@ -91,7 +131,12 @@
 <table  class="t1">
     <tr>
         <td>
-            <span>Local Proxy</span>
+            <a href="#" title="Add your local proxy as following: http(s)://host:port
+or Leave empty if not using a local proxy. The following proxy configurations are not supported:
+- PAC (proxy auto-config).
+- Automatic configuration script." >
+                <span>Local Proxy</span>
+            </a>
         </td>
         <td>
         [@ww.textfield  name="Local Proxy" required='false'/]
@@ -235,10 +280,28 @@
                            minutes.value= v" />
         </td>
     </tr>
-</table>
-[@ww.checkbox label='Use VUDs' name='vuds' toggle='true'/]
-[@ww.checkbox label='Set step status according to SLA' name='sla' toggle='false'/]
+    <tr>
+        <td>
 
+        </td>
+        <td>
+            <a href="#" title="A Virtual User Day (VUD) license provides you with a specified number of Vusers (VUDs) that you can run an unlimited number of times within a 24 hour period.
+Before using this option, make sure that VUDs licenses are applied in your Micro Focus LoadRunner Enterprise environment." >
+                [@ww.checkbox label='Use VUDs' name='vuds' toggle='true'/]
+            </a>
+        </td>
+    </tr>
+    <tr>
+        <td>
+
+        </td>
+        <td>
+            <a href="#" title="Check this option in order to set the build-step status according to a pre-defined SLA (Service Level Agreement) configured within your performance test.
+Unless checked, the build-step will be labeled as Passed as long as no failures occurred."
+            [@ww.checkbox label='Set step status according to SLA' name='sla' toggle='false'/]
+        </td>
+    </tr>
+</table>
 <script>
 </script>
 

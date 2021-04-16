@@ -36,7 +36,7 @@ import java.util.Map;
  */
 public class TaskConfigurator extends AbstractTaskConfigurator {
 
-    public static final String PC_SERVER ="PC Server";
+    public static final String PC_SERVER ="LRE Server";
     public static final String USER ="User name";
     public static final String HTTPS ="https";
     public static final String PASSWORD ="Password";
@@ -55,7 +55,7 @@ public class TaskConfigurator extends AbstractTaskConfigurator {
     public static final String TIMESLOT_MINUTES ="Minutes";
     public static final String VUDS ="vuds";
     public static final String SLA ="sla";
-
+    public static final String AUTHENTICATE_WITH_TOKEN = "authenticateWithToken";
 
     public Map<String,String> postRunActionMap = new LinkedHashMap<String, String>();
     public Map<String,String> testInstanceMap = new LinkedHashMap<String, String>();
@@ -68,9 +68,6 @@ public class TaskConfigurator extends AbstractTaskConfigurator {
     private static final String REGEX =  "^\\$\\{.*\\}$|^[0-9]*$"; // regex for parameter or numeric
 
     ArrayList<String> localDAtaArray = new ArrayList<String>();
-
-
-
 
     // Convert the params from the ui into a config map to be stored in the database for being used by the task.
     public Map<String, String> generateTaskConfigMap(final ActionParametersMap params, final TaskDefinition previousTaskDefinition)
@@ -96,7 +93,7 @@ public class TaskConfigurator extends AbstractTaskConfigurator {
         config.put(TIMESLOT_MINUTES, params.getString(TIMESLOT_MINUTES));
         config.put(VUDS, params.getString(VUDS));
         config.put(SLA, params.getString(SLA));
-
+        config.put(AUTHENTICATE_WITH_TOKEN, params.getString(AUTHENTICATE_WITH_TOKEN));
 
         return config;
     }
@@ -107,8 +104,6 @@ public class TaskConfigurator extends AbstractTaskConfigurator {
         updateLocalArray();
 
         super.validate(params, errorCollection);
-
-
 
         //final String PCServerValue = params.getString(PC_SERVER);
         for (String p : localDAtaArray) {
@@ -127,10 +122,7 @@ public class TaskConfigurator extends AbstractTaskConfigurator {
                 }
             }
         }
-
     }
-
-
 
     // array with parameters we want to validate
     private void updateLocalArray(){
@@ -147,8 +139,7 @@ public class TaskConfigurator extends AbstractTaskConfigurator {
         localDAtaArray.add(TIMESLOT_HOURS);
         localDAtaArray.add(TIMESLOT_MINUTES);
         localDAtaArray.add(TREND_REPORT_ID);
-//        localDAtaArray.add(POST_RUN_ACTION);
-
+        // localDAtaArray.add(POST_RUN_ACTION);
 
         postRunActionMap.put(PostRunAction.DO_NOTHING.getValue().replaceAll(" ","_"), PostRunAction.DO_NOTHING.getValue()); //"Do Not Collate"
         postRunActionMap.put(PostRunAction.COLLATE.getValue().replaceAll(" ","_"), PostRunAction.COLLATE.getValue()); // "Collate Results"
@@ -160,8 +151,6 @@ public class TaskConfigurator extends AbstractTaskConfigurator {
         trendReportMap.put("NO_TREND","Do Not Trend");
         trendReportMap.put("ASSOCIATED","Use trend report associated with the test - Performance Center 12.55 or later");
         trendReportMap.put("USE_ID","Add run to trend report with ID");
-
-
     }
 
 
@@ -171,16 +160,14 @@ public class TaskConfigurator extends AbstractTaskConfigurator {
     {
         updateLocalArray();
 
-
-
         context.put("postRunActionList", postRunActionMap);
         context.put("testInstanceList",testInstanceMap);
         context.put("trendReporList",trendReportMap);
 
-  //      context.put("selectedPostRunAction",taskDefinition.getConfiguration().get(POST_RUN_ACTION));
-
+        // context.put("selectedPostRunAction",taskDefinition.getConfiguration().get(POST_RUN_ACTION));
 
         context.put(PC_SERVER, taskDefinition.getConfiguration().get(PC_SERVER));
+        context.put(AUTHENTICATE_WITH_TOKEN, taskDefinition.getConfiguration().get(AUTHENTICATE_WITH_TOKEN));
         context.put(USER, taskDefinition.getConfiguration().get(USER));
         context.put(HTTPS, taskDefinition.getConfiguration().get(HTTPS));
         context.put(PASSWORD, taskDefinition.getConfiguration().get(PASSWORD));
@@ -199,11 +186,7 @@ public class TaskConfigurator extends AbstractTaskConfigurator {
         context.put(TIMESLOT_MINUTES, taskDefinition.getConfiguration().get(TIMESLOT_MINUTES));
         context.put(VUDS, taskDefinition.getConfiguration().get(VUDS));
         context.put(SLA, taskDefinition.getConfiguration().get(SLA));
-
-
-
         //config.put(POST_RUN_ACTION, params.getString(POST_RUN_ACTION));
-
     }
 
     // Fill the data of the task when opening it at the first time
@@ -219,5 +202,4 @@ public class TaskConfigurator extends AbstractTaskConfigurator {
         context.put(TIMESLOT_HOURS,"0");
         context.put(TIMESLOT_MINUTES,"30");
     }
-
 }

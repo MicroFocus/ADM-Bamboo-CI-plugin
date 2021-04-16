@@ -128,7 +128,11 @@ namespace HpToolsLauncherTests
                 100000,
                 QcRunMode.RUN_LOCAL,
                 null,
-                new List<string> { "Aaron\\Amit" });
+                new List<string> { "Aaron\\Amit" },
+                TestStorageType.Alm,
+                false,
+                "",
+                "");
 
             if (runner.Connected)
                 runner.Run();
