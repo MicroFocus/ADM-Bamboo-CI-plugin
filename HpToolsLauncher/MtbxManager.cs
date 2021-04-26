@@ -170,7 +170,13 @@ namespace HpToolsLauncher
                     if (xname != null)
                         name = xname.Value;
                     var testName = path.Substring(path.LastIndexOf("\\") + 1);
-                    
+
+                    string currentFolder = AppDomain.CurrentDomain.BaseDirectory.ToLower();
+                    if (path.ToLower().Contains(currentFolder))
+                    {
+                        testName = path.Substring(currentFolder.Length);
+                    }
+
                     //TestInfo col = new TestInfo(path, name, testGroupName);
                     TestInfo col = new TestInfo(path, testName, testGroupName);
                     HashSet<string> paramNames = new HashSet<string>();
