@@ -91,7 +91,7 @@
         <maven-source-plugin.version>2.2.1</maven-source-plugin.version>
         <bamboo.version>5.10.3</bamboo.version>
         <bamboo.data.version>5.10.3</bamboo.data.version>
-        <amps.version>5.1.11</amps.version>
+        <amps.version>8.0.0</amps.version>
         <plugin.testrunner.version>1.2.3</plugin.testrunner.version>
         <atlassian.spring.scanner.version>1.2.13</atlassian.spring.scanner.version>
         <!-- This key is used to keep the consistency between the key in atlassian-plugin.xml and the key to generate bundle. -->
@@ -199,6 +199,10 @@
                     <groupId>commons-codec</groupId>
                     <artifactId>commons-codec</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-jdk14</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 
@@ -280,7 +284,7 @@
 
         <plugins>
             <plugin>
-                <artifactId>maven-bamboo-plugin</artifactId>
+                <artifactId>bamboo-maven-plugin</artifactId>
                 <groupId>com.atlassian.maven.plugins</groupId>
                 <version>${amps.version}</version>
                 <extensions>true</extensions>
@@ -288,7 +292,7 @@
                     <allowGoogleTracking>false</allowGoogleTracking>
                     <productVersion>${bamboo.version}</productVersion>
                     <productDataVersion>${bamboo.data.version}</productDataVersion>
-                    <enableFastdev>false</enableFastdev>
+                    <enableQuickReload>false</enableQuickReload>
                     <buildTestPlugin>false</buildTestPlugin>
                     <!-- See here for more options: -->
                     <!-- https://developer.atlassian.com/docs/developer-tools/working-with-the-sdk/about-amps-build-options/amps-build-configuration-reference -->

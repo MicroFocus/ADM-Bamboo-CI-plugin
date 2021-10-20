@@ -20,7 +20,7 @@
 
 package com.adm.bamboo.plugin.uft.api;
 
-import com.adm.bamboo.plugin.uft.capability.CapabilityUftDefaultsHelper;
+import com.adm.bamboo.plugin.uft.capability.UftCapabilityTypeModule;
 import com.adm.bamboo.plugin.uft.helpers.HpTasksArtifactRegistrator;
 import com.atlassian.bamboo.build.Job;
 import com.atlassian.bamboo.collections.ActionParametersMap;
@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class AbstractLauncherTaskConfigurator extends AbstractTaskConfigurator implements TaskRequirementSupport {
+
     private static final String BUILD_WORKING_DIR = "bamboo.agentId";
 
     private ArtifactDefinitionManager artifactDefinitionManager;
@@ -71,7 +72,7 @@ public class AbstractLauncherTaskConfigurator extends AbstractTaskConfigurator i
     @NotNull
     @Override
     public Set<Requirement> calculateRequirements(TaskDefinition taskDefinition) {
-        RequirementImpl uftReq = new RequirementImpl(CapabilityUftDefaultsHelper.CAPABILITY_UFT, true, ".*");
+        RequirementImpl uftReq = new RequirementImpl(UftCapabilityTypeModule.MF_UFT_CAPABILITY, true, ".*");
         Set<Requirement> result = new HashSet<Requirement>();
         result.add(uftReq);
         return result;

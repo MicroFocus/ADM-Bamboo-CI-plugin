@@ -21,7 +21,9 @@
 package com.adm.bamboo.plugin.uft.task;
 
 import com.adm.bamboo.plugin.uft.api.AbstractLauncherTask;
+import com.adm.bamboo.plugin.uft.capability.UftCapabilityTypeModule;
 import com.adm.bamboo.plugin.uft.helpers.LauncherParamsBuilder;
+import com.adm.bamboo.plugin.uft.helpers.locator.UFTLocatorServiceFactory;
 import com.adm.utils.uft.enums.RunType;
 import com.adm.bamboo.plugin.uft.results.TestResultHelperAlm;
 import com.adm.utils.uft.enums.AlmRunMode;
@@ -35,6 +37,7 @@ import com.atlassian.bamboo.task.TaskResult;
 import com.atlassian.bamboo.task.TaskResultBuilder;
 import com.atlassian.bamboo.utils.i18n.I18nBean;
 import com.atlassian.bamboo.utils.i18n.I18nBeanFactory;
+import com.atlassian.bamboo.v2.build.agent.capability.CapabilityContext;
 import com.atlassian.bamboo.variable.CustomVariableContext;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import org.apache.commons.lang.StringUtils;
@@ -50,12 +53,14 @@ public class RunFromAlmUftTask implements AbstractLauncherTask {
     private final I18nBean i18nBean;
     private final TestCollationService testCollationService;
     private final CustomVariableContext customVariableContext;
+    private final CapabilityContext capabilityContext;
 
-    public RunFromAlmUftTask(final TestCollationService testCollationService, @NotNull final I18nBeanFactory i18nBeanFactory,
+    public RunFromAlmUftTask(final TestCollationService testCollationService, final CapabilityContext capabilityContext, @NotNull final I18nBeanFactory i18nBeanFactory,
                              @ComponentImport CustomVariableContext customVariableContext) {
         this.i18nBean = i18nBeanFactory.getI18nBean();
         this.testCollationService = testCollationService;
         this.customVariableContext = customVariableContext;
+        this.capabilityContext = capabilityContext;
     }
 
     public CustomVariableContext getCustomVariableContext() {
@@ -122,6 +127,18 @@ public class RunFromAlmUftTask implements AbstractLauncherTask {
     @NotNull
     @Override
     public TaskResult execute(@NotNull TaskContext taskContext) throws TaskException {
+        final ConfigurationMap map = taskContext.getConfigurationMap();
+        final String runMode = map.get(UFTConstants.RUN_MODE.getValue());
+
+        // we only check if the remote machine has the UFT installed, if the ALM run mode is local,
+        // otherwise it is not our responsibility
+        if (runMode.equals(UFTConstants.RUN_LOCALLY_PARAMETER.getValue())
+                &&
+                !UFTLocatorServiceFactory.getInstance().getLocator().validateUFTPath(capabilityContext.getCapabilityValue(UftCapabilityTypeModule.MF_UFT_CAPABILITY))) {
+            taskContext.getBuildLogger().addErrorLogEntry(i18nBean.getText("MFCapability.notValid"));
+            return TaskResultBuilder.newBuilder(taskContext).failedWithError().build();
+        }
+
         return AbstractLauncherTask.super.execute(taskContext, customVariableContext);
     }
 

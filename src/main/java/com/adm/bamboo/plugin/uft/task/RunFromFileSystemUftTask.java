@@ -21,7 +21,9 @@
 package com.adm.bamboo.plugin.uft.task;
 
 import com.adm.bamboo.plugin.uft.api.AbstractLauncherTask;
+import com.adm.bamboo.plugin.uft.capability.UftCapabilityTypeModule;
 import com.adm.bamboo.plugin.uft.helpers.LauncherParamsBuilder;
+import com.adm.bamboo.plugin.uft.helpers.locator.UFTLocatorServiceFactory;
 import com.adm.utils.uft.FilesHandler;
 import com.adm.utils.uft.integration.HttpConnectionException;
 import com.adm.utils.uft.integration.JobOperation;
@@ -41,6 +43,7 @@ import com.atlassian.bamboo.task.TaskResultBuilder;
 import com.atlassian.bamboo.utils.i18n.I18nBean;
 import com.atlassian.bamboo.utils.i18n.I18nBeanFactory;
 
+import com.atlassian.bamboo.v2.build.agent.capability.CapabilityContext;
 import com.atlassian.bamboo.variable.CustomVariableContext;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import net.minidev.json.JSONArray;
@@ -64,17 +67,18 @@ public class RunFromFileSystemUftTask implements AbstractLauncherTask {
     private final I18nBean i18nBean;
     private final TestCollationService testCollationService;
     private final CustomVariableContext customVariableContext;
+    private final CapabilityContext capabilityContext;
 
-    public RunFromFileSystemUftTask(@NotNull final TestCollationService testCollationService, @NotNull final I18nBeanFactory i18nBeanFactory, @ComponentImport CustomVariableContext customVariableContext) {
+    public RunFromFileSystemUftTask(@NotNull final TestCollationService testCollationService, final CapabilityContext capabilityContext, @NotNull final I18nBeanFactory i18nBeanFactory, @ComponentImport CustomVariableContext customVariableContext) {
         this.i18nBean = i18nBeanFactory.getI18nBean();
         this.testCollationService = testCollationService;
         this.customVariableContext = customVariableContext;
+        this.capabilityContext = capabilityContext;
     }
 
     public CustomVariableContext getCustomVariableContext() {
         return customVariableContext;
     }
-
 
     /**
      * Get task properties
@@ -232,6 +236,11 @@ public class RunFromFileSystemUftTask implements AbstractLauncherTask {
     @NotNull
     @Override
     public TaskResult execute(@NotNull final TaskContext taskContext) throws TaskException {
+        if (!UFTLocatorServiceFactory.getInstance().getLocator().validateUFTPath(capabilityContext.getCapabilityValue(UftCapabilityTypeModule.MF_UFT_CAPABILITY))) {
+            taskContext.getBuildLogger().addErrorLogEntry(i18nBean.getText("MFCapability.notValid"));
+            return TaskResultBuilder.newBuilder(taskContext).failedWithError().build();
+        }
+
        return AbstractLauncherTask.super.execute(taskContext, customVariableContext);
     }
 

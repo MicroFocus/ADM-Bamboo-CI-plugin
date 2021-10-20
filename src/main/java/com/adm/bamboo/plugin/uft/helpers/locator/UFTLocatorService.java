@@ -18,38 +18,35 @@
  * ___________________________________________________________________
  */
 
-package com.adm.bamboo.plugin.uft.helpers;
+package com.adm.bamboo.plugin.uft.helpers.locator;
 
-import com.sun.jna.platform.win32.Advapi32Util;
-import com.sun.jna.platform.win32.WinReg;
+public interface UFTLocatorService {
 
-public class WindowsRegistry {
-    private static final String SOFTWARE_KEY = "SOFTWARE\\";
-    private static final String WOW_6432_PREFIX = "SOFTWARE\\WOW6432NODE\\";
+    /**
+     * Checks by registry if the UFT is installed on the agent's machine
+     * @return
+     */
+    boolean isInstalled();
 
-    private static boolean IsX64() {
-        String arch = System.getProperty("os.arch");
-        if (arch == null) {
-            return false;
-        }
-        return arch.contains("64");
-    }
+    /**
+     * Returns the absolute path of the UFT executable installation by registry
+     * @return
+     */
+    String getPath();
 
-    private static String GetArchKeyName(final String key) {
-        String keyUpper = key.toUpperCase();
-        if (IsX64() && !keyUpper.startsWith(WOW_6432_PREFIX) && keyUpper.startsWith(SOFTWARE_KEY)) {
-            return WOW_6432_PREFIX + key.substring(SOFTWARE_KEY.length());
-        } else {
-            return key;
-        }
-    }
+    /**
+     * Returns the absolute path of the UFT executable without validating it,
+     * It will be validated each Task run
+     * @param startingPathPoint The user given UFT path, which is not yet validated
+     * @return
+     */
+    String getPathFromManualPoint(String startingPathPoint);
 
-    public static String readHKLMString(final String key, final String value) {
-        try {
-            String newKey = GetArchKeyName(key);
-            return Advapi32Util.registryGetStringValue(WinReg.HKEY_LOCAL_MACHINE, newKey, value);
-        } catch (Throwable e) {
-            return "";
-        }
-    }
+    /**
+     * Validates by registry the UFT path
+     * @param path
+     * @return
+     */
+    boolean validateUFTPath(String path);
+
 }
