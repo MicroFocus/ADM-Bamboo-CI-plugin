@@ -100,6 +100,7 @@ public interface AbstractLauncherTask extends TaskType {
                 TaskUtils.logErrorMessage(ie, buildLogger, taskContext);
             }
         }
+
         return collateResults(taskContext, mergedProperties);
     }
 

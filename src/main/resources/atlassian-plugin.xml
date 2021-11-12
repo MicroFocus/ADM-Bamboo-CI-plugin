@@ -53,6 +53,10 @@
         <context>bamboo-plugin</context>
     </web-resource>
 
+    <capabilityType key="MicroFocusUftCapabilityType" name="Micro Focus UFT" class="com.adm.bamboo.plugin.uft.capability.UftCapabilityTypeModule" sortOrder="1001">
+        <description>Micro Focus UFT Capability Type</description>
+        <resource type="freemarker" name="edit" location="capability/editMicroFocusCapability.ftl" />
+    </capabilityType>
 
     <taskType key="LoadRunnerTestTask" name="LoadRunner Test Task"
               class="com.adm.bamboo.plugin.loadrunner.task.LoadRunnerTestTask">
@@ -71,7 +75,7 @@
         <description>Execute UFT tests from file system</description>
         <category name="test"/>
         <configuration class="com.adm.bamboo.plugin.uft.ui.FileSystemUftTaskConfigurator"/>
-        <capabilityDefaultsHelper class="com.adm.bamboo.plugin.uft.capability.CapabilityUftDefaultsHelper"/>
+        <capabilityDefaultsHelper class="com.adm.bamboo.plugin.uft.capability.UftCapabilityTypeModule"/>
         <resource
                 type="freemarker"
                 name="edit"
@@ -192,4 +196,5 @@
         <resource type="freemarker" name="edit" location="templates/sv/svChangeMode.ftl"/>
         <resource type="download" name="icon" location="/images/task/sv/svChangeMode_icon.png"/>
     </taskType>
+
 </atlassian-plugin>

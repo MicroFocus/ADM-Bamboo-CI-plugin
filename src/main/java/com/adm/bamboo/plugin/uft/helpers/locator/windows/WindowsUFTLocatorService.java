@@ -18,50 +18,71 @@
  * ___________________________________________________________________
  */
 
-package com.adm.bamboo.plugin.uft.capability;
+package com.adm.bamboo.plugin.uft.helpers.locator.windows;
 
 import com.adm.bamboo.plugin.uft.helpers.WindowsRegistry;
+import com.adm.bamboo.plugin.uft.helpers.locator.UFTLocatorService;
 import com.adm.utils.uft.StringUtils;
-import com.atlassian.bamboo.v2.build.agent.capability.CapabilityDefaultsHelper;
-import com.atlassian.bamboo.v2.build.agent.capability.CapabilityImpl;
-import com.atlassian.bamboo.v2.build.agent.capability.CapabilitySet;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
-public class CapabilityUftDefaultsHelper implements CapabilityDefaultsHelper {
+public class WindowsUFTLocatorService implements UFTLocatorService {
 
-    public static final String CAPABILITY_HP_ROOT = CapabilityDefaultsHelper.CAPABILITY_BUILDER_PREFIX + ".Micro Focus";
-    public static final String CAPABILITY_UFT = CAPABILITY_HP_ROOT + ".Unified Functional Testing";
     private static final String UFT_REGISTRY_KEY = "SOFTWARE\\Mercury Interactive\\QuickTest Professional\\CurrentVersion";
-    private static final String UFT_REGISTRY_VALUE = "QuickTest Professional";
+    private static final String UFT_REGISTRY_INSTALL_VALUE = "QuickTest Professional";
+    private static final String UFT_REGISTRY_VERSION_MAJOR_VALUE = "Major";
     private static final String UFT_EXE_NAME = "bin\\UFT.exe";
 
-    @NotNull
     @Override
-    public CapabilitySet addDefaultCapabilities(final CapabilitySet capabilitySet) {
-        String uftPath = getUftExePath();
-        if (!StringUtils.isNullOrEmpty(uftPath)) {
-            CapabilityImpl capability = new CapabilityImpl(CAPABILITY_UFT, uftPath);
-            capabilitySet.addCapability(capability);
-        } else {
-            capabilitySet.removeCapability(CAPABILITY_UFT);
-        }
-        return capabilitySet;
+    public boolean isInstalled() {
+        return !StringUtils.isNullOrEmpty(WindowsRegistry.readHKLMString(UFT_REGISTRY_KEY, UFT_REGISTRY_VERSION_MAJOR_VALUE));
     }
 
-    private static String getUftExePath() {
-        String installPath = WindowsRegistry.readHKLMString(UFT_REGISTRY_KEY, UFT_REGISTRY_VALUE);
+    @Override
+    public String getPath() {
+        final String installPath = WindowsRegistry.readHKLMString(UFT_REGISTRY_KEY, UFT_REGISTRY_INSTALL_VALUE);
+
         if (StringUtils.isNullOrEmpty(installPath)) {
             return "";
         }
+
         File f = new File(installPath);
         if (f.exists() && f.isDirectory()) {
             f = new File(f, UFT_EXE_NAME);
+
             if (f.exists() && f.isFile()) {
                 return f.getAbsolutePath();
             }
         }
+
         return "";
     }
+
+    @Override
+    public String getPathFromManualPoint(String startingPathPoint) {
+        return startingPathPoint + "\\" + UFT_EXE_NAME;
+    }
+
+    @Override
+    public boolean validateUFTPath(String path) {
+        // the registry entry is always created when the UFT is installed, therefore
+        // we can validate the given path by comparing to the registry specified path
+        // at this part we will be connected to the remote machine's file system
+
+        final File f = new File(path);
+
+        if (f.exists() && f.isFile()) {
+            final File registryPathFile = new File(WindowsRegistry.readHKLMString(UFT_REGISTRY_KEY, UFT_REGISTRY_INSTALL_VALUE), UFT_EXE_NAME);
+
+            // the UFT is not installed, according to the registry
+            if (!registryPathFile.exists()) {
+                return false;
+            }
+
+            return registryPathFile.getAbsolutePath().equals(f.getAbsolutePath());
+        }
+
+        return false;
+    }
+
 }
