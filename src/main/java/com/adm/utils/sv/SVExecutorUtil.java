@@ -50,7 +50,7 @@ public class SVExecutorUtil {
      * @return the command executor
      */
     public static ICommandExecutor createCommandExecutor(URL url, Credentials credentials) throws Exception {
-        return new CommandExecutorFactory().createCommandExecutor(url, credentials);
+        return new CommandExecutorFactory().createCommandExecutor(url, true, credentials);
     }
 
     /**
