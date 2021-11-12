@@ -189,7 +189,7 @@
         <dependency>
             <groupId>com.microfocus.sv</groupId>
             <artifactId>SVConfigurator</artifactId>
-            <version>5.3</version>
+            <version>5.4.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-io</groupId>
@@ -227,11 +227,6 @@
                 <enabled>true</enabled>
                 <checksumPolicy>warn</checksumPolicy>
             </releases>
-        </repository>
-        <repository>
-            <id>bintray-adm-maven</id>
-            <name>bintray</name>
-            <url>https://dl.bintray.com/adm/maven</url>
         </repository>
     </repositories>
 
