@@ -36,6 +36,9 @@ import com.atlassian.bamboo.task.TaskResultBuilder;
 import com.atlassian.bamboo.utils.i18n.I18nBean;
 import com.atlassian.bamboo.utils.i18n.I18nBeanFactory;
 
+import net.minidev.json.JSONObject;
+import net.minidev.json.JSONValue;
+import net.minidev.json.parser.ParseException;
 import org.apache.commons.lang.BooleanUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -107,6 +110,15 @@ public class UploadApplicationUftTask implements AbstractLauncherTask {
             }
 
             if (StringUtils.isNullOrEmpty(info)) {
+                return logErrorMessage(i18nBean.getText("UploadApplicationTask.error.unknownErr"), buildLogger, taskContext);
+            }
+
+            try {
+                JSONObject jsonObject = (JSONObject) JSONValue.parseStrict(info);
+                if ((boolean) jsonObject.get("error")) {
+                    return logErrorMessage((String) jsonObject.get("message"), buildLogger, taskContext);
+                }
+            } catch (ParseException e) {
                 return logErrorMessage(i18nBean.getText("UploadApplicationTask.error.unknownErr"), buildLogger, taskContext);
             }
 
