@@ -22,6 +22,7 @@ package com.adm.bamboo.plugin.uft.task;
 
 import com.adm.bamboo.plugin.uft.api.AbstractLauncherTask;
 import com.adm.bamboo.plugin.uft.ui.UploadApplicationUftTaskConfigurator;
+import com.adm.utils.uft.StringUtils;
 import com.adm.utils.uft.integration.HttpConnectionException;
 import com.adm.utils.uft.integration.JobOperation;
 import com.adm.utils.uft.enums.UFTConstants;
@@ -35,6 +36,9 @@ import com.atlassian.bamboo.task.TaskResultBuilder;
 import com.atlassian.bamboo.utils.i18n.I18nBean;
 import com.atlassian.bamboo.utils.i18n.I18nBeanFactory;
 
+import net.minidev.json.JSONObject;
+import net.minidev.json.JSONValue;
+import net.minidev.json.parser.ParseException;
 import org.apache.commons.lang.BooleanUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -87,22 +91,37 @@ public class UploadApplicationUftTask implements AbstractLauncherTask {
         List<String> applicationsPaths = UploadApplicationUftTaskConfigurator.fetchMCApplicationPathFromContext(map);
 
         if (applicationsPaths == null || applicationsPaths.size() == 0) {
-            logErrorMessage(i18nBean.getText("UploadApplicationTask.error.atLeastOneApp"), buildLogger, taskContext);
+            return logErrorMessage(i18nBean.getText("UploadApplicationTask.error.atLeastOneApp"), buildLogger, taskContext);
         }
 
         for (String path : applicationsPaths) {
             String appName = new File(path).getName();
-            buildLogger.addBuildLogEntry(i18nBean.getText("UploadApplicationTask.msg.startUpload" + appName));
+            buildLogger.addBuildLogEntry(String.format(i18nBean.getText("UploadApplicationTask.msg.startUpload"), appName));
+
+            String info = null;
+            try {
+                info = operation.upload(path);
+            } catch (HttpConnectionException e) {
+                return logErrorMessage(i18nBean.getText("UploadApplicationTask.error.failToConnectMCServer"), buildLogger, taskContext);
+            } catch (FileNotFoundException e) {
+                return logErrorMessage(String.format(i18nBean.getText("UploadApplicationTask.error.failToFindApp"), appName), buildLogger, taskContext);
+            } catch (IOException e) {
+                return logErrorMessage(i18nBean.getText("UploadApplicationTask.error.uploadApp"), buildLogger, taskContext);
+            }
+
+            if (StringUtils.isNullOrEmpty(info)) {
+                return logErrorMessage(i18nBean.getText("UploadApplicationTask.error.unknownErr"), buildLogger, taskContext);
+            }
 
             try {
-                String info = operation.upload(path);
-            } catch (HttpConnectionException e) {
-                logErrorMessage(i18nBean.getText("UploadApplicationTask.error.failToConnectMCServer"), buildLogger, taskContext);
-            } catch (FileNotFoundException e) {
-                logErrorMessage(i18nBean.getText("UploadApplicationTask.error.failToFindApp"), buildLogger, taskContext);
-            } catch (IOException e) {
-                logErrorMessage(i18nBean.getText("UploadApplicationTask.error.uploadApp"), buildLogger, taskContext);
+                JSONObject jsonObject = (JSONObject) JSONValue.parseStrict(info);
+                if ((boolean) jsonObject.get("error")) {
+                    return logErrorMessage((String) jsonObject.get("message"), buildLogger, taskContext);
+                }
+            } catch (ParseException e) {
+                return logErrorMessage(i18nBean.getText("UploadApplicationTask.error.unknownErr"), buildLogger, taskContext);
             }
+
             buildLogger.addBuildLogEntry(i18nBean.getText("UploadApplicationTask.msg.uploadSuccessful"));
         }
 

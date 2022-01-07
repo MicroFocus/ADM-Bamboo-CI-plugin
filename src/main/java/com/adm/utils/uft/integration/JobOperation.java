@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
@@ -117,9 +118,8 @@ public class JobOperation {
                 jsessionId = (String) jsonObject.get(JSESSIONID);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            return null;
         }
-
 
         File appFile = new File(appPath);
 
@@ -160,10 +160,10 @@ public class JobOperation {
 
         HttpResponse response = HttpUtils.post(proxyInfo, uploadUrl, headers, bytes);
 
-
         if (response != null && response.getJsonObject() != null) {
             json = response.getJsonObject().toJSONString();
         }
+
         return json;
     }
 
