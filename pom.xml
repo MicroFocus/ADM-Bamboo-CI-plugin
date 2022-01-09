@@ -102,7 +102,7 @@
         <matching.obj>jarfile_batch_sign_local_timestamp</matching.obj>
         <file.name>${project.artifactId}-${project.version}.jar</file.name>
         <shaded.file.name>${project.artifactId}-${project.version}-shaded.jar</shaded.file.name>
-        <integrations.sdk.version>1.1</integrations.sdk.version>
+        <integrations.sdk.version>2.7.2.6</integrations.sdk.version>
         <nexus-staging-maven-plugin.version>1.6.7</nexus-staging-maven-plugin.version>
 
         <msbuild.exe>C:\Windows\Microsoft.NET\Framework\v4.0.30319\msbuild.exe</msbuild.exe>
