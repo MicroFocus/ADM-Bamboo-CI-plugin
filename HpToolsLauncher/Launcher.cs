@@ -258,7 +258,7 @@ namespace HpToolsLauncher
                     ConsoleWriter.WriteLine(string.Format(Resources.LauncherDisplayRunmode, enmQcRunMode.ToString()));
 
                     //go over testsets in the parameters, and collect them
-                    List<string> sets = GetParamsWithPrefix("TestSet");
+                    List<string> sets = GetParamsWithPrefix("TestSet", true);
                    
                     if (sets.Count == 0)
                     {
@@ -374,7 +374,7 @@ namespace HpToolsLauncher
             return runner;
         }
 
-        private List<string> GetParamsWithPrefix(string prefix)
+        private List<string> GetParamsWithPrefix(string prefix, bool skipEmptyEntries = false)
         {
             int idx = 1;
             List<string> parameters = new List<string>();
@@ -383,8 +383,13 @@ namespace HpToolsLauncher
                 string set = _ciParams[prefix + idx];
                 if (set.StartsWith("Root\\"))
                     set = set.Substring(5);
-                set = set.TrimEnd("\\".ToCharArray());
-                parameters.Add(set.TrimEnd());
+
+                set = set.TrimEnd(" \\".ToCharArray());
+                if (!(skipEmptyEntries && string.IsNullOrWhiteSpace(set)))
+                {
+                    parameters.Add(set);
+                }
+
                 ++idx;
             }
             return parameters;
