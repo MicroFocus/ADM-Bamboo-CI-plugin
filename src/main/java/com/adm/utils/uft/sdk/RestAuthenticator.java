@@ -137,7 +137,6 @@ public class RestAuthenticator {
      *             if error such as 404, or 500
      */
     public String isAuthenticated(Client client, Logger logger) {
-        logger.log("isAuthenticated method");
         String ret;
         Response response =
                 client.httpGet(

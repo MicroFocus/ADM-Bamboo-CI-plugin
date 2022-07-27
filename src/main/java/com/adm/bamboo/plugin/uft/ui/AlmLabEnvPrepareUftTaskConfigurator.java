@@ -194,7 +194,7 @@ public class AlmLabEnvPrepareUftTaskConfigurator extends AbstractLauncherTaskCon
     }
 
     public static boolean useExistingConfiguration(Map<String, String> confMap) {
-        return confMap.get(UFTConstants.ENV_ALM_CONFIGS_OPTION).equals(UFTConstants.ENV_ALM_CONFIG_PATTERN_OPTION_EXIST);
+        return (UFTConstants.ENV_ALM_CONFIG_PATTERN_OPTION_EXIST).getValue().equals(confMap.get(UFTConstants.ENV_ALM_CONFIGS_OPTION.getValue()));
     }
 
 }
