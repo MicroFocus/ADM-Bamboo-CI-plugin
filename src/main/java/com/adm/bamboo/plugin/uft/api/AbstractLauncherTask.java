@@ -109,6 +109,7 @@ public interface AbstractLauncherTask extends TaskType {
             ProcessBuilder builder = new ProcessBuilder(launcherPath, "-paramfile", paramFile);
             builder.directory(workingDirectory);
 
+            logger.addBuildLogEntry(launcherPath + " -paramfile " + paramFile);
             Process process = builder.start();
             BufferedReader output = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line;

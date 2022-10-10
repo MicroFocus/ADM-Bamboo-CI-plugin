@@ -93,7 +93,8 @@ public final class TestResultHelperFileSystem {
                 }
             }
         } catch (JAXBException ex) {
-            logger.addBuildLogEntry("Test results file (" + results.getName() + ") has invalid format.");
+            logger.addBuildLogEntry(ex.getMessage());
+            logger.addBuildLogEntry("Failed to parse test results file (" + results.getName() + ").");
         }
 
         return resultItems;

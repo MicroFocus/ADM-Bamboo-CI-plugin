@@ -33,7 +33,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Paths;
 import java.text.DateFormat;
-import java.text.Format;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -55,8 +54,7 @@ public class ResultSerializer {
             if (testsuites != null)
             {
                 StringWriter writer = new StringWriter();
-                JAXBContext context = JAXBContext.newInstance(Testsuites.class);
-                Marshaller marshaller = context.createMarshaller();
+                Marshaller marshaller = getJaxbContext(Testsuites.class).createMarshaller();
                 marshaller.marshal(testsuites, writer);
 
                 PrintWriter resultWriter = new PrintWriter(filePath);
@@ -85,12 +83,23 @@ public class ResultSerializer {
 
     public static Testsuites Deserialize(File file) throws JAXBException
     {
-        JAXBContext jaxbContext = JAXBContext.newInstance(Testsuites.class);
-
-        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+        Unmarshaller jaxbUnmarshaller = getJaxbContext(Testsuites.class).createUnmarshaller();
         Testsuites testsuites = (Testsuites)jaxbUnmarshaller.unmarshal(file);
 
         return testsuites;
+    }
+
+    private static JAXBContext getJaxbContext(Class clazz) throws JAXBException {
+        JAXBContext context;
+        Thread t = Thread.currentThread();
+        ClassLoader orig = t.getContextClassLoader();
+        t.setContextClassLoader(ResultSerializer.class.getClassLoader());
+        try {
+            context = JAXBContext.newInstance(clazz);
+        } finally {
+            t.setContextClassLoader(orig);
+        }
+        return context;
     }
 
     private static String getFullFilePath(String workingDirectoryPath, String fileName)
