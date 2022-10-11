@@ -42,13 +42,13 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import static java.lang.String.format;
 
 public class AlmLabEnvPrepareUftTask implements AbstractLauncherTask {
-    private VariableDefinitionManager variableDefinitionManager;
+    private final VariableService variableService;
 
-    public void setVariableDefinitionManager(VariableDefinitionManager variableDefinitionManager) {
-       this.variableDefinitionManager = variableDefinitionManager;
+    public AlmLabEnvPrepareUftTask(VariableDefinitionManager variableDefinitionManager) {
+
+        this.variableService = new VariableService(variableDefinitionManager);
     }
 
     @NotNull
@@ -85,6 +85,7 @@ public class AlmLabEnvPrepareUftTask implements AbstractLauncherTask {
                 project,
                 userName);
 
+
         AutEnvironmentConfigModel autEnvModel = new AutEnvironmentConfigModel(
                 almServerPath,
                 userName,
@@ -98,7 +99,12 @@ public class AlmLabEnvPrepareUftTask implements AbstractLauncherTask {
                 autEnvironmentParameters);
 
         try {
-            Logger logger = buildLogger::addBuildLogEntry;
+
+            Logger logger = new Logger() {
+                public void log(String message) {
+                    buildLogger.addBuildLogEntry(message);
+                }
+            };
 
             AUTEnvironmentBuilderPerformer performer = new AUTEnvironmentBuilderPerformer(restClient, logger, autEnvModel);
             performer.start();
@@ -106,14 +112,11 @@ public class AlmLabEnvPrepareUftTask implements AbstractLauncherTask {
             String outputConfig = confMap.get(UFTConstants.OUTPUT_CONFIG_ID.getValue());
 
             if (!StringUtils.isNullOrEmpty(outputConfig)) {
+
                 String confId = autEnvModel.getCurrentConfigID();
-                if (variableDefinitionManager == null) {
-                    logger.log("Warning: variableDefinitionManager is null. The outEnvID cannot be saved as global variable.");
-                } else {
-                    logger.log(format("The outEnvID [%s] will be saved as global variable", confId));
-                    new VariableService(variableDefinitionManager).saveGlobalVariable(outputConfig, confId);
-                }
+                variableService.saveGlobalVariable(outputConfig, confId);
             }
+
         } catch (InterruptedException e) {
             state = TaskState.ERROR;
         } catch (Throwable cause) {
