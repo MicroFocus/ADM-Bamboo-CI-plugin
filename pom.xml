@@ -25,7 +25,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.adm</groupId>
     <artifactId>app-delivery-management-bamboo</artifactId>
-    <version>2.0</version>
+    <version>2.1</version>
     <packaging>atlassian-plugin</packaging>
 
     <name>Micro Focus Bamboo plugin</name>
@@ -87,7 +87,7 @@
     <properties>
         <maven-javadoc-plugin.version>2.10.4</maven-javadoc-plugin.version>
         <maven-gpg-plugin.version>1.5</maven-gpg-plugin.version>
-        <maven.compiler.plugin.version>1.8</maven.compiler.plugin.version>
+        <java.version>1.8</java.version>
         <maven-source-plugin.version>2.2.1</maven-source-plugin.version>
         <bamboo.version>5.10.3</bamboo.version>
         <bamboo.data.version>5.10.3</bamboo.data.version>
@@ -102,7 +102,7 @@
         <matching.obj>jarfile_batch_sign_local_timestamp</matching.obj>
         <file.name>${project.artifactId}-${project.version}.jar</file.name>
         <shaded.file.name>${project.artifactId}-${project.version}-shaded.jar</shaded.file.name>
-        <integrations.sdk.version>2.7.2.6</integrations.sdk.version>
+        <integrations.sdk.version>2.7.6.1</integrations.sdk.version>
         <nexus-staging-maven-plugin.version>1.6.7</nexus-staging-maven-plugin.version>
 
         <msbuild.exe>C:\Windows\Microsoft.NET\Framework\v4.0.30319\msbuild.exe</msbuild.exe>
@@ -194,7 +194,7 @@
         <dependency>
             <groupId>com.microfocus.sv</groupId>
             <artifactId>SVConfigurator</artifactId>
-            <version>5.4.1</version>
+            <version>5.5</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-io</groupId>
@@ -217,6 +217,14 @@
             <artifactId>plugins-common</artifactId>
             <version>1.0.2-TENANT</version>
         </dependency>
+
+        <!-- !!!!! VERY IMPORTANT NOTE: jakarta.xml.bind-api 3.0.0-RC1 is required to get rid of JAXB runtime errors, even if it is not used in code, so please do not remove it, unless your are sure the JAXB objects are working with remote agents using either JDK1.8 or JDK11 -->
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>3.0.0-RC1</version>
+        </dependency>
+
     </dependencies>
 
     <repositories>
@@ -255,12 +263,13 @@
         <pluginManagement>
             <plugins>
                 <plugin>
-                    <artifactId>maven-compiler-plugin</artifactId>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <version>3.3</version>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.10.1</version>
                     <configuration>
-                        <source>${maven.compiler.plugin.version}</source>
-                        <target>${maven.compiler.plugin.version}</target>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                        <!--<release>${java.version}</release>-->
                     </configuration>
                 </plugin>
                 <plugin>

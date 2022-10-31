@@ -230,7 +230,7 @@
                             return;
                         }
                     }
-                    jobId =  data.data && data.data.id;
+                    jobId =  dataJSON.data && dataJSON.data.id;
                     if (!jobId){
                         alert('The login to Mobile Center failed. Check that the Mobile Center login information is correct.');
                         openMCBtn.disabled = false;

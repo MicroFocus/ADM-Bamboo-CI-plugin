@@ -20,9 +20,6 @@
 
 package com.adm.utils.uft.enums;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public enum UFTConstants {
 
     //Run from File System
@@ -144,7 +141,7 @@ public enum UFTConstants {
     OUTPUT_CONFIG_ID("outEnvID"),
 
     //lists and maps for controls with collections
-    ENV_ALM_CONFIGS_OPTION("ALMConfigOptions"),
+    ENV_ALM_CONFIG_OPTIONS("ALMConfigOptions"),
     ENV_ALM_CONFIG_PATTERN_OPTION_NEW("ALMConfUseNew"),
     ENV_ALM_CONFIG_PATTERN_OPTION_EXIST("ALMConfUseExist"),
 

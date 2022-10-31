@@ -51,7 +51,7 @@ public class AlmLabEnvPrepareUftTaskConfigurator extends AbstractLauncherTaskCon
         config.put(UFTConstants.DOMAIN.getValue(), params.getString(UFTConstants.DOMAIN.getValue()));
         config.put(UFTConstants.PROJECT_LAB_ENV.getValue(), params.getString(UFTConstants.PROJECT_LAB_ENV.getValue()));
 
-        config.put(UFTConstants.ENV_ALM_CONFIGS_OPTION.getValue(), params.getString(UFTConstants.ENV_ALM_CONFIGS_OPTION.getValue()));
+        config.put(UFTConstants.ENV_ALM_CONFIG_OPTIONS.getValue(), params.getString(UFTConstants.ENV_ALM_CONFIG_OPTIONS.getValue()));
         config.put(UFTConstants.AUT_ENV_NEW_CONFIG_NAME.getValue(), params.getString(UFTConstants.AUT_ENV_NEW_CONFIG_NAME.getValue()));
         config.put(UFTConstants.AUT_ENV_EXIST_CONFIG_ID.getValue(), params.getString(UFTConstants.AUT_ENV_EXIST_CONFIG_ID.getValue()));
         config.put(UFTConstants.AUT_ENV_ID.getValue(), params.getString(UFTConstants.AUT_ENV_ID.getValue()));
@@ -110,7 +110,7 @@ public class AlmLabEnvPrepareUftTaskConfigurator extends AbstractLauncherTaskCon
             errorCollection.addError(UFTConstants.AUT_ENV_ID.getValue(), textProvider.getText("AlmLabEnvPrepareTask.error.autEnvIDIsEmpty"));
         }
 
-        if (UFTConstants.ENV_ALM_CONFIG_PATTERN_OPTION_NEW.getValue().equals(params.getString(UFTConstants.ENV_ALM_CONFIGS_OPTION.getValue()))) {
+        if (UFTConstants.ENV_ALM_CONFIG_PATTERN_OPTION_NEW.getValue().equals(params.getString(UFTConstants.ENV_ALM_CONFIG_OPTIONS.getValue()))) {
             if (StringUtils.isEmpty(params.getString(UFTConstants.AUT_ENV_NEW_CONFIG_NAME.getValue()))) {
                 errorCollection.addError(UFTConstants.AUT_ENV_NEW_CONFIG_NAME.getValue(), textProvider.getText("AlmLabEnvPrepareTask.error.assignAUTEnvConfValueIsNotAssigned"));
             }
@@ -124,7 +124,7 @@ public class AlmLabEnvPrepareUftTaskConfigurator extends AbstractLauncherTaskCon
     @Override
     public void populateContextForCreate(@NotNull final Map<String, Object> context) {
         super.populateContextForCreate(context);
-        context.put(UFTConstants.ENV_ALM_CONFIGS_OPTION.getValue(), UFTConstants.ENV_ALM_CONFIG_PATTERN_OPTION_EXIST.getValue());
+        context.put(UFTConstants.ENV_ALM_CONFIG_OPTIONS.getValue(), UFTConstants.ENV_ALM_CONFIG_PATTERN_OPTION_EXIST.getValue());
         populateContextForLists(context);
     }
 
@@ -165,7 +165,7 @@ public class AlmLabEnvPrepareUftTaskConfigurator extends AbstractLauncherTaskCon
         context.put(UFTConstants.DOMAIN.getValue(), configuration.get(UFTConstants.DOMAIN.getValue()));
         context.put(UFTConstants.PROJECT_LAB_ENV.getValue(), configuration.get(UFTConstants.PROJECT_LAB_ENV.getValue()));
 
-        context.put(UFTConstants.ENV_ALM_CONFIGS_OPTION.getValue(), configuration.get(UFTConstants.ENV_ALM_CONFIGS_OPTION.getValue()));
+        context.put(UFTConstants.ENV_ALM_CONFIG_OPTIONS.getValue(), configuration.get(UFTConstants.ENV_ALM_CONFIG_OPTIONS.getValue()));
         context.put(UFTConstants.AUT_ENV_NEW_CONFIG_NAME.getValue(), configuration.get(UFTConstants.AUT_ENV_NEW_CONFIG_NAME.getValue()));
         context.put(UFTConstants.AUT_ENV_EXIST_CONFIG_ID.getValue(), configuration.get(UFTConstants.AUT_ENV_EXIST_CONFIG_ID.getValue()));
         context.put(UFTConstants.AUT_ENV_ID.getValue(), configuration.get(UFTConstants.AUT_ENV_ID.getValue()));
@@ -194,7 +194,7 @@ public class AlmLabEnvPrepareUftTaskConfigurator extends AbstractLauncherTaskCon
     }
 
     public static boolean useExistingConfiguration(Map<String, String> confMap) {
-        return (UFTConstants.ENV_ALM_CONFIG_PATTERN_OPTION_EXIST).getValue().equals(confMap.get(UFTConstants.ENV_ALM_CONFIGS_OPTION.getValue()));
+        String envAlmConfOption = confMap.get(UFTConstants.ENV_ALM_CONFIG_OPTIONS.getValue());
+        return envAlmConfOption != null && (UFTConstants.ENV_ALM_CONFIG_PATTERN_OPTION_EXIST).getValue().equals(envAlmConfOption);
     }
-
 }
