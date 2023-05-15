@@ -96,7 +96,7 @@ public class RunFromFileSystemUftTask implements AbstractLauncherTask {
         builder.setRunType(RunType.FILE_SYSTEM);
 
         String timeout = map.get(UFTConstants.TIMEOUT.getValue());
-        builder.setPerScenarioTimeOut(timeout);
+        builder.setFsTimeout(timeout);
 
         boolean useMC = BooleanUtils.toBoolean(map.get(UFTConstants.USE_MC_SETTINGS.getValue()));
         if (useMC) {

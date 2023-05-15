@@ -170,6 +170,9 @@ public class LauncherParamsBuilder {
         setParamValue("PerScenarioTimeOut", perScenarioTimeOut);
     }
 
+    public void setFsTimeout(String fsTimeout) {
+        setParamValue("fsTimeout", fsTimeout);
+    }
     public void setFileSystemPassword(String oriPass) {
         try {
             String encPass = EncryptionUtils.Encrypt(oriPass, EncryptionUtils.getSecretKey());
