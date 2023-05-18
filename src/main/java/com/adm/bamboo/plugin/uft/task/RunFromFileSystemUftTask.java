@@ -23,6 +23,7 @@ package com.adm.bamboo.plugin.uft.task;
 import com.adm.bamboo.plugin.uft.api.AbstractLauncherTask;
 import com.adm.bamboo.plugin.uft.capability.UftCapabilityTypeModule;
 import com.adm.bamboo.plugin.uft.helpers.LauncherParamsBuilder;
+import com.adm.bamboo.plugin.uft.helpers.locator.UFTLocatorService;
 import com.adm.bamboo.plugin.uft.helpers.locator.UFTLocatorServiceFactory;
 import com.adm.utils.uft.FilesHandler;
 import com.adm.utils.uft.integration.HttpConnectionException;
@@ -49,14 +50,13 @@ import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Properties;
 
 import static com.adm.bamboo.plugin.uft.results.TestResultHelper.collateTestResults;
@@ -236,7 +236,9 @@ public class RunFromFileSystemUftTask implements AbstractLauncherTask {
     @NotNull
     @Override
     public TaskResult execute(@NotNull final TaskContext taskContext) throws TaskException {
-        if (!UFTLocatorServiceFactory.getInstance().getLocator().validateUFTPath(capabilityContext.getCapabilityValue(UftCapabilityTypeModule.MF_UFT_CAPABILITY))) {
+        final String fullPathOfUftExe = capabilityContext.getCapabilityValue(UftCapabilityTypeModule.MF_UFT_CAPABILITY);
+        final UFTLocatorService locator = UFTLocatorServiceFactory.getInstance().getLocator();
+        if (!locator.validateUFTPath(fullPathOfUftExe)) {
             taskContext.getBuildLogger().addErrorLogEntry(i18nBean.getText("MFCapability.notValid"));
             return TaskResultBuilder.newBuilder(taskContext).failedWithError().build();
         }
@@ -354,6 +356,9 @@ public class RunFromFileSystemUftTask implements AbstractLauncherTask {
 
         if (publishMode.equals(UFTConstants.PUBLISH_MODE_FAILED_VALUE.getValue())) {
             return ResultTypeFilter.FAILED;
+        }
+        if (publishMode.equals(UFTConstants.PUBLISH_MODE_NEVER_VALUE.getValue())) {
+            return null;
         }
 
         return ResultTypeFilter.All;

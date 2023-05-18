@@ -32,7 +32,7 @@ public interface UFTLocatorService {
      * Returns the absolute path of the UFT executable installation by registry
      * @return
      */
-    String getPath();
+    String getUftExeFullPath();
 
     /**
      * Returns the absolute path of the UFT executable without validating it,
@@ -48,5 +48,4 @@ public interface UFTLocatorService {
      * @return
      */
     boolean validateUFTPath(String path);
-
 }
