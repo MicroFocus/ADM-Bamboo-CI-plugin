@@ -101,7 +101,7 @@ public enum UFTConstants {
     TEST_ID_PARAM("testId"),
     DESCRIPTION_PARAM("description"),
     DURATION_PARAM("duration"),
-    ENVIRONMENT_ID_PARAM("enviromentId"),
+    ENVIRONMENT_ID_PARAM("environmentId"),
     USE_SDA_PARAM("useSda"),
     DEPLOYMENT_ACTION_PARAM("deploymentAction"),
     DEPLOYED_ENVIRONMENT_NAME("deployedEnvironmentName"),
