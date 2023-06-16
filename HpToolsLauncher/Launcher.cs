@@ -39,8 +39,7 @@ namespace HpToolsLauncher
     {
         private IXmlBuilder _xmlBuilder;
         private bool _ciRun = false;
-        private readonly string _paramFileName = null;
-        private JavaProperties _ciParams = new JavaProperties();
+        private JavaProperties _ciParams = new();
         private TestStorageType _runtype = TestStorageType.Unknown;
         private readonly string _failOnUftTestFailed;
         private static readonly char[] _commaAndSemiColon = new char[] { ',' , ';'};
@@ -89,7 +88,6 @@ namespace HpToolsLauncher
             _runtype = runtype;
             if (paramFileName != null)
                 _ciParams.Load(paramFileName);
-            _paramFileName = paramFileName;
 
             _failOnUftTestFailed = string.IsNullOrEmpty(failOnTestFailed) ? "N" : failOnTestFailed;
         }
@@ -168,7 +166,7 @@ namespace HpToolsLauncher
             //runner instantiation failed (no tests to run or other problem)
             if (runner == null)
             {
-                Environment.Exit((int)Launcher.ExitCodeEnum.Failed);
+                Environment.Exit((int)ExitCodeEnum.Failed);
             }
 
             //run the tests!
@@ -185,7 +183,7 @@ namespace HpToolsLauncher
         /// <param name="ciParams"></param>
         IAssetRunner CreateRunner(TestStorageType runType)
         {
-            IAssetRunner runner = null;
+            IAssetRunner runner;
             switch (runType)
             {
                 case TestStorageType.Alm:
@@ -250,12 +248,12 @@ namespace HpToolsLauncher
                     //get the tests
                     IEnumerable<string> tests = GetParamsWithPrefix("Test");
 
-                    IEnumerable<string> jenkinsEnvVariablesWithCommas = GetParamsWithPrefix("JenkinsEnv");
-                    Dictionary<string, string> jenkinsEnvVariables = new();
-                    foreach (string var in jenkinsEnvVariablesWithCommas)
+                    IEnumerable<string> bambooEnvVarsWithCommas = GetParamsWithPrefix("JenkinsEnv");
+                    Dictionary<string, string> bambooEnvVars = new();
+                    foreach (string var in bambooEnvVarsWithCommas)
                     { 
                         string[] nameVal = var.Split(_commaAndSemiColon);
-                        jenkinsEnvVariables.Add(nameVal[0], nameVal[1]);
+                        bambooEnvVars.Add(nameVal[0], nameVal[1]);
                     }
                     //parse the timeout into a TimeSpan
                     TimeSpan timeout = TimeSpan.MaxValue;
@@ -305,9 +303,6 @@ namespace HpToolsLauncher
                         ConsoleWriter.WriteLine(Resources.LauncherNoValidTests);
                         return null;
                     }
-                    string fsAppParamName = _ciParams.GetOrDefault("fsAppParamName");
-                    string appIdentifier = _ciParams.GetOrDefault(fsAppParamName);
-
                     RunAsUser uftRunAsUser = null;
                     string username = _ciParams.GetOrDefault("uftRunAsUserName");
                     if (!username.IsNullOrEmpty())
@@ -325,7 +320,7 @@ namespace HpToolsLauncher
                             uftRunAsUser = new RunAsUser(username, plainTextPwd.ToSecureString());
                         }
                     }
-                    runner = new FileSystemTestsRunner(validTests, timeout, pollingInterval, perScenarioTimeOut, ignoreErrorStrings, jenkinsEnvVariables, fsAppParamName, appIdentifier, uftRunAsUser);
+                    runner = new FileSystemTestsRunner(validTests, timeout, pollingInterval, perScenarioTimeOut, ignoreErrorStrings, bambooEnvVars, uftRunAsUser);
 
                     break;
 
@@ -339,7 +334,7 @@ namespace HpToolsLauncher
         private List<string> GetParamsWithPrefix(string prefix, bool skipEmptyEntries = false)
         {
             int idx = 1;
-            List<string> parameters = new List<string>();
+            List<string> parameters = new();
             while (_ciParams.ContainsKey(prefix + idx))
             {
                 string set = _ciParams[prefix + idx];
@@ -347,7 +342,7 @@ namespace HpToolsLauncher
                     set = set.Substring(5);
 
                 set = set.TrimEnd(" \\".ToCharArray());
-                if (!(skipEmptyEntries && string.IsNullOrWhiteSpace(set)))
+                if (!(skipEmptyEntries && set.IsNullOrWhiteSpace()))
                 {
                     parameters.Add(set);
                 }
@@ -368,26 +363,25 @@ namespace HpToolsLauncher
             {
                 if (_ciRun)
                 {
-                    _xmlBuilder = new JunitXmlBuilder();
-                    _xmlBuilder.XmlName = resultsFile;
+                    _xmlBuilder = new JunitXmlBuilder { XmlName = resultsFile };
                 }
 
                 TestSuiteRunResults results = runner.Run();
 
                 if (results == null)
-                    Environment.Exit((int)Launcher.ExitCodeEnum.Failed);
+                    Environment.Exit((int)ExitCodeEnum.Failed);
 
                 _xmlBuilder.CreateXmlFromRunResults(results);
 
                 //if there is an error
-                if (results.TestRuns.Any(tr => tr.TestState == TestState.Failed || tr.TestState == TestState.Error))
+                if (results.TestRuns.Any(tr => tr.TestState.In(TestState.Failed, TestState.Error)))
                 {
-                    ExitCode = Launcher.ExitCodeEnum.Failed;
+                    ExitCode = ExitCodeEnum.Failed;
                 }
 
                 //this is the total run summary
                 ConsoleWriter.ActiveTestRun = null;
-                string runStatus = (ExitCode == ExitCodeEnum.Passed || ExitCode == ExitCodeEnum.Unstable) ? "Job succeeded" : "Job failed";
+                string runStatus = ExitCode.In(ExitCodeEnum.Passed, ExitCodeEnum.Unstable) ? "Job succeeded" : "Job failed";
                 int numFailures = results.TestRuns.Count(t => t.TestState == TestState.Failed);
                 int numSuccess = results.TestRuns.Count(t => t.TestState == TestState.Passed);
                 int numErrors = results.TestRuns.Count(t => t.TestState == TestState.Error);

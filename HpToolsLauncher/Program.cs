@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using HpToolsLauncher.Properties;
+using HpToolsLauncher.Utils;
 
 namespace HpToolsLauncher
 {
@@ -35,7 +36,7 @@ namespace HpToolsLauncher
 
     class Program
     {
-        private static readonly Dictionary<string, string> argsDictionary = new Dictionary<string, string>();
+        private static readonly Dictionary<string, string> argsDictionary = new();
 
         static void Main(string[] args)
         {
@@ -46,22 +47,19 @@ namespace HpToolsLauncher
                 ShowHelp();
                 return;
             }
-            for (int i = 0; i < args.Count(); i = i + 2)
+            for (int i = 0; i < args.Count(); i += 2)
             {
                 string key = args[i].StartsWith("-") ? args[i].Substring(1) : args[i];
-                string val = i + 1 < args.Count() ? args[i + 1].Trim() : String.Empty;
+                string val = i + 1 < args.Count() ? args[i + 1].Trim() : string.Empty;
                 argsDictionary[key] = val;
             }
-            string paramFileName, runtype;
             string failOnTestFailed = "N";
-            argsDictionary.TryGetValue("runtype", out runtype);
-            argsDictionary.TryGetValue("paramfile", out paramFileName);
-            TestStorageType enmRuntype = TestStorageType.Unknown;
-
-            if (!Enum.TryParse<TestStorageType>(runtype, true, out enmRuntype))
+            argsDictionary.TryGetValue("runtype", out string runtype);
+            argsDictionary.TryGetValue("paramfile", out string paramFileName);
+            if (!Enum.TryParse(runtype, true, out TestStorageType enmRuntype))
                 enmRuntype = TestStorageType.Unknown;
 
-            if (string.IsNullOrEmpty(paramFileName))
+            if (paramFileName.IsNullOrEmpty())
             {
                 ShowHelp();
                 return;

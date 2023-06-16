@@ -95,9 +95,9 @@ namespace HpToolsLauncher.Utils
         public const string ResultsFileName = "Results.xml";
         public const string QTPReportProcessPath = @"bin\reportviewer.exe";
 
-        public const string STFileExtention = ".st";
-        public const string QTPFileExtention = ".tsp";
-        public const string LoadRunnerFileExtention = ".lrs";
+        public const string ST_FILE_EXT = ".st";
+        public const string QTP_FILE_EXT = ".tsp";
+        public const string LR_FILE_EXT = ".lrs";
 
         #endregion
 
@@ -403,9 +403,9 @@ namespace HpToolsLauncher.Utils
             // First, process all the files directly under this folder
             try
             {
-                files = root.GetFiles($"*{STFileExtention}");
-                files = files.Union(root.GetFiles($"*{QTPFileExtention}")).ToArray();
-                files = files.Union(root.GetFiles($"*{LoadRunnerFileExtention}")).ToArray();
+                files = root.GetFiles($"*{ST_FILE_EXT}");
+                files = files.Union(root.GetFiles($"*{QTP_FILE_EXT}")).ToArray();
+                files = files.Union(root.GetFiles($"*{LR_FILE_EXT}")).ToArray();
             }
             catch
             {
@@ -419,7 +419,7 @@ namespace HpToolsLauncher.Utils
             {
                 foreach (FileInfo fi in files)
                 {
-                    if (fi.Extension == LoadRunnerFileExtention)
+                    if (fi.Extension == LR_FILE_EXT)
                         results.Add(fi.FullName);
                     else
                         results.Add(fi.Directory.FullName);
