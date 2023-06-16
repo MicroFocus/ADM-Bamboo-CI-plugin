@@ -26,6 +26,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HpToolsLauncher;
 using System.IO;
 using System.Xml.Linq;
+using HpToolsLauncher.Utils;
 
 namespace HpToolsLauncherTests
 {

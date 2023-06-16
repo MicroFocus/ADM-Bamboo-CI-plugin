@@ -22,6 +22,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using HpToolsLauncher.Properties;
+using HpToolsLauncher.Utils;
 
 namespace HpToolsLauncher
 {

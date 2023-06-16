@@ -274,7 +274,7 @@ namespace LRAnalysisLauncher
         {
             System.Reflection.AssemblyName name = new System.Reflection.AssemblyName(args.Name);
             if (name.Name.ToLowerInvariant().EndsWith(".resources")) return null;
-            string installPath = HpToolsLauncher.Helper.getLRInstallPath();
+            string installPath = HpToolsLauncher.Utils.Helper.getLRInstallPath();
             if (installPath == null)
             {
                 Console.WriteLine(Resources.CannotLocateInstallDir);

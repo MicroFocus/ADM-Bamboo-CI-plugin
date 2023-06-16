@@ -24,6 +24,7 @@ using System.IO;
 using System.Reflection;
 using HpToolsLauncher.Properties;
 using HpToolsLauncher.TestRunners;
+using HpToolsLauncher.Utils;
 
 namespace HpToolsLauncher
 {
@@ -36,6 +37,7 @@ namespace HpToolsLauncher
         private static string _uftViewerPath;
         private int _errors, _fail;
         private bool _useUFTLicense;
+        private RunAsUser _uftRunAsUser;
         private TimeSpan _timeout = TimeSpan.MaxValue;
         private Stopwatch _stopwatch = null;
         private string _abortFilename = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\stop" + Launcher.UniqueTimeStamp + ".txt";
@@ -48,7 +50,6 @@ namespace HpToolsLauncher
 
         //saves runners for cleaning up at the end.
         private Dictionary<TestType, IFileSysTestRunner> _colRunnersForCleanup = new Dictionary<TestType, IFileSysTestRunner>();
-
 
         public const string UftJUnitRportName = "uftRunnerRoot";
 
@@ -69,6 +70,7 @@ namespace HpToolsLauncher
             Dictionary<string, string> jenkinsEnvVariables,
             string fsAppParamName,
             string appIdentifier,
+            RunAsUser uftRunAsUser,
             bool useUFTLicense = false
             )
         {
@@ -76,7 +78,7 @@ namespace HpToolsLauncher
             //search if we have any testing tools installed
             if (!Helper.IsTestingToolsInstalled(TestStorageType.FileSystem))
             {
-                ConsoleWriter.WriteErrLine(string.Format(Resources.FileSystemTestsRunner_No_HP_testing_tool_is_installed_on, System.Environment.MachineName));
+                ConsoleWriter.WriteErrLine(string.Format(Resources.FileSystemTestsRunner_No_HP_testing_tool_is_installed_on, Environment.MachineName));
                 Environment.Exit((int)Launcher.ExitCodeEnum.Failed);
             }
 
@@ -87,7 +89,7 @@ namespace HpToolsLauncher
             _perScenarioTimeOut = perScenarioTimeOut;
             _ignoreErrorStrings = ignoreErrorStrings;
 
-
+            _uftRunAsUser = uftRunAsUser;
             _useUFTLicense = useUFTLicense;
             _tests = new List<TestInfo>();
 
@@ -184,30 +186,57 @@ namespace HpToolsLauncher
         public override TestSuiteRunResults Run()
         {
             //create a new Run Results object
-            TestSuiteRunResults activeRunDesc = new TestSuiteRunResults();
+            TestSuiteRunResults activeRunDesc = new();
 
             double totalTime = 0;
             try
             {
                 var start = DateTime.Now;
+                Exception dcomEx = null;
+                bool isDcomVerified = false;
                 foreach (var test in _tests)
                 {
                     if (RunCancelled()) break;
 
                     var testStart = DateTime.Now;
-
                     string errorReason = string.Empty;
                     TestRunResults runResult = null;
                     try
                     {
+                        var type = Helper.GetTestType(test.TestPath);
+
+                        if (type == TestType.QTP)
+                        {
+                            if (!isDcomVerified)
+                            {
+                                try
+                                {
+                                    Helper.ChangeDCOMSettingToInteractiveUser();
+                                }
+                                catch (Exception ex)
+                                {
+                                    dcomEx = ex;
+                                }
+                                finally
+                                {
+                                    isDcomVerified = true;
+                                }
+                            }
+
+                            if (dcomEx != null)
+                                throw dcomEx;
+                        }
+
                         runResult = RunHPToolsTest(test, ref errorReason);
                     }
                     catch (Exception ex)
                     {
-                        runResult = new TestRunResults();
-                        runResult.TestState = TestState.Error;
-                        runResult.ErrorDesc = ex.Message;
-                        runResult.TestName = test.TestName;
+                        runResult = new TestRunResults
+                        {
+                            TestState = TestState.Error,
+                            ErrorDesc = ex.Message,
+                            TestName = test.TestName
+                        };
                     }
 
                     //get the original source for this test, for grouping tests under test classes
@@ -228,11 +257,11 @@ namespace HpToolsLauncher
                             {
                                 if (RunCancelled())
                                 {
-                                    runResult.ErrorDesc = HpToolsLauncher.Properties.Resources.ExceptionUserCancelled;
+                                    runResult.ErrorDesc = Resources.ExceptionUserCancelled;
                                 }
                                 else
                                 {
-                                    runResult.ErrorDesc = HpToolsLauncher.Properties.Resources.ExceptionExternalProcess;
+                                    runResult.ErrorDesc = Resources.ExceptionExternalProcess;
                                 }
                             }
                             runResult.ReportLocation = null;
@@ -301,7 +330,7 @@ namespace HpToolsLauncher
                     runner = new ApiTestRunner(this, _timeout - _stopwatch.Elapsed);
                     break;
                 case TestType.QTP:
-                    runner = new GuiTestRunner(this, _useUFTLicense, _timeout - _stopwatch.Elapsed);
+                    runner = new GuiTestRunner(this, _useUFTLicense, _timeout - _stopwatch.Elapsed, _uftRunAsUser);
                     break;
                 case TestType.LoadRunner:
                     AppDomain.CurrentDomain.AssemblyResolve += Helper.HPToolsAssemblyResolver;

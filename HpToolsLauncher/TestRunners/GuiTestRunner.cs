@@ -26,14 +26,19 @@ using Resources = HpToolsLauncher.Properties.Resources;
 using System.Threading;
 using System.Diagnostics;
 using System.Collections.Generic;
-using Microsoft.Win32;
+using HpToolsLauncher.Utils;
+using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace HpToolsLauncher
 {
     public class GuiTestRunner : IFileSysTestRunner
     {
+        private static HashSet<string> _colLoadedAddinNames = null;
+        private readonly Type _qtType = Type.GetTypeFromProgID("Quicktest.Application");
+        private readonly Type _runResultsOptionsType = Type.GetTypeFromProgID("QuickTest.RunResultsOptions");
         private readonly IAssetRunner _runNotifier;
-        private readonly object _lockObject = new object();
+        private readonly object _lockObject = new();
         private TimeSpan _timeLeftUntilTimeout = TimeSpan.MaxValue;
         private Stopwatch _stopwatch = null;
         private Application _qtpApplication;
@@ -41,6 +46,15 @@ namespace HpToolsLauncher
         private Parameters _qtpParameters;
         private bool _useUFTLicense;
         private RunCancelledDelegate _runCancelled;
+        private RunAsUser _uftRunAsUser;
+        private const int DISP_E_MEMBERNOTFOUND = -2147352573;
+        private const string REPORT = "Report";
+        private const string READY = "Ready";
+        private const string WAITING = "Waiting";
+        private const string BUSY = "Busy";
+        private const string RUNNING = "Running";
+        private const string PASSED = "Passed";
+        private const string WARNING = "Warning";
 
         /// <summary>
         /// constructor
@@ -48,12 +62,13 @@ namespace HpToolsLauncher
         /// <param name="runNotifier"></param>
         /// <param name="useUftLicense"></param>
         /// <param name="timeLeftUntilTimeout"></param>
-        public GuiTestRunner(IAssetRunner runNotifier, bool useUftLicense, TimeSpan timeLeftUntilTimeout)
+        public GuiTestRunner(IAssetRunner runNotifier, bool useUftLicense, TimeSpan timeLeftUntilTimeout, RunAsUser uftRunAsUser)
         {
             _timeLeftUntilTimeout = timeLeftUntilTimeout;
             _stopwatch = Stopwatch.StartNew();
             _runNotifier = runNotifier;
             _useUFTLicense = useUftLicense;
+            _uftRunAsUser = uftRunAsUser;
         }
 
         #region QTP
@@ -68,21 +83,16 @@ namespace HpToolsLauncher
         public TestRunResults RunTest(TestInfo testinf, ref string errorReason, RunCancelledDelegate runCanclled)
         {
             var testPath = testinf.TestPath;
-            TestRunResults runDesc = new TestRunResults();
+            TestRunResults runDesc = new() { ReportLocation = testPath, TestPath = testPath };
             ConsoleWriter.ActiveTestRun = runDesc;
-            ConsoleWriter.WriteLine(DateTime.Now.ToString(Launcher.DateFormat) + " Running: " + testPath);
-            runDesc.ReportLocation = testPath;
-
-
-            runDesc.TestPath = testPath;
-            runDesc.TestState = TestState.Unknown;
+            ConsoleWriter.WriteLine($"{DateTime.Now.ToString(Launcher.DateFormat)} Running: {testPath}");
 
             _runCancelled = runCanclled;
 
             if (!Helper.IsQtpInstalled())
             {
                 runDesc.TestState = TestState.Error;
-                runDesc.ErrorDesc = string.Format(Resources.GeneralQtpNotInstalled, System.Environment.MachineName);
+                runDesc.ErrorDesc = string.Format(Resources.GeneralQtpNotInstalled, Environment.MachineName);
                 ConsoleWriter.WriteErrLine(runDesc.ErrorDesc);
                 Environment.ExitCode = (int)Launcher.ExitCodeEnum.Failed;
                 return runDesc;
@@ -90,24 +100,34 @@ namespace HpToolsLauncher
 
             try
             {
-                ChangeDCOMSettingToInteractiveUser();
-                var type = Type.GetTypeFromProgID("Quicktest.Application");
-
                 lock (_lockObject)
                 {
-                    _qtpApplication = Activator.CreateInstance(type) as Application;
+                    _qtpApplication = Activator.CreateInstance(_qtType) as Application;
+                    if (_uftRunAsUser != null)
+                    {
+                        try
+                        {
+                            _qtpApplication.LaunchAsUser(_uftRunAsUser.Username, _uftRunAsUser.EncodedPassword);
+                        }
+                        catch (COMException e)
+                        {
+                            if (e.ErrorCode == DISP_E_MEMBERNOTFOUND)
+                            {
+                                errorReason = Resources.UftLaunchAsUserNotSupported;
+                            }
+                            throw;
+                        }
+                        if (_qtpApplication.Visible)
+                        {
+                            _qtpApplication.Visible = false;
+                        }
+                    }
 
                     Version qtpVersion = Version.Parse(_qtpApplication.Version);
                     if (qtpVersion.Equals(new Version(11, 0)))
                     {
-                        runDesc.ReportLocation = Path.Combine(testPath, "Report");
-                        if (Directory.Exists(runDesc.ReportLocation))
-                        {
-                            Directory.Delete(runDesc.ReportLocation, true);
-                            Directory.CreateDirectory(runDesc.ReportLocation);
-                        }
+                        runDesc.ReportLocation = GetReportLocation(testPath);
                     }
-
 
                     // Check for required Addins
                     LoadNeededAddins(testPath);
@@ -124,7 +144,6 @@ namespace HpToolsLauncher
                         // Launch application after set Addins
                         _qtpApplication.Launch();
                         _qtpApplication.Visible = false;
-
                     }
                 }
             }
@@ -132,7 +151,7 @@ namespace HpToolsLauncher
             {
                 errorReason = Resources.QtpNotLaunchedError;
                 runDesc.TestState = TestState.Error;
-                runDesc.ReportLocation = "";
+                runDesc.ReportLocation = string.Empty;
                 runDesc.ErrorDesc = e.Message;
                 return runDesc;
             }
@@ -188,8 +207,7 @@ namespace HpToolsLauncher
                 //if we don't have a qtp instance, create one
                 if (_qtpApplication == null)
                 {
-                    var type = Type.GetTypeFromProgID("Quicktest.Application");
-                    _qtpApplication = Activator.CreateInstance(type) as Application;
+                    _qtpApplication = Activator.CreateInstance(_qtType) as Application;
                 }
 
                 //if the app is running, close it.
@@ -202,7 +220,6 @@ namespace HpToolsLauncher
             }
         }
 
-        static HashSet<string> _colLoadedAddinNames = null;
         /// <summary>
         /// Set the test Addins 
         /// </summary>
@@ -216,13 +233,12 @@ namespace HpToolsLauncher
 
             try
             {
-                HashSet<string> colCurrentTestAddins = new HashSet<string>();
+                HashSet<string> colCurrentTestAddins = new();
 
-                object erroDescription;
                 var testAddinsObj = _qtpApplication.GetAssociatedAddinsForTest(fileName);
                 object[] testAddins = (object[])testAddinsObj;
 
-                foreach (string addin in testAddins)
+                foreach (string addin in testAddins.Cast<string>())
                 {
                     colCurrentTestAddins.Add(addin);
                 }
@@ -258,7 +274,7 @@ namespace HpToolsLauncher
                 {
                     if (_qtpApplication.Launched)
                         _qtpApplication.Quit();
-                    _qtpApplication.SetActiveAddins(ref testAddinsObj, out erroDescription);
+                    _qtpApplication.SetActiveAddins(ref testAddinsObj, out object _);
                 }
 
             }
@@ -267,7 +283,6 @@ namespace HpToolsLauncher
                 // Try anyway to run the test
             }
         }
-
 
         /// <summary>
         /// Activate all Installed Addins 
@@ -312,8 +327,7 @@ namespace HpToolsLauncher
             GuiTestRunResult result = new GuiTestRunResult { IsSuccess = true };
             try
             {
-                Type runResultsOptionstype = Type.GetTypeFromProgID("QuickTest.RunResultsOptions");
-                var options = (RunResultsOptions)Activator.CreateInstance(runResultsOptionstype);
+                var options = (RunResultsOptions)Activator.CreateInstance(_runResultsOptionsType);
                 options.ResultsLocation = testResults.ReportLocation;
                 _qtpApplication.Options.Run.RunMode = "Fast";
 
@@ -330,16 +344,15 @@ namespace HpToolsLauncher
 
                 _qtpApplication.Test.Run(options, false, _qtpParameters);
 
-                result.ReportPath = Path.Combine(testResults.ReportLocation, "Report");
+                result.ReportPath = Path.Combine(testResults.ReportLocation, REPORT);
                 int slept = 0;
-                while ((slept < 20000 && _qtpApplication.GetStatus().Equals("Ready")) || _qtpApplication.GetStatus().Equals("Waiting"))
+                while (slept < 20000 && _qtpApplication.GetStatus().In(READY, WAITING))
                 {
                     Thread.Sleep(50);
                     slept += 50;
                 }
 
-
-                while (!_runCancelled() && (_qtpApplication.GetStatus().Equals("Running") || _qtpApplication.GetStatus().Equals("Busy")))
+                while (!_runCancelled() && _qtpApplication.GetStatus().In(RUNNING, BUSY))
                 {
                     Thread.Sleep(200);
                     if (_timeLeftUntilTimeout - _stopwatch.Elapsed <= TimeSpan.Zero)
@@ -368,24 +381,23 @@ namespace HpToolsLauncher
                 string lastError = _qtpApplication.Test.LastRunResults.LastError;
 
                 //read the lastError
-                if (!String.IsNullOrEmpty(lastError))
+                if (!lastError.IsNullOrEmpty())
                 {
                     testResults.TestState = TestState.Error;
                     testResults.ErrorDesc = lastError;
                 }
 
                 // the way to check the logical success of the target QTP test is: app.Test.LastRunResults.Status == "Passed".
-                if (_qtpApplication.Test.LastRunResults.Status.Equals("Passed"))
+                if (_qtpApplication.Test.LastRunResults.Status == PASSED)
                 {
                     testResults.TestState = TestState.Passed;
-
                 }
-                else if (_qtpApplication.Test.LastRunResults.Status.Equals("Warning"))
+                else if (_qtpApplication.Test.LastRunResults.Status == WARNING)
                 {
                     testResults.TestState = TestState.Passed;
                     testResults.HasWarnings = true;
 
-                    if (Launcher.ExitCode != Launcher.ExitCodeEnum.Failed && Launcher.ExitCode != Launcher.ExitCodeEnum.Aborted)
+                    if (!Launcher.ExitCode.In(Launcher.ExitCodeEnum.Failed, Launcher.ExitCodeEnum.Aborted))
                         Launcher.ExitCode = Launcher.ExitCodeEnum.Unstable;
                 }
                 else
@@ -417,7 +429,6 @@ namespace HpToolsLauncher
             }
             catch (Exception e2)
             {
-
                 ConsoleWriter.WriteLine(string.Format(Resources.GeneralErrorWithStack, e2.Message, e2.StackTrace));
                 testResults.TestState = TestState.Error;
                 testResults.ErrorDesc = Resources.QtpRunError;
@@ -425,7 +436,6 @@ namespace HpToolsLauncher
                 result.IsSuccess = false;
                 return result;
             }
-
 
             return result;
         }
@@ -463,7 +473,7 @@ namespace HpToolsLauncher
                     }
                 }
             }
-            catch (Exception e)
+            catch
             {
                 errorReason = Resources.QtpNotLaunchedError;
                 return false;
@@ -554,7 +564,7 @@ namespace HpToolsLauncher
                     ConsoleWriter.WriteLine("Using external data table: " + dataTablePath);
                 }
             }
-            catch (Exception e)
+            catch
             {
                 errorReason = Resources.QtpRunError;
                 return false;
@@ -586,7 +596,7 @@ namespace HpToolsLauncher
                             {
                                 _qtpApplication.Test.Stop();
                             }
-                            catch (Exception e)
+                            catch
                             {
                             }
                             finally
@@ -597,7 +607,7 @@ namespace HpToolsLauncher
                     }
                 }
             }
-            catch (Exception ex)
+            catch
             {
             }
 
@@ -606,61 +616,18 @@ namespace HpToolsLauncher
             _qtpApplication = null;
         }
 
-
-        /// <summary>
-        /// Why we need this? If we run jenkins in a master slave node where there is a jenkins service installed in the slave machine, we need to change the DCOM settings as follow:
-        /// dcomcnfg.exe -> My Computer -> DCOM Config -> QuickTest Professional Automation -> Identity -> and select The Interactive User
-        /// </summary>
-        private void ChangeDCOMSettingToInteractiveUser()
+        private string GetReportLocation(string testPath)
         {
-            string errorMsg = "Unable to change DCOM settings. To chage it manually: " +
-                              "run dcomcnfg.exe -> My Computer -> DCOM Config -> QuickTest Professional Automation -> Identity -> and select The Interactive User";
-
-            string interactiveUser = "Interactive User";
-            string runAs = "RunAs";
-
-            try
+            string path = Path.Combine(testPath, REPORT);
+            if (Directory.Exists(path))
             {
-                var regKey = GetQuickTestProfessionalAutomationRegKey(RegistryView.Registry32);
-
-                if (regKey == null)
-                {
-                    regKey = GetQuickTestProfessionalAutomationRegKey(RegistryView.Registry64);
-                }
-
-                if (regKey == null)
-                    throw new Exception(@"Unable to find in registry SOFTWARE\Classes\AppID\{A67EB23A-1B8F-487D-8E38-A6A3DD150F0B");
-
-                object runAsKey = regKey.GetValue(runAs);
-
-                if (runAsKey == null || !runAsKey.ToString().Equals(interactiveUser))
-                {
-                    regKey.SetValue(runAs, interactiveUser);
-                }
-
+                Directory.Delete(path, true);
+                Directory.CreateDirectory(path);
             }
-            catch (Exception ex)
-            {
-                throw new Exception(errorMsg + "detailed error is : " + ex.Message);
-            }
-
-
+            return path;
         }
-
-        private RegistryKey GetQuickTestProfessionalAutomationRegKey(RegistryView registryView)
-        {
-            RegistryKey localKey = RegistryKey.OpenBaseKey(Microsoft.Win32.RegistryHive.LocalMachine, RegistryView.Registry64);
-            localKey = localKey.OpenSubKey(@"SOFTWARE\Classes\AppID\{A67EB23A-1B8F-487D-8E38-A6A3DD150F0B}", true);
-
-            return localKey;
-        }
-
 
         #endregion
-
-
-
-
 
         /// <summary>
         /// holds the resutls for a GUI test
@@ -669,7 +636,7 @@ namespace HpToolsLauncher
         {
             public GuiTestRunResult()
             {
-                ReportPath = "";
+                ReportPath = string.Empty;
             }
 
             public bool IsSuccess { get; set; }

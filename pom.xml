@@ -105,7 +105,8 @@
         <integrations.sdk.version>2.7.6.1</integrations.sdk.version>
         <nexus-staging-maven-plugin.version>1.6.7</nexus-staging-maven-plugin.version>
 
-        <msbuild.exe>C:\Windows\Microsoft.NET\Framework\v4.0.30319\msbuild.exe</msbuild.exe>
+        <!--<msbuild.exe>C:\Windows\Microsoft.NET\Framework\v4.0.30319\msbuild.exe</msbuild.exe>-->
+        <msbuild.exe>C:\Program Files\Microsoft Visual Studio\2022\Professional\MSBuild\Current\Bin\MSBuild.exe</msbuild.exe>
         <msbuild.configuration>Release</msbuild.configuration>
         <!--bamboo.buildTimestamp>${bamboo.buildTimestamp}</bamboo.buildTimestamp-->
     </properties>

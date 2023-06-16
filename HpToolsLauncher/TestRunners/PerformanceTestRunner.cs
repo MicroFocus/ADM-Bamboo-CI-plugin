@@ -28,6 +28,7 @@ using System.Threading;
 using HP.LoadRunner.Interop.Wlrun;
 using HpToolsLauncher.Properties;
 using System.Xml;
+using HpToolsLauncher.Utils;
 //using Analysis.Api;
 
 namespace HpToolsLauncher.TestRunners
@@ -124,7 +125,6 @@ namespace HpToolsLauncher.TestRunners
                 {
                     Console.WriteLine(string.Format(Resources.CannotDeleteReportFolder, _resultsFolder));
                 }
-
             }
             else
             {
@@ -132,7 +132,7 @@ namespace HpToolsLauncher.TestRunners
                 {
                     Directory.CreateDirectory(_resultsFolder);
                 }
-                catch (Exception e)
+                catch
                 {
                     errorReason = string.Format(Resources.FailedToCreateTempDirError, _resultsFolder);
                     runDesc.TestState = TestState.Error;
@@ -805,9 +805,7 @@ namespace HpToolsLauncher.TestRunners
                 {
                     p.Kill();
                     Thread.Sleep(500);
-
                 }
-
                 // check if any wlrun.exe process existed, kill them.
 
                 var wlrunProcesses = Process.GetProcessesByName("Wlrun");
@@ -837,9 +835,8 @@ namespace HpToolsLauncher.TestRunners
                     ConsoleWriter.WriteLine("wlrun killed");
                 }
             }
-            catch (Exception e)
+            catch
             {
-
             }
         }
 

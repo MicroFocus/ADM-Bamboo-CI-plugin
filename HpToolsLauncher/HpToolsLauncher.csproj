@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
@@ -10,7 +10,8 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>HpToolsLauncher</RootNamespace>
     <AssemblyName>HpToolsLauncher</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <LangVersion>preview</LangVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -82,7 +83,6 @@
     <Compile Include="Interfaces\IFileSysTestRunner.cs" />
     <Compile Include="Interfaces\IXmlBuilder.cs" />
     <Compile Include="ExportOptions.cs" />
-    <Compile Include="Helper.cs" />
     <Compile Include="IniManager.cs" />
     <Compile Include="JavaProperties\JavaIniFile.cs" />
     <Compile Include="JavaProperties\JavaProperties.cs" />
@@ -110,6 +110,10 @@
     <Compile Include="TestRunners\ApiTestRunner.cs" />
     <Compile Include="Runners\AlmTestSetsRunner.cs" />
     <Compile Include="TestSuiteRunResults.cs" />
+    <Compile Include="Utils\Encoder.cs" />
+    <Compile Include="Utils\Extensions.cs" />
+    <Compile Include="Utils\Helper.cs" />
+    <Compile Include="Utils\RunAsUser.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Interfaces\.svn\prop-base\" />

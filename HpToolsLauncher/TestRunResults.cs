@@ -17,22 +17,14 @@
  * The information contained herein is subject to change without notice.
  * ___________________________________________________________________
  */
+using HpToolsLauncher.Utils;
 using System;
 
 namespace HpToolsLauncher
 {
     public class TestRunResults
     {
-        private TestState m_enmTestState = TestState.Unknown;
-        private TestState m_enmPrevTestState = TestState.Unknown;
-        private bool m_hasWarnings = false;
-
-        public bool HasWarnings
-        {
-            get { return m_hasWarnings; }
-            set { m_hasWarnings = value; }
-        }
-     
+        public bool HasWarnings { get; set; }
         public string TestPath { get; set; }
         public string TestName { get; set; }
         public string TestGroup { get; set; }
@@ -43,19 +35,8 @@ namespace HpToolsLauncher
         public TimeSpan Runtime { get; set; }
         public string TestType { get; set; }
         public string ReportLocation { get; set; }
-        
-        public TestState TestState
-        {
-            get { return m_enmTestState; }
-            set { m_enmTestState = value; }
-        }
-
-        public TestState PrevTestState
-        {
-            get { return m_enmPrevTestState; }
-            set { m_enmPrevTestState = value; }
-        }
-
+        public TestState TestState { get; set; } = TestState.Unknown;
+        public TestState PrevTestState { get; set; } = TestState.Unknown;
         public int PrevRunId { get; set; }
     }
 }

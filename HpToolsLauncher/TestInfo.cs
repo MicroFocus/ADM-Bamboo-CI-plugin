@@ -73,13 +73,12 @@ namespace HpToolsLauncher
                 if (!string.IsNullOrWhiteSpace(validationMessages))
                     ConsoleWriter.WriteLine("parameter schema validation errors: \n" + validationMessages);
             }
-            catch (Exception ex)
+            catch
             {
                 ConsoleWriter.WriteErrLine("An error occured while creating ST parameter file, check the validity of TestInputParameters.xml in your test directory and of your mtbx file");
             }
             return doc.ToString();
         }
-
 
         private string NormalizeParamValue(TestParameterInfo param)
         {
@@ -102,31 +101,6 @@ namespace HpToolsLauncher
             }
         }
 
-        private string NormalizeParamType(string pType)
-        {
-            switch (pType.ToLower())
-            {
-                case "datetime":
-                case "date":
-                    return "dateTime";
-
-                case "any":
-                case "string":
-                case "password":
-                    return "string";
-
-                case "int":
-                case "integer":
-                case "number":
-                    return "integer";
-                case "bool":
-                case "boolean":
-                    return "boolean";
-                default:
-                    return pType.ToLower();
-            }
-        }
-
         public TestInfo(string testPath, string testName)
         {
             TestPath = testPath;
@@ -139,7 +113,6 @@ namespace HpToolsLauncher
             TestGroup = testGroup;
             _testName = testName;
         }
-
 
         List<TestParameterInfo> _paramList = new List<TestParameterInfo>();
         string _testName;
@@ -175,7 +148,6 @@ namespace HpToolsLauncher
             get { return _dataTablePath; }
             set { _dataTablePath = value; }
         }
-
 
         internal Dictionary<string, object> GetParameterDictionaryForQTP()
         {

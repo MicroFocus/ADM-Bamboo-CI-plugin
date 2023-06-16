@@ -17,6 +17,7 @@
  * The information contained herein is subject to change without notice.
  * ___________________________________________________________________
  */
+using HpToolsLauncher.Utils;
 using System.IO;
 using System.Xml.Serialization;
 
