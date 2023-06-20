@@ -153,7 +153,6 @@ public interface AbstractLauncherTask extends TaskType {
 
     default UftRunAsUser getUftRunAsUser(CustomVariableContext customVariableContext, BuildLogger logger) throws IllegalArgumentException {
         Map<String, VariableDefinitionContext> vars = customVariableContext.getVariableContexts();
-        logger.addBuildLogEntry("Trying to loop into customVariableContext.getVariableContexts()");
         if (vars != null && !vars.isEmpty()) {
             if (vars.keySet().contains(UFT_RUN_AS_USER_NAME)) {
                 String username = vars.get(UFT_RUN_AS_USER_NAME).getValue();
