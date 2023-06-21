@@ -28,7 +28,6 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using HpToolsLauncher.Utils;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
 
 namespace HpToolsLauncher
 {
@@ -40,13 +39,13 @@ namespace HpToolsLauncher
         private readonly IAssetRunner _runNotifier;
         private readonly object _lockObject = new();
         private TimeSpan _timeLeftUntilTimeout = TimeSpan.MaxValue;
-        private Stopwatch _stopwatch = null;
+        private readonly Stopwatch _stopwatch = null;
         private Application _qtpApplication;
         private ParameterDefinitions _qtpParamDefs;
         private Parameters _qtpParameters;
-        private bool _useUFTLicense;
+        private readonly bool _useUFTLicense;
         private RunCancelledDelegate _runCancelled;
-        private RunAsUser _uftRunAsUser;
+        private readonly RunAsUser _uftRunAsUser;
         private const int DISP_E_MEMBERNOTFOUND = -2147352573;
         private const string REPORT = "Report";
         private const string READY = "Ready";
@@ -246,7 +245,7 @@ namespace HpToolsLauncher
                 if (_colLoadedAddinNames != null)
                 {
                     //check if we have a missing addin (and need to quit Qtp, and reload with new addins)
-                    foreach (string addin in testAddins)
+                    foreach (string addin in testAddins.Cast<string>())
                     {
                         if (!_colLoadedAddinNames.Contains(addin))
                         {
@@ -272,13 +271,13 @@ namespace HpToolsLauncher
                 //the addins need to be refreshed, load new addins
                 if (blnNeedToLoadAddins)
                 {
-                    if (_qtpApplication.Launched)
+                    if (_qtpApplication.Launched && _uftRunAsUser == null)
                         _qtpApplication.Quit();
                     _qtpApplication.SetActiveAddins(ref testAddinsObj, out object _);
                 }
 
             }
-            catch (Exception)
+            catch
             {
                 // Try anyway to run the test
             }
