@@ -30,13 +30,12 @@ import com.atlassian.bamboo.task.TaskDefinition;
 import com.atlassian.bamboo.utils.error.ErrorCollection;
 import com.atlassian.bamboo.utils.i18n.I18nBean;
 
+import com.atlassian.bamboo.v2.build.agent.capability.Requirement;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AlmLabManagementUftTaskConfigurator extends AbstractLauncherTaskConfigurator {
 
@@ -186,4 +185,12 @@ public class AlmLabManagementUftTaskConfigurator extends AbstractLauncherTaskCon
 
         return actionsMap;
     }
+
+    @NotNull
+    @Override
+    public Set<Requirement> calculateRequirements(TaskDefinition taskDefinition) {
+        //for ALM Lab Mgmt task the UFT capability is not required
+        return new HashSet<Requirement>();
+    }
+
 }
