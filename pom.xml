@@ -30,7 +30,7 @@
 
     <name>OpenText Bamboo plugin</name>
     <description>
-        This plugin allows users to use MicroFocus Software products functionalists through Bamboo.
+        This plugin allows users to use OpenText Software products functionalists through Bamboo.
     </description>
     <url>https://github.com/MicroFocus/ADM-Bamboo-CI-plugin</url>
     <organization>
