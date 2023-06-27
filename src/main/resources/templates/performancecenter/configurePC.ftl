@@ -286,7 +286,7 @@ or Leave empty if not using a local proxy. The following proxy configurations ar
         </td>
         <td>
             <a href="#" title="A Virtual User Day (VUD) license provides you with a specified number of Vusers (VUDs) that you can run an unlimited number of times within a 24 hour period.
-Before using this option, make sure that VUDs licenses are applied in your Micro Focus LoadRunner Enterprise environment." >
+Before using this option, make sure that VUDs licenses are applied in your OpenText LoadRunner Enterprise environment." >
                 [@ww.checkbox label='Use VUDs' name='vuds' toggle='true'/]
             </a>
         </td>
