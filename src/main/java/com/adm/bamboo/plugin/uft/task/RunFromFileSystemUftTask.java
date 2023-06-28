@@ -121,7 +121,7 @@ public class RunFromFileSystemUftTask implements AbstractLauncherTask {
     }
 
     /**
-     * If "use mobile center" option is checked add the mobile center settings to task properties set
+     * If "use Digital Lab" option is checked add the Digital Lab settings to task properties set
      *
      * @param builder
      * @param map
@@ -201,7 +201,7 @@ public class RunFromFileSystemUftTask implements AbstractLauncherTask {
             try {
                 jobJSON = operation.getJobById(jobUUID);
             } catch (HttpConnectionException e) {
-                buildLogger.addErrorLogEntry("********** Fail to connect mobile center, please check URL, UserName, Password, and Proxy Configuration ********** ");
+                buildLogger.addErrorLogEntry("********** Fail to connect Digital Lab, please check URL, UserName, Password, and Proxy Configuration ********** ");
             }
 
             if (jobJSON != null) {

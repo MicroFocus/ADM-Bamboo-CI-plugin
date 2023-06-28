@@ -142,10 +142,10 @@
     </taskType>
 
     <taskType
-            name="UFT Mobile Application Upload"
+            name="Digital Lab Application Upload"
             class="com.adm.bamboo.plugin.uft.task.UploadApplicationUftTask"
             key="UploadApplicationUftTask">
-        <description>Uploads apps to UFT Mobile</description>
+        <description>Uploads apps to Digital Lab</description>
         <category name="test"/>
         <configuration class="com.adm.bamboo.plugin.uft.ui.UploadApplicationUftTaskConfigurator"/>
         <resource
