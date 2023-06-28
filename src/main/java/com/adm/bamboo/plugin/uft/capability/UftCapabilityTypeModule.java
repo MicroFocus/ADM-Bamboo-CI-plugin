@@ -34,7 +34,7 @@ import java.util.Map;
 
 public class UftCapabilityTypeModule extends AbstractExecutableCapabilityTypeModule {
 
-    public static final String MF_PREFIX = CapabilityDefaultsHelper.CAPABILITY_BUILDER_PREFIX + ".Micro Focus";
+    public static final String MF_PREFIX = CapabilityDefaultsHelper.CAPABILITY_BUILDER_PREFIX + ".OpenText";
     public static final String MF_UFT_CAPABILITY = MF_PREFIX + ".Unified Functional Testing";
     public static final String UFT_EXECUTABLE = "uft";
     public static final String UFT_EXECUTABLE_KEY = "uftPath";
