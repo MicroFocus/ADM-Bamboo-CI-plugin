@@ -53,8 +53,8 @@
         <context>bamboo-plugin</context>
     </web-resource>
 
-    <capabilityType key="OpenTextUftCapabilityType" name="OpenText UFT" class="com.adm.bamboo.plugin.uft.capability.UftCapabilityTypeModule" sortOrder="1001">
-        <description>OpenText UFT Capability Type</description>
+    <capabilityType key="OpenTextUftCapabilityType" name="OpenText UFT One" class="com.adm.bamboo.plugin.uft.capability.UftCapabilityTypeModule" sortOrder="1001">
+        <description>OpenText UFT One Capability Type</description>
         <resource type="freemarker" name="edit" location="capability/editMicroFocusCapability.ftl" />
     </capabilityType>
 
