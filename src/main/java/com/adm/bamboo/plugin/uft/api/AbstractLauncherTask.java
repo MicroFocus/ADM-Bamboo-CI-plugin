@@ -20,13 +20,12 @@
 
 package com.adm.bamboo.plugin.uft.api;
 
+import com.adm.utils.uft.model.UftRunAsUser;
 import com.adm.utils.uft.FilesHandler;
+import com.adm.utils.uft.StringUtils;
 import com.adm.utils.uft.TaskUtils;
 import com.atlassian.bamboo.build.logger.BuildLogger;
-import com.atlassian.bamboo.task.TaskContext;
-import com.atlassian.bamboo.task.TaskException;
-import com.atlassian.bamboo.task.TaskResult;
-import com.atlassian.bamboo.task.TaskType;
+import com.atlassian.bamboo.task.*;
 import com.atlassian.bamboo.variable.CustomVariableContext;
 import com.atlassian.bamboo.variable.VariableDefinitionContext;
 import org.jetbrains.annotations.NotNull;
@@ -35,13 +34,15 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 public interface AbstractLauncherTask extends TaskType {
-    public static final String BUILD_KEY = "buildTimeStamp";
+    String BUILD_KEY = "buildTimeStamp";
+    String KEY_VALUE_FORMAT = "%s = %s";
+    String UFT_RUN_AS_USER_NAME = "UFT_RUN_AS_USER_NAME";
+    String UFT_RUN_AS_USER_ENCODED_PWD = "UFT_RUN_AS_USER_ENCODED_PASSWORD";
+    String UFT_RUN_AS_USER_PWD = "UFT_RUN_AS_USER_PASSWORD";
 
     Properties getTaskProperties(final TaskContext taskContext) throws Exception;
 
@@ -62,6 +63,22 @@ public interface AbstractLauncherTask extends TaskType {
 
         //retrieve bamboo buildTimeStamp
         String buildTimeStamp = getBuildTimeStamp(customVariableContext);
+
+        UftRunAsUser uftRunAsUser;
+        try {
+            uftRunAsUser = getUftRunAsUser(customVariableContext, buildLogger);;
+            if (uftRunAsUser != null) {
+                mergedProperties.put("uftRunAsUserName", uftRunAsUser.getUsername());
+                if (!StringUtils.isBlank(uftRunAsUser.getEncodedPassword())) {
+                    mergedProperties.put("uftRunAsUserEncodedPassword", uftRunAsUser.getEncodedPasswordAsEncrypted());
+                } else if (!StringUtils.isBlank(uftRunAsUser.getPassword())) {
+                    mergedProperties.put("uftRunAsUserPassword", uftRunAsUser.getPasswordAsEncrypted());
+                }
+            }
+        } catch(Exception e) {
+            buildLogger.addErrorLogEntry(String.format("Build parameters check failed: %s.", e.getMessage()));
+            return TaskResultBuilder.newBuilder(taskContext).failedWithError().build();
+        }
 
         //build props file
         File workingDirectory = taskContext.getWorkingDirectory();
@@ -132,6 +149,33 @@ public interface AbstractLauncherTask extends TaskType {
         }
 
         return buildTimeStamp;
+    }
+
+    default UftRunAsUser getUftRunAsUser(CustomVariableContext customVariableContext, BuildLogger logger) throws IllegalArgumentException {
+        Map<String, VariableDefinitionContext> vars = customVariableContext.getVariableContexts();
+        if (vars != null && !vars.isEmpty()) {
+            if (vars.keySet().contains(UFT_RUN_AS_USER_NAME)) {
+                String username = vars.get(UFT_RUN_AS_USER_NAME).getValue();
+                if (!StringUtils.isBlank(username)) {
+                    logger.addBuildLogEntry(String.format(KEY_VALUE_FORMAT, UFT_RUN_AS_USER_NAME, username));
+                    String password = null;
+                    boolean isEncoded = false;
+                    if (vars.keySet().contains(UFT_RUN_AS_USER_ENCODED_PWD)) {
+                        password = vars.get(UFT_RUN_AS_USER_ENCODED_PWD).getValue();
+                        isEncoded = true;
+                    } else if (vars.keySet().contains(UFT_RUN_AS_USER_PWD)) {
+                        password = vars.get(UFT_RUN_AS_USER_PWD).getValue();
+                        return new UftRunAsUser(username, password, false);
+                    }
+
+                    if (StringUtils.isBlank(password)) {
+                        throw new IllegalArgumentException(String.format("Either %s or %s is required.", UFT_RUN_AS_USER_PWD, UFT_RUN_AS_USER_ENCODED_PWD));
+                    }
+                    return new UftRunAsUser(username, password, isEncoded);
+                }
+            }
+        }
+        return null;
     }
 }
 

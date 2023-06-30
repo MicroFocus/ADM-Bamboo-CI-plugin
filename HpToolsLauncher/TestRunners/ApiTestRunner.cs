@@ -22,6 +22,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using HpToolsLauncher.Properties;
+using HpToolsLauncher.Utils;
 
 namespace HpToolsLauncher
 {
@@ -38,18 +39,21 @@ namespace HpToolsLauncher
         private TimeSpan _timeout = TimeSpan.MaxValue;
         private Stopwatch _stopwatch = null;
         private RunCancelledDelegate _runCancelled;
+        private RunAsUser _uftRunAsUser;
 
         /// <summary>
         /// constructor
         /// </summary>
         /// <param name="runner">parent runner</param>
         /// <param name="timeout">the global timout</param>
-        public ApiTestRunner(IAssetRunner runner, TimeSpan timeout)
+        /// <param name="uftRunAsUser"></param>
+        public ApiTestRunner(IAssetRunner runner, TimeSpan timeout, RunAsUser uftRunAsUser)
         {
             _stopwatch = Stopwatch.StartNew();
             _timeout = timeout;
             _stCanRun = TrySetSTRunner();
             _runner = runner;
+            _uftRunAsUser = uftRunAsUser;
         }
 
         /// <summary>
@@ -62,7 +66,7 @@ namespace HpToolsLauncher
             if (File.Exists(STRunnerName))
                 return true;
             _stExecuterPath = Helper.GetSTInstallPath();
-            if ((!String.IsNullOrEmpty(_stExecuterPath)))
+            if (!_stExecuterPath.IsNullOrEmpty())
             {
                 _stExecuterPath += "bin";
                 return true;
@@ -123,23 +127,21 @@ namespace HpToolsLauncher
             string paramsFilePath = Path.Combine(tempPath, "params" + paramFileName + ".xml");
             string paramFileContent = testinf.GenerateAPITestXmlForTest();
 
-            string argumentString = "";
-            if (!string.IsNullOrWhiteSpace(paramFileContent))
+            string argumentString;
+            if (!paramFileContent.IsNullOrWhiteSpace())
             {
                 File.WriteAllText(paramsFilePath, paramFileContent);
-                argumentString = String.Format("{0} \"{1}\" {2} \"{3}\" {4} \"{5}\"", STRunnerTestArg, testinf.TestPath, STRunnerReportArg, runDesc.ReportLocation, STRunnerInputParamsArg, paramsFilePath);
+                argumentString = $"{STRunnerTestArg} \"{testinf.TestPath}\" {STRunnerReportArg} \"{runDesc.ReportLocation}\" {STRunnerInputParamsArg} \"{paramsFilePath}\"";
             }
             else
             {
-                argumentString = String.Format("{0} \"{1}\" {2} \"{3}\"", STRunnerTestArg, testinf.TestPath, STRunnerReportArg, runDesc.ReportLocation);
+                argumentString = $"{STRunnerTestArg} \"{testinf.TestPath}\" {STRunnerReportArg} \"{runDesc.ReportLocation}\"";
             }
 
             Stopwatch s = Stopwatch.StartNew();
             runDesc.TestState = TestState.Running;
 
-            if (!ExecuteProcess(fileName,
-                                argumentString,
-                                ref errorReason))
+            if (!ExecuteProcess(fileName, argumentString, ref errorReason))
             {
                 runDesc.TestState = TestState.Error;
                 runDesc.ErrorDesc = errorReason;
@@ -182,7 +184,7 @@ namespace HpToolsLauncher
             {
                 using (proc = new Process())
                 {
-                    InitProcess(proc, fileName, arguments, true);
+                    InitProcess(proc, fileName, arguments);
                     RunProcess(proc, true);
 
                     //it could be that the process already existed
@@ -194,7 +196,6 @@ namespace HpToolsLauncher
 
                         if (!proc.HasExited)
                         {
-
                             proc.OutputDataReceived -= OnOutputDataReceived;
                             proc.ErrorDataReceived -= OnErrorDataReceived;
                             proc.Kill();
@@ -231,27 +232,28 @@ namespace HpToolsLauncher
         /// <param name="proc"></param>
         /// <param name="fileName"></param>
         /// <param name="arguments"></param>
-        /// <param name="enableRedirection"></param>
-        private void InitProcess(Process proc, string fileName, string arguments, bool enableRedirection)
+        private void InitProcess(Process proc, string fileName, string arguments)
         {
-            var processStartInfo = new ProcessStartInfo
+            ProcessStartInfo psi = new()
             {
                 FileName = fileName,
                 Arguments = arguments,
-                WorkingDirectory = Directory.GetCurrentDirectory()
+                WorkingDirectory = Directory.GetCurrentDirectory(),
+                ErrorDialog = false,
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                CreateNoWindow = true,
             };
 
-            if (!enableRedirection) return;
+            if (_uftRunAsUser != null)
+            {
+                psi.UserName = _uftRunAsUser.Username;
+                psi.Password = _uftRunAsUser.Password;
+            }
 
-            processStartInfo.ErrorDialog = false;
-            processStartInfo.UseShellExecute = false;
-            processStartInfo.RedirectStandardOutput = true;
-            processStartInfo.RedirectStandardError = true;
-
-            proc.StartInfo = processStartInfo;
-
+            proc.StartInfo = psi;
             proc.EnableRaisingEvents = true;
-            proc.StartInfo.CreateNoWindow = true;
 
             proc.OutputDataReceived += OnOutputDataReceived;
             proc.ErrorDataReceived += OnErrorDataReceived;
@@ -284,22 +286,17 @@ namespace HpToolsLauncher
         /// <param name="e"></param>
         private void OnErrorDataReceived(object sender, DataReceivedEventArgs e)
         {
-            var p = sender as Process;
-
-            if (p == null) return;
+            if (sender is not Process p) return;
             try
             {
                 if (!p.HasExited || p.ExitCode == 0) return;
             }
             catch { return; }
-            string format = String.Format("{0} {1}: ", DateTime.Now.ToShortDateString(),
-                                          DateTime.Now.ToLongTimeString());
             string errorData = e.Data;
 
-            if (String.IsNullOrEmpty(errorData))
+            if (errorData.IsNullOrEmpty())
             {
-                errorData = String.Format("External process has exited with code {0}", p.ExitCode);
-
+                errorData = $"External process has exited with code {p.ExitCode}";
             }
 
             ConsoleWriter.WriteErrLine(errorData);
@@ -312,10 +309,9 @@ namespace HpToolsLauncher
         /// <param name="e"></param>
         private void OnOutputDataReceived(object sender, DataReceivedEventArgs e)
         {
-            if (!String.IsNullOrEmpty(e.Data))
+            if (!e.Data.IsNullOrEmpty())
             {
-                string data = e.Data;
-                ConsoleWriter.WriteLine(data);
+                ConsoleWriter.WriteLine(e.Data);
             }
         }
 

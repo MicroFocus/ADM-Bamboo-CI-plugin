@@ -24,6 +24,7 @@ using System.IO;
 using System.Reflection;
 using HpToolsLauncher.Properties;
 using HpToolsLauncher.TestRunners;
+using HpToolsLauncher.Utils;
 
 namespace HpToolsLauncher
 {
@@ -36,6 +37,7 @@ namespace HpToolsLauncher
         private static string _uftViewerPath;
         private int _errors, _fail;
         private bool _useUFTLicense;
+        private RunAsUser _uftRunAsUser;
         private TimeSpan _timeout = TimeSpan.MaxValue;
         private Stopwatch _stopwatch = null;
         private string _abortFilename = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\stop" + Launcher.UniqueTimeStamp + ".txt";
@@ -48,7 +50,6 @@ namespace HpToolsLauncher
 
         //saves runners for cleaning up at the end.
         private Dictionary<TestType, IFileSysTestRunner> _colRunnersForCleanup = new Dictionary<TestType, IFileSysTestRunner>();
-
 
         public const string UftJUnitRportName = "uftRunnerRoot";
 
@@ -66,17 +67,16 @@ namespace HpToolsLauncher
             int ControllerPollingInterval,
             TimeSpan perScenarioTimeOut,
             List<string> ignoreErrorStrings,
-            Dictionary<string, string> jenkinsEnvVariables,
-            string fsAppParamName,
-            string appIdentifier,
+            Dictionary<string, string> bambooEnvVariables,
+            RunAsUser uftRunAsUser,
             bool useUFTLicense = false
             )
         {
-            _jenkinsEnvVariables = jenkinsEnvVariables;
+            _jenkinsEnvVariables = bambooEnvVariables;
             //search if we have any testing tools installed
             if (!Helper.IsTestingToolsInstalled(TestStorageType.FileSystem))
             {
-                ConsoleWriter.WriteErrLine(string.Format(Resources.FileSystemTestsRunner_No_HP_testing_tool_is_installed_on, System.Environment.MachineName));
+                ConsoleWriter.WriteErrLine(string.Format(Resources.FileSystemTestsRunner_No_HP_testing_tool_is_installed_on, Environment.MachineName));
                 Environment.Exit((int)Launcher.ExitCodeEnum.Failed);
             }
 
@@ -87,14 +87,14 @@ namespace HpToolsLauncher
             _perScenarioTimeOut = perScenarioTimeOut;
             _ignoreErrorStrings = ignoreErrorStrings;
 
-
+            _uftRunAsUser = uftRunAsUser;
             _useUFTLicense = useUFTLicense;
             _tests = new List<TestInfo>();
 
             //go over all sources, and create a list of all tests
             foreach (string source in sources)
             {
-                List<TestInfo> testGroup = new List<TestInfo>();
+                List<TestInfo> testGroup = new();
                 try
                 {
                     //--handle directories which contain test subdirectories (recursively)
@@ -115,38 +115,24 @@ namespace HpToolsLauncher
                     //other files are dropped
                     {
                         testGroup = new List<TestInfo>();
-                        FileInfo fi = new FileInfo(source);
-                        if (fi.Extension == Helper.LoadRunnerFileExtention)
+                        FileInfo fi = new(source);
+                        if (fi.Extension == Helper.LR_FILE_EXT)
                             testGroup.Add(new TestInfo(source, source, source));
                         else if (fi.Extension == ".mtb")
-                        //if (source.TrimEnd().EndsWith(".mtb", StringComparison.CurrentCultureIgnoreCase))
                         {
-                            MtbManager manager = new MtbManager();
+                            MtbManager manager = new();
 
                             var paths = manager.Parse(source);
-                     
+
                             foreach (var p in paths)
                             {
                                 testGroup.Add(new TestInfo(p, p, source));
                             }
-                        } else if (fi.Extension == ".mtbx")
-                            //if (source.TrimEnd().EndsWith(".mtb", StringComparison.CurrentCultureIgnoreCase))
-                            {
-                                testGroup = MtbxManager.Parse(source, _jenkinsEnvVariables, source);
-
-                            // set the test Id for each test from the group
-                            // this is important for parallel runner
-                            
-                            //testGroup = MtbxManager.Parse(source, _jenkinsEnvVariables, source);
-                           // if (!string.IsNullOrEmpty(fsAppParamName) && !string.IsNullOrEmpty(appIdentifier))
-                          //  {
-                              //  var testParam = new TestParameterInfo() { Name = fsAppParamName, Type = "string", Value = appIdentifier };
-                                //foreach(TestInfo testInfo in testGroup)
-                                //{
-                                //testInfo.ParameterList.Add(testParam);
-                                //testInfo.TestId = source.Id;
-                                //}
-                            }
+                        }
+                        else if (fi.Extension == ".mtbx")
+                        {
+                            testGroup = MtbxManager.Parse(source, _jenkinsEnvVariables, source);
+                        }
                     }
                 }
                 catch (Exception)
@@ -163,19 +149,16 @@ namespace HpToolsLauncher
                 _tests.AddRange(testGroup);
             }
 
-            if (_tests == null || _tests.Count == 0)
+            if (_tests.IsNullOrEmpty())
             {
                 ConsoleWriter.WriteLine(Resources.FsRunnerNoValidTests);
                 Environment.Exit((int)Launcher.ExitCodeEnum.Failed);
             }
 
             ConsoleWriter.WriteLine(string.Format(Resources.FsRunnerTestsFound, _tests.Count));
-            _tests.ForEach(t => ConsoleWriter.WriteLine("" + t.TestName));
+            _tests.ForEach(t => ConsoleWriter.WriteLine(t.TestName));
             ConsoleWriter.WriteLine(Resources.GeneralDoubleSeperator);
         }
-
-
-
 
         /// <summary>
         /// runs all tests given to this runner and returns a suite of run resutls
@@ -184,30 +167,57 @@ namespace HpToolsLauncher
         public override TestSuiteRunResults Run()
         {
             //create a new Run Results object
-            TestSuiteRunResults activeRunDesc = new TestSuiteRunResults();
+            TestSuiteRunResults activeRunDesc = new();
 
             double totalTime = 0;
             try
             {
                 var start = DateTime.Now;
+                Exception dcomEx = null;
+                bool isDcomVerified = false;
                 foreach (var test in _tests)
                 {
                     if (RunCancelled()) break;
 
                     var testStart = DateTime.Now;
-
                     string errorReason = string.Empty;
                     TestRunResults runResult = null;
                     try
                     {
+                        var type = Helper.GetTestType(test.TestPath);
+
+                        if (type == TestType.QTP)
+                        {
+                            if (!isDcomVerified)
+                            {
+                                try
+                                {
+                                    Helper.ChangeDCOMSettingToInteractiveUser();
+                                }
+                                catch (Exception ex)
+                                {
+                                    dcomEx = ex;
+                                }
+                                finally
+                                {
+                                    isDcomVerified = true;
+                                }
+                            }
+
+                            if (dcomEx != null)
+                                throw dcomEx;
+                        }
+
                         runResult = RunHPToolsTest(test, ref errorReason);
                     }
                     catch (Exception ex)
                     {
-                        runResult = new TestRunResults();
-                        runResult.TestState = TestState.Error;
-                        runResult.ErrorDesc = ex.Message;
-                        runResult.TestName = test.TestName;
+                        runResult = new TestRunResults
+                        {
+                            TestState = TestState.Error,
+                            ErrorDesc = ex.Message,
+                            TestName = test.TestName
+                        };
                     }
 
                     //get the original source for this test, for grouping tests under test classes
@@ -228,11 +238,11 @@ namespace HpToolsLauncher
                             {
                                 if (RunCancelled())
                                 {
-                                    runResult.ErrorDesc = HpToolsLauncher.Properties.Resources.ExceptionUserCancelled;
+                                    runResult.ErrorDesc = Resources.ExceptionUserCancelled;
                                 }
                                 else
                                 {
-                                    runResult.ErrorDesc = HpToolsLauncher.Properties.Resources.ExceptionExternalProcess;
+                                    runResult.ErrorDesc = Resources.ExceptionExternalProcess;
                                 }
                             }
                             runResult.ReportLocation = null;
@@ -274,16 +284,6 @@ namespace HpToolsLauncher
         }
 
         /// <summary>
-        /// checks if timeout has expired
-        /// </summary>
-        /// <returns></returns>
-        private bool CheckTimeout()
-        {
-            TimeSpan timeleft = _timeout - _stopwatch.Elapsed;
-            return (timeleft > TimeSpan.Zero);
-        }
-
-        /// <summary>
         /// creates a correct type of runner and runs a single test.
         /// </summary>
         /// <param name="testPath"></param>
@@ -291,24 +291,22 @@ namespace HpToolsLauncher
         /// <returns></returns>
         private TestRunResults RunHPToolsTest(TestInfo testinf, ref string errorReason)
         {
-
             var testPath = testinf.TestPath;
             var type = Helper.GetTestType(testPath);
             IFileSysTestRunner runner = null;
             switch (type)
             {
                 case TestType.ST:
-                    runner = new ApiTestRunner(this, _timeout - _stopwatch.Elapsed);
+                    runner = new ApiTestRunner(this, _timeout - _stopwatch.Elapsed, _uftRunAsUser);
                     break;
                 case TestType.QTP:
-                    runner = new GuiTestRunner(this, _useUFTLicense, _timeout - _stopwatch.Elapsed);
+                    runner = new GuiTestRunner(this, _useUFTLicense, _timeout - _stopwatch.Elapsed, _uftRunAsUser);
                     break;
                 case TestType.LoadRunner:
                     AppDomain.CurrentDomain.AssemblyResolve += Helper.HPToolsAssemblyResolver;
                     runner = new PerformanceTestRunner(this, _timeout, _pollingInterval, _perScenarioTimeOut, _ignoreErrorStrings);
                     break;
             }
-
 
             if (runner != null)
             {
@@ -331,9 +329,8 @@ namespace HpToolsLauncher
             }
 
             //check for abortion
-            if (System.IO.File.Exists(_abortFilename))
+            if (File.Exists(_abortFilename))
             {
-
                 ConsoleWriter.WriteLine(Resources.GeneralStopAborted);
 
                 //stop working 
@@ -350,7 +347,6 @@ namespace HpToolsLauncher
         /// <returns></returns>
         public bool RunCancelled()
         {
-
             //if timeout has passed
             if (_stopwatch.Elapsed > _timeout)
             {
@@ -392,7 +388,6 @@ namespace HpToolsLauncher
                     break;
             }
         }
-
 
         /// <summary>
         /// Opens the report viewer for the given report directory

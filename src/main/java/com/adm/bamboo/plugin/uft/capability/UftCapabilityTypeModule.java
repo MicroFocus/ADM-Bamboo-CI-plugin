@@ -27,7 +27,6 @@ import com.atlassian.bamboo.v2.build.agent.capability.*;
 import com.google.common.collect.Lists;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +57,7 @@ public class UftCapabilityTypeModule extends AbstractExecutableCapabilityTypeMod
     @Override
     public CapabilitySet addDefaultCapabilities(@NotNull CapabilitySet capabilitySet) {
         if (locatorService.isInstalled()) {
-            final String uftPath = locatorService.getPath();
+            final String uftPath = locatorService.getUftExeFullPath();
 
             if (!uftPath.isEmpty()) {
                 capabilitySet.addCapability(new CapabilityImpl(MF_UFT_CAPABILITY, uftPath));
@@ -115,7 +114,7 @@ public class UftCapabilityTypeModule extends AbstractExecutableCapabilityTypeMod
         if (detectionFlag) {
             uftPath = locatorService.getPathFromManualPoint(getParamValue(params, FIELD_UFT_PATH));
         } else {
-            uftPath = locatorService.getPath();
+            uftPath = locatorService.getUftExeFullPath();
         }
 
         return new CapabilityImpl(MF_UFT_CAPABILITY, uftPath);

@@ -35,14 +35,14 @@ public class WindowsUFTLocatorService implements UFTLocatorService {
 
     @Override
     public boolean isInstalled() {
-        return !StringUtils.isNullOrEmpty(WindowsRegistry.readHKLMString(UFT_REGISTRY_KEY, UFT_REGISTRY_VERSION_MAJOR_VALUE));
+        return !StringUtils.isBlank(WindowsRegistry.readHKLMString(UFT_REGISTRY_KEY, UFT_REGISTRY_VERSION_MAJOR_VALUE));
     }
 
     @Override
-    public String getPath() {
-        final String installPath = WindowsRegistry.readHKLMString(UFT_REGISTRY_KEY, UFT_REGISTRY_INSTALL_VALUE);
+    public String getUftExeFullPath() {
+        String installPath = WindowsRegistry.readHKLMString(UFT_REGISTRY_KEY, UFT_REGISTRY_INSTALL_VALUE);
 
-        if (StringUtils.isNullOrEmpty(installPath)) {
+        if (StringUtils.isBlank(installPath)) {
             return "";
         }
 
@@ -70,19 +70,7 @@ public class WindowsUFTLocatorService implements UFTLocatorService {
         // at this part we will be connected to the remote machine's file system
 
         final File f = new File(path);
-
-        if (f.exists() && f.isFile()) {
-            final File registryPathFile = new File(WindowsRegistry.readHKLMString(UFT_REGISTRY_KEY, UFT_REGISTRY_INSTALL_VALUE), UFT_EXE_NAME);
-
-            // the UFT is not installed, according to the registry
-            if (!registryPathFile.exists()) {
-                return false;
-            }
-
-            return registryPathFile.getAbsolutePath().equals(f.getAbsolutePath());
-        }
-
-        return false;
+        final String fullPathOfUftExe = getUftExeFullPath();
+        return f.exists() && f.isFile() && fullPathOfUftExe.equalsIgnoreCase(f.getAbsolutePath());
     }
-
 }

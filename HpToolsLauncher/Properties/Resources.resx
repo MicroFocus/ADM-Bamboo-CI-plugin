@@ -433,4 +433,7 @@ Save the test in QuickTest and then run it again.</value>
   <data name="GeneralDuplicateParameterWarning" xml:space="preserve">
     <value>The Parameter {0} of test: {1} is defined more than once</value>
   </data>
+  <data name="UftLaunchAsUserNotSupported" xml:space="preserve">
+    <value>The installed version of UFT One does not support the LaunchAsUser method. Please use the version 2023 or later.</value>
+  </data>
 </root>

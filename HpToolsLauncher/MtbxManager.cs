@@ -27,16 +27,12 @@ using System.Text;
 using System.Xml.Linq;
 using System.Xml.Schema;
 using HpToolsLauncher.Properties;
+using HpToolsLauncher.Utils;
 
 namespace HpToolsLauncher
 {
     public class MtbxManager
     {
-
-        private static string _defaultFileExt = ".mtbx";
-
-
-
         //the xml format of an mtbx file below:
         /*
          <Mtbx>
@@ -66,20 +62,17 @@ namespace HpToolsLauncher
 
         private static XAttribute GetAttribute(XElement x, XName attributeName)
         {
-            return x.Attributes().FirstOrDefault(a => a.Name.Namespace == attributeName.Namespace
-            && string.Equals(a.Name.LocalName, attributeName.LocalName, StringComparison.OrdinalIgnoreCase));
+            return x.Attributes().FirstOrDefault(a => a.Name.Namespace == attributeName.Namespace && a.Name.LocalName.EqualsIgnoreCase(attributeName.LocalName));
         }
 
         private static XElement GetElement(XElement x, XName eName)
         {
-            return x.Elements().FirstOrDefault(a => a.Name.Namespace == eName.Namespace
-             && string.Equals(a.Name.LocalName, eName.LocalName, StringComparison.OrdinalIgnoreCase));
+            return x.Elements().FirstOrDefault(a => a.Name.Namespace == eName.Namespace && a.Name.LocalName.EqualsIgnoreCase(eName.LocalName));
         }
 
         private static IEnumerable<XElement> GetElements(XElement x, XName eName)
         {
-            return x.Elements().Where(a => a.Name.Namespace == eName.Namespace
-             && string.Equals(a.Name.LocalName, eName.LocalName, StringComparison.OrdinalIgnoreCase));
+            return x.Elements().Where(a => a.Name.Namespace == eName.Namespace && a.Name.LocalName.EqualsIgnoreCase(eName.LocalName));
         }
 
         public static List<TestInfo> Parse(string mtbxFileName, Dictionary<string, string> jankinsEnvironmentVars, string testGroupName)
@@ -88,7 +81,7 @@ namespace HpToolsLauncher
         }
         private static string ReplaceString(string str, string oldValue, string newValue, StringComparison comparison)
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
 
             int previousIndex = 0;
             int index = str.IndexOf(oldValue, comparison);
@@ -127,10 +120,10 @@ namespace HpToolsLauncher
                 }
             }
 
-            List<TestInfo> retval = new List<TestInfo>();
+            List<TestInfo> retval = new();
             XDocument doc = XDocument.Parse(xmlContent);
 
-            XmlSchemaSet schemas = new XmlSchemaSet();
+            XmlSchemaSet schemas = new();
 
             var assembly = Assembly.GetExecutingAssembly();
 
@@ -140,13 +133,13 @@ namespace HpToolsLauncher
 
             schemas.Add(schema);
 
-            string validationMessages = "";
+            string validationMessages = string.Empty;
             doc.Validate(schemas, (o, e) =>
             {
                 validationMessages += e.Message + Environment.NewLine;
             });
 
-            if (!string.IsNullOrWhiteSpace(validationMessages))
+            if (!validationMessages.IsNullOrWhiteSpace())
                 ConsoleWriter.WriteLine("mtbx schema validation errors: " + validationMessages);
             try
             {
@@ -177,13 +170,11 @@ namespace HpToolsLauncher
                         testName = path.Substring(currentFolder.Length);
                     }
 
-                    //TestInfo col = new TestInfo(path, name, testGroupName);
-                    TestInfo col = new TestInfo(path, testName, testGroupName);
-                    HashSet<string> paramNames = new HashSet<string>();
+                    TestInfo col = new(path, testName, testGroupName);
+                    HashSet<string> paramNames = new();
 
                     foreach (var param in GetElements(test, "Parameter"))
                     {
-                        
                         string pname = GetAttribute(param, "name").Value;
                         string pval = GetAttribute(param, "value").Value;
                         XAttribute xptype = GetAttribute(param, "type");

@@ -27,15 +27,11 @@ import com.atlassian.bamboo.collections.ActionParametersMap;
 import com.atlassian.bamboo.task.TaskDefinition;
 import com.atlassian.bamboo.utils.error.ErrorCollection;
 import com.atlassian.bamboo.utils.i18n.I18nBean;
+import com.atlassian.bamboo.v2.build.agent.capability.Requirement;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AlmLabEnvPrepareUftTaskConfigurator extends AbstractLauncherTaskConfigurator {
     private static final Map ENV_ALM_CONFIG_OPTIONS = new HashMap();
@@ -197,4 +193,12 @@ public class AlmLabEnvPrepareUftTaskConfigurator extends AbstractLauncherTaskCon
         String envAlmConfOption = confMap.get(UFTConstants.ENV_ALM_CONFIG_OPTIONS.getValue());
         return envAlmConfOption != null && (UFTConstants.ENV_ALM_CONFIG_PATTERN_OPTION_EXIST).getValue().equals(envAlmConfOption);
     }
+
+    @NotNull
+    @Override
+    public Set<Requirement> calculateRequirements(TaskDefinition taskDefinition) {
+        //for ALM Lab Env Prep task the UFT capability is not required
+        return new HashSet<Requirement>();
+    }
+
 }

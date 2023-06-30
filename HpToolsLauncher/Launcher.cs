@@ -23,6 +23,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using HpToolsLauncher.Properties;
+using HpToolsLauncher.Utils;
 
 namespace HpToolsLauncher
 {
@@ -38,23 +39,18 @@ namespace HpToolsLauncher
     {
         private IXmlBuilder _xmlBuilder;
         private bool _ciRun = false;
-        private readonly string _paramFileName = null;
-        private JavaProperties _ciParams = new JavaProperties();
+        private JavaProperties _ciParams = new();
         private TestStorageType _runtype = TestStorageType.Unknown;
         private readonly string _failOnUftTestFailed;
-        private static ExitCodeEnum _exitCode = ExitCodeEnum.Passed;
-        private static string _dateFormat = "dd/MM/yyyy HH:mm:ss";
+        private static readonly char[] _commaAndSemiColon = new char[] { ',' , ';'};
+        private const string _secretKey = "EncriptionPass4Java";
 
-        public static string DateFormat
-        {
-            get { return Launcher._dateFormat; }
-            set { Launcher._dateFormat = value; }
-        }
+        public static string DateFormat { get; set; } = "dd/MM/yyyy HH:mm:ss";
 
         /// <summary>
         /// if running an alm job theses strings are mandatory:
         /// </summary>
-        private string[] requiredParamsForQcRun = { "almServerUrl",
+        private readonly string[] requiredParamsForQcRun = { "almServerUrl",
                                  "almUserName",
                                  "almPassword",
                                  "almDomain",
@@ -79,12 +75,7 @@ namespace HpToolsLauncher
         /// <summary>
         /// saves the exit code in case we want to run all tests but fail at the end since a file wasn't found
         /// </summary>
-        public static ExitCodeEnum ExitCode
-        {
-            get { return Launcher._exitCode; }
-            set { Launcher._exitCode = value; }
-        }
-
+        public static ExitCodeEnum ExitCode { get; set; } = ExitCodeEnum.Passed;
 
         /// <summary>
         /// constructor
@@ -97,29 +88,26 @@ namespace HpToolsLauncher
             _runtype = runtype;
             if (paramFileName != null)
                 _ciParams.Load(paramFileName);
-            _paramFileName = paramFileName;
 
             _failOnUftTestFailed = string.IsNullOrEmpty(failOnTestFailed) ? "N" : failOnTestFailed;
         }
-
-        static String secretkey = "EncriptionPass4Java";
 
         /// <summary>
         /// decrypts strings which were encrypted by Encrypt (in the c# or java code, mainly for qc passwords)
         /// </summary>
         /// <param name="textToDecrypt"></param>
-        /// <param name="key"></param>
         /// <returns></returns>
-        string Decrypt(string textToDecrypt, string key)
+        private string Decrypt(string textToDecrypt)
         {
-            RijndaelManaged rijndaelCipher = new RijndaelManaged();
-            rijndaelCipher.Mode = CipherMode.CBC;
-            rijndaelCipher.Padding = PaddingMode.PKCS7;
-
-            rijndaelCipher.KeySize = 0x80;
-            rijndaelCipher.BlockSize = 0x80;
-            byte[] encryptedData = Convert.FromBase64String(textToDecrypt);
-            byte[] pwdBytes = Encoding.UTF8.GetBytes(key);
+            RijndaelManaged rijndaelCipher = new()
+            {
+                Mode = CipherMode.CBC,
+                Padding = PaddingMode.PKCS7,
+                KeySize = 0x80,
+                BlockSize = 0x80
+            };
+            byte[] encryptedData = Convert.FromBase64String(textToDecrypt); 
+            byte[] pwdBytes = Encoding.UTF8.GetBytes(_secretKey);
             byte[] keyBytes = new byte[0x10];
             int len = pwdBytes.Length;
             if (len > keyBytes.Length)
@@ -131,35 +119,6 @@ namespace HpToolsLauncher
             rijndaelCipher.IV = keyBytes;
             byte[] plainText = rijndaelCipher.CreateDecryptor().TransformFinalBlock(encryptedData, 0, encryptedData.Length);
             return Encoding.UTF8.GetString(plainText);
-        }
-
-        /// <summary>
-        /// encrypts strings to be decrypted by decrypt function(in the c# or java code, mainly for qc passwords)
-        /// </summary>
-        /// <param name="textToEncrypt"></param>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        string Encrypt(string textToEncrypt, string key)
-        {
-            RijndaelManaged rijndaelCipher = new RijndaelManaged();
-            rijndaelCipher.Mode = CipherMode.CBC;
-            rijndaelCipher.Padding = PaddingMode.PKCS7;
-
-            rijndaelCipher.KeySize = 0x80;
-            rijndaelCipher.BlockSize = 0x80;
-            byte[] pwdBytes = Encoding.UTF8.GetBytes(key);
-            byte[] keyBytes = new byte[0x10];
-            int len = pwdBytes.Length;
-            if (len > keyBytes.Length)
-            {
-                len = keyBytes.Length;
-            }
-            Array.Copy(pwdBytes, keyBytes, len);
-            rijndaelCipher.Key = keyBytes;
-            rijndaelCipher.IV = keyBytes;
-            ICryptoTransform transform = rijndaelCipher.CreateEncryptor();
-            byte[] plainText = Encoding.UTF8.GetBytes(textToEncrypt);
-            return Convert.ToBase64String(transform.TransformFinalBlock(plainText, 0, plainText.Length));
         }
 
         /// <summary>
@@ -178,7 +137,7 @@ namespace HpToolsLauncher
         {
             _ciRun = true;
             if (_runtype == TestStorageType.Unknown)
-                Enum.TryParse<TestStorageType>(_ciParams["runType"], true, out _runtype);
+                Enum.TryParse(_ciParams["runType"], true, out _runtype);
             if (_runtype == TestStorageType.Unknown)
             {
                 WriteToConsole(Resources.LauncherNoRuntype);
@@ -198,24 +157,23 @@ namespace HpToolsLauncher
             }
             else
             {
-                UniqueTimeStamp = resultsFilename.ToLower().Replace("results", "").Replace(".xml", "");
+                UniqueTimeStamp = resultsFilename.ToLower().Replace("results", string.Empty).Replace(".xml", string.Empty);
             }
 
             //create the runner according to type
-            IAssetRunner runner = CreateRunner(_runtype, _ciParams);
+            IAssetRunner runner = CreateRunner(_runtype);
 
             //runner instantiation failed (no tests to run or other problem)
             if (runner == null)
             {
-                Environment.Exit((int)Launcher.ExitCodeEnum.Failed);
+                Environment.Exit((int)ExitCodeEnum.Failed);
             }
 
             //run the tests!
             RunTests(runner, resultsFilename);
 
-
-            if (Launcher.ExitCode != ExitCodeEnum.Passed)
-                Environment.Exit((int)Launcher.ExitCode);
+            if (ExitCode != ExitCodeEnum.Passed)
+                Environment.Exit((int)ExitCode);
         }
 
         /// <summary>
@@ -223,16 +181,16 @@ namespace HpToolsLauncher
         /// </summary>
         /// <param name="runType"></param>
         /// <param name="ciParams"></param>
-        IAssetRunner CreateRunner(TestStorageType runType, JavaProperties ciParams)
+        IAssetRunner CreateRunner(TestStorageType runType)
         {
-            IAssetRunner runner = null;
+            IAssetRunner runner;
             switch (runType)
             {
                 case TestStorageType.Alm:
                     //check that all required parameters exist
                     foreach (string param1 in requiredParamsForQcRun)
                     {
-                        if (!ciParams.ContainsKey(param1))
+                        if (!_ciParams.ContainsKey(param1))
                         {
                             ConsoleWriter.WriteLine(string.Format(Resources.LauncherParamRequired, param1));
                             return null;
@@ -240,8 +198,7 @@ namespace HpToolsLauncher
                     }
 
                     //parse params that need parsing
-                    double dblQcTimeout = int.MaxValue;
-                    if (!double.TryParse(_ciParams["almTimeout"], out dblQcTimeout))
+                    if (!double.TryParse(_ciParams["almTimeout"], out double dblQcTimeout))
                     {
                         ConsoleWriter.WriteLine(Resources.LauncherTimeoutNotNumeric);
                         dblQcTimeout = int.MaxValue;
@@ -249,8 +206,7 @@ namespace HpToolsLauncher
 
                     ConsoleWriter.WriteLine(string.Format(Resources.LauncherDisplayTimeout, dblQcTimeout));
 
-                    QcRunMode enmQcRunMode = QcRunMode.RUN_LOCAL;
-                    if (!Enum.TryParse<QcRunMode>(_ciParams["almRunMode"], true, out enmQcRunMode))
+                    if (!Enum.TryParse(_ciParams["almRunMode"], true, out QcRunMode enmQcRunMode))
                     {
                         ConsoleWriter.WriteLine(Resources.LauncherIncorrectRunmode);
                         enmQcRunMode = QcRunMode.RUN_LOCAL;
@@ -265,13 +221,12 @@ namespace HpToolsLauncher
                         ConsoleWriter.WriteLine(Resources.LauncherNoTests);
                         return null;
                     }
-
                    
-                    bool isSSOEnabled = ciParams.ContainsKey("almSSO") && Convert.ToBoolean(ciParams["almSSO"]);
-                    string clientID = ciParams.ContainsKey("clientID") ? ciParams["clientID"] : "";
-                    string apiKey = ciParams.ContainsKey("apiKeySecret") ? Decrypt(ciParams["apiKeySecret"], secretkey) : "";
-                    string almUserName = ciParams.ContainsKey("almUserName") ? ciParams["almUserName"] : "";
-                    string almPassword = ciParams.ContainsKey("almPassword") ? Decrypt(ciParams["almPassword"], secretkey) : "";
+                    bool isSSOEnabled = _ciParams.ContainsKey("almSSO") && Convert.ToBoolean(_ciParams["almSSO"]);
+                    string clientID = _ciParams.GetOrDefault("clientID");
+                    string apiKey = _ciParams.ContainsKey("apiKeySecret") ? Decrypt(_ciParams["apiKeySecret"]) : string.Empty;
+                    string almUserName = _ciParams.GetOrDefault("almUserName");
+                    string almPassword = _ciParams.ContainsKey("almPassword") ? Decrypt(_ciParams["almPassword"]) : string.Empty;
          
                     //create an Alm runner
                     runner = new AlmTestSetsRunner(_ciParams["almServerUrl"],
@@ -293,12 +248,12 @@ namespace HpToolsLauncher
                     //get the tests
                     IEnumerable<string> tests = GetParamsWithPrefix("Test");
 
-                    IEnumerable<string> jenkinsEnvVariablesWithCommas = GetParamsWithPrefix("JenkinsEnv");
-                    Dictionary<string, string> jenkinsEnvVariables = new Dictionary<string,string>();
-                    foreach (string var in jenkinsEnvVariablesWithCommas)
+                    IEnumerable<string> bambooEnvVarsWithCommas = GetParamsWithPrefix("JenkinsEnv");
+                    Dictionary<string, string> bambooEnvVars = new();
+                    foreach (string var in bambooEnvVarsWithCommas)
                     { 
-                        string[] nameVal = var.Split(",;".ToCharArray());
-                        jenkinsEnvVariables.Add(nameVal[0], nameVal[1]);
+                        string[] nameVal = var.Split(_commaAndSemiColon);
+                        bambooEnvVars.Add(nameVal[0], nameVal[1]);
                     }
                     //parse the timeout into a TimeSpan
                     TimeSpan timeout = TimeSpan.MaxValue;
@@ -307,8 +262,7 @@ namespace HpToolsLauncher
                         string strTimoutInSeconds = _ciParams["fsTimeout"];
                         if (strTimoutInSeconds.Trim() != "-1")
                         {
-                            int intTimoutInSeconds = 0;
-                            int.TryParse(strTimoutInSeconds, out intTimoutInSeconds);
+                            int.TryParse(strTimoutInSeconds, out int intTimoutInSeconds);
                             timeout = TimeSpan.FromSeconds(intTimoutInSeconds);
                         }
                     }
@@ -326,44 +280,47 @@ namespace HpToolsLauncher
                         string strTimoutInSeconds = _ciParams["PerScenarioTimeOut"];
                         if (strTimoutInSeconds.Trim() != "-1")
                         {
-                            int intTimoutInSeconds = 0;
-                            if (int.TryParse(strTimoutInSeconds, out intTimoutInSeconds))
+                            if (int.TryParse(strTimoutInSeconds, out int intTimoutInSeconds))
                                 perScenarioTimeOut = TimeSpan.FromMinutes(intTimoutInSeconds);
                         }
                     }
 
                     char[] delim = { '\n' };
-                    List<string> ignoreErrorStrings = new List<string>();
+                    List<string> ignoreErrorStrings = new();
                     if (_ciParams.ContainsKey("ignoreErrorStrings"))
                     {
                         ignoreErrorStrings.AddRange(_ciParams["ignoreErrorStrings"].Split(delim, StringSplitOptions.RemoveEmptyEntries));
                     }
 
-                    
-                    if (tests == null || tests.Count() == 0)
+                    if (tests.IsNullOrEmpty())
                     {
                         WriteToConsole(Resources.LauncherNoTestsFound);
                     }
 
                     List<string> validTests = Helper.ValidateFiles(tests);
-
-                    if (tests != null && tests.Count() > 0 && validTests.Count == 0)
+                    if (tests.HasAny() && validTests.Count == 0)
                     {
                         ConsoleWriter.WriteLine(Resources.LauncherNoValidTests);
                         return null;
                     }
-                    string fsAppParamName = "";
-                    string appIdentifier = "";
-                    if (_ciParams.ContainsKey("fsAppParamName"))
+                    RunAsUser uftRunAsUser = null;
+                    string username = _ciParams.GetOrDefault("uftRunAsUserName");
+                    if (!username.IsNullOrEmpty())
                     {
-                        fsAppParamName = _ciParams["fsAppParamName"];
-                        if (_ciParams.ContainsKey(fsAppParamName))
+                        string encryptedAndEncodedPwd = _ciParams.GetOrDefault("uftRunAsUserEncodedPassword");
+                        string encryptedPwd = _ciParams.GetOrDefault("uftRunAsUserPassword");
+                        if (!encryptedAndEncodedPwd.IsNullOrEmpty())
                         {
-                            appIdentifier = _ciParams[fsAppParamName];
+                            string encodedPwd = Decrypt(encryptedAndEncodedPwd);
+                            uftRunAsUser = new RunAsUser(username, encodedPwd);
+                        }
+                        else if (!encryptedPwd.IsNullOrEmpty())
+                        {
+                            string plainTextPwd = Decrypt(encryptedPwd);
+                            uftRunAsUser = new RunAsUser(username, plainTextPwd.ToSecureString());
                         }
                     }
-
-                    runner = new FileSystemTestsRunner(validTests, timeout, pollingInterval, perScenarioTimeOut, ignoreErrorStrings, jenkinsEnvVariables, fsAppParamName, appIdentifier);
+                    runner = new FileSystemTestsRunner(validTests, timeout, pollingInterval, perScenarioTimeOut, ignoreErrorStrings, bambooEnvVars, uftRunAsUser);
 
                     break;
 
@@ -377,7 +334,7 @@ namespace HpToolsLauncher
         private List<string> GetParamsWithPrefix(string prefix, bool skipEmptyEntries = false)
         {
             int idx = 1;
-            List<string> parameters = new List<string>();
+            List<string> parameters = new();
             while (_ciParams.ContainsKey(prefix + idx))
             {
                 string set = _ciParams[prefix + idx];
@@ -385,7 +342,7 @@ namespace HpToolsLauncher
                     set = set.Substring(5);
 
                 set = set.TrimEnd(" \\".ToCharArray());
-                if (!(skipEmptyEntries && string.IsNullOrWhiteSpace(set)))
+                if (!(skipEmptyEntries && set.IsNullOrWhiteSpace()))
                 {
                     parameters.Add(set);
                 }
@@ -406,26 +363,25 @@ namespace HpToolsLauncher
             {
                 if (_ciRun)
                 {
-                    _xmlBuilder = new JunitXmlBuilder();
-                    _xmlBuilder.XmlName = resultsFile;
+                    _xmlBuilder = new JunitXmlBuilder { XmlName = resultsFile };
                 }
 
                 TestSuiteRunResults results = runner.Run();
 
                 if (results == null)
-                    Environment.Exit((int)Launcher.ExitCodeEnum.Failed);
+                    Environment.Exit((int)ExitCodeEnum.Failed);
 
                 _xmlBuilder.CreateXmlFromRunResults(results);
 
                 //if there is an error
-                if (results.TestRuns.Any(tr => tr.TestState == TestState.Failed || tr.TestState == TestState.Error))
+                if (results.TestRuns.Any(tr => tr.TestState.In(TestState.Failed, TestState.Error)))
                 {
-                    Launcher.ExitCode = Launcher.ExitCodeEnum.Failed;
+                    ExitCode = ExitCodeEnum.Failed;
                 }
 
                 //this is the total run summary
                 ConsoleWriter.ActiveTestRun = null;
-                string runStatus = (Launcher.ExitCode == ExitCodeEnum.Passed || Launcher.ExitCode == ExitCodeEnum.Unstable) ? "Job succeeded" : "Job failed";
+                string runStatus = ExitCode.In(ExitCodeEnum.Passed, ExitCodeEnum.Unstable) ? "Job succeeded" : "Job failed";
                 int numFailures = results.TestRuns.Count(t => t.TestState == TestState.Failed);
                 int numSuccess = results.TestRuns.Count(t => t.TestState == TestState.Passed);
                 int numErrors = results.TestRuns.Count(t => t.TestState == TestState.Error);
@@ -444,7 +400,7 @@ namespace HpToolsLauncher
                     }
                 }
 
-                Environment.Exit((int)Launcher.ExitCode);
+                Environment.Exit((int)ExitCode);
             }
             finally
             {
