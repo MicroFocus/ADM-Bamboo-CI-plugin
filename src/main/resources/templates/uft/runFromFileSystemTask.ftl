@@ -232,7 +232,7 @@
                     }
                     jobId =  dataJSON.data && dataJSON.data.id;
                     if (!jobId){
-                        alert('The login to Mobile Center failed. Check that the Mobile Center login information is correct.');
+                        alert('The login to Digital Lab failed. Check that the Digital Lab login information is correct.');
                         openMCBtn.disabled = false;
                         return;
                     }
@@ -247,7 +247,7 @@
                     wizard.focus();
                     window.addEventListener('message', messageEventHandler, false);
                 }else{
-                    alert('The login to Mobile Center failed. Check that the Mobile Center login information is correct.');
+                    alert('The login to Digital Lab failed. Check that the Digital Lab login information is correct.');
                     openMCBtn.disabled = false;
                     return;
                 }
@@ -295,7 +295,7 @@
                 },
                 error: function(error) {
                     console.log("=====get job detail from mc fail====");
-                    alert('Get job detail information from Mobile Center failed, please try again.');
+                    alert('Get job detail information from Digital Lab failed, please try again.');
                     //enable action button after the wizard closed
                     openMCBtn.disabled = false;
                 }
