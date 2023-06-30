@@ -28,13 +28,13 @@
     <version>2.1</version>
     <packaging>atlassian-plugin</packaging>
 
-    <name>Micro Focus Bamboo plugin</name>
+    <name>OpenText Bamboo plugin</name>
     <description>
-        This plugin allows users to use MicroFocus Software products functionalists through Bamboo.
+        This plugin enables users to use OpenText products via Bamboo. 
     </description>
     <url>https://github.com/MicroFocus/ADM-Bamboo-CI-plugin</url>
     <organization>
-        <name>Micro Focus</name>
+        <name>OpenText</name>
     </organization>
     <licenses>
         <license>
