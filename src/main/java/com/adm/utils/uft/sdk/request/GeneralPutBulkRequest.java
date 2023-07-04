@@ -44,17 +44,14 @@ public abstract class GeneralPutBulkRequest extends GeneralRequest {
         Map<String, String> ret = new HashMap<String, String>();
         ret.put(RESTConstants.CONTENT_TYPE, RESTConstants.APP_XML_BULK);
         ret.put(RESTConstants.ACCEPT, RESTConstants.APP_XML);
+        ret.put(RESTConstants.X_XSRF_TOKEN, _client.getXsrfTokenValue());
 
         return ret;
     }
 
     @Override
     protected Response perform() {
-        return _client.httpPut(
-                getUrl(),
-                getDataBytes(),
-                getHeaders(),
-                ResourceAccessLevel.PROTECTED);
+        return _client.httpPut(getUrl(), getDataBytes(), getHeaders(), ResourceAccessLevel.PROTECTED);
     }
 
     private byte[] getDataBytes() {
@@ -69,7 +66,6 @@ public abstract class GeneralPutBulkRequest extends GeneralRequest {
         }
 
         return builder.append("</Entities>").toString().getBytes();
-
     }
 }
 

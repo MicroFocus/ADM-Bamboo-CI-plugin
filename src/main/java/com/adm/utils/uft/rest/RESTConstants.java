@@ -39,4 +39,6 @@ public interface RESTConstants {
     String POST = "POST";
     String PUT = "PUT";
     String COOKIE = "Cookie";
+    String XSRF_TOKEN = "XSRF-TOKEN";
+    String X_XSRF_TOKEN = "X-XSRF-TOKEN";
 }

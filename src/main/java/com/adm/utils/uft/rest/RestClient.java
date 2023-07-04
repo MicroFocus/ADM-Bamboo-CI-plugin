@@ -40,6 +40,7 @@ import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.UUID;
 
 public class RestClient implements Client {
     private final String _serverUrl;
@@ -47,7 +48,7 @@ public class RestClient implements Client {
     private final String _restPrefix;
     private final String _webuiPrefix;
     private final String _username;
-    private ProxyInfo proxyInfo;
+    private final String XSRF_TOKEN_VALUE;
 
     /**
      * Configure SSL context for the client.
@@ -107,25 +108,13 @@ public class RestClient implements Client {
                         String.format("domains/%s", domain),
                         String.format("projects/%s", project));
         _webuiPrefix = getPrefixUrl("webui/alm", domain, project);
+
+        XSRF_TOKEN_VALUE = UUID.randomUUID().toString();
+        _cookies.put(RESTConstants.XSRF_TOKEN, XSRF_TOKEN_VALUE);
     }
 
-    /**
-     * Constructor for setting rest client properties including proxy info.
-     */
-    public RestClient(String url, String domain, String project, String username, ProxyInfo proxyInfo) {
-
-        if (!url.endsWith("/")) {
-            url = String.format("%s/", url);
-        }
-        _serverUrl = url;
-        _username = username;
-        this.proxyInfo = proxyInfo;
-        _restPrefix =
-                getPrefixUrl(
-                        "rest",
-                        String.format("domains/%s", domain),
-                        String.format("projects/%s", project));
-        _webuiPrefix = getPrefixUrl("webui/alm", domain, project);
+    public String getXsrfTokenValue() {
+        return XSRF_TOKEN_VALUE;
     }
 
     @Override
@@ -229,11 +218,11 @@ public class RestClient implements Client {
             ResourceAccessLevel resourceAccessLevel) {
 
         Response ret;
-        if ((queryString != null) && !queryString.isEmpty()) {
+        if (queryString != null && !queryString.isEmpty()) {
             url += "?" + queryString;
         }
         try {
-            HttpURLConnection connection = (HttpURLConnection) openConnection(proxyInfo, url);
+            HttpURLConnection connection = (HttpURLConnection) openConnection(url);
 
             connection.setRequestMethod(type);
 
@@ -259,7 +248,7 @@ public class RestClient implements Client {
     }
 
     /**
-     * @param connnection
+     * @param connection
      *            connection to set the headers and bytes in
      * @param headers
      *            to use in the request, such as content-type
@@ -267,24 +256,24 @@ public class RestClient implements Client {
      *            the actual data to post in the connection.
      */
     private void prepareHttpRequest(
-            HttpURLConnection connnection,
+            HttpURLConnection connection,
             Map<String, String> headers,
             byte[] bytes) {
 
         // set all cookies for request
-        connnection.setRequestProperty(RESTConstants.COOKIE, getCookies());
+        connection.setRequestProperty(RESTConstants.COOKIE, getCookies());
 
-        setConnectionHeaders(connnection, headers);
+        setConnectionHeaders(connection, headers);
 
-        setConnectionData(connnection, bytes);
+        setConnectionData(connection, bytes);
     }
 
-    private void setConnectionData(HttpURLConnection connnection, byte[] bytes) {
+    private void setConnectionData(HttpURLConnection connection, byte[] bytes) {
 
         if (bytes != null && bytes.length > 0) {
-            connnection.setDoOutput(true);
+            connection.setDoOutput(true);
             try {
-                OutputStream out = connnection.getOutputStream();
+                OutputStream out = connection.getOutputStream();
                 out.write(bytes);
                 out.flush();
                 out.close();
@@ -294,13 +283,13 @@ public class RestClient implements Client {
         }
     }
 
-    private void setConnectionHeaders(HttpURLConnection connnection, Map<String, String> headers) {
+    private void setConnectionHeaders(HttpURLConnection connection, Map<String, String> headers) {
 
         if (headers != null) {
             Iterator<Map.Entry<String, String>> headersIterator = headers.entrySet().iterator();
             while (headersIterator.hasNext()) {
                 Map.Entry<String, String> header = headersIterator.next();
-                connnection.setRequestProperty(header.getKey(), header.getValue());
+                connection.setRequestProperty(header.getKey(), header.getValue());
             }
         }
     }
@@ -384,31 +373,9 @@ public class RestClient implements Client {
         return _username;
     }
 
-    public static URLConnection openConnection(final ProxyInfo proxyInfo, String urlString) throws IOException {
-        Proxy proxy = null;
+    public static URLConnection openConnection(String urlString) throws IOException {
         URL url = new URL(urlString);
-
-        if (proxyInfo != null && org.apache.commons.lang.StringUtils.isNotBlank(proxyInfo._host) && org.apache.commons.lang.StringUtils.isNotBlank(proxyInfo._port)) {
-            int port = Integer.parseInt(proxyInfo._port.trim());
-            proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyInfo._host, port));
-        }
-
-        if (proxy != null && org.apache.commons.lang.StringUtils.isNotBlank(proxyInfo._userName) && StringUtils.isNotBlank(proxyInfo._password)) {
-            Authenticator authenticator = new Authenticator() {
-                @Override
-                protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(proxyInfo._userName, proxyInfo._password.toCharArray());    //To change body of overridden methods use File | Settings | File Templates.
-                }
-            };
-            Authenticator.setDefault(authenticator);
-        }
-
-        if (proxy == null) {
-            return url.openConnection();
-        }
-
-
-        return url.openConnection(proxy);
+        return url.openConnection();
     }
 
     /**

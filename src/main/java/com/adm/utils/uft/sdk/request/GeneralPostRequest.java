@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GeneralPostRequest  extends GeneralRequest {
+public class GeneralPostRequest extends GeneralRequest {
 
     protected GeneralPostRequest(Client client) {
         super(client);
@@ -44,6 +44,7 @@ public class GeneralPostRequest  extends GeneralRequest {
         Map<String, String> ret = new HashMap<String, String>();
         ret.put(RESTConstants.CONTENT_TYPE, RESTConstants.APP_XML);
         ret.put(RESTConstants.ACCEPT, RESTConstants.APP_XML);
+        ret.put(RESTConstants.X_XSRF_TOKEN, _client.getXsrfTokenValue());
 
         return ret;
     }
