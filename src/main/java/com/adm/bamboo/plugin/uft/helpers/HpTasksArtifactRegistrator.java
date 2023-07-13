@@ -37,7 +37,7 @@ public class HpTasksArtifactRegistrator {
             return;
         }
 
-        String name = i18nBean.getText("Micro Focus Tasks Artifact Definition");
+        String name = i18nBean.getText("OpenText Tasks Artifact Definition");
         String ARTIFACT_COPY_PATTERN = HP_UFT_PREFIX + "${bamboo.buildNumber}/**";
         if (artifactDefinitionManager.findArtifactDefinition(job, name) == null) {
             ArtifactDefinitionImpl artifactDefinition = new ArtifactDefinitionImpl(name, "", ARTIFACT_COPY_PATTERN);

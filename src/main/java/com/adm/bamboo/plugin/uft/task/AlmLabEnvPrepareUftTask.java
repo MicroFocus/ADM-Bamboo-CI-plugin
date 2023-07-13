@@ -33,10 +33,13 @@ import com.adm.utils.uft.sdk.AUTEnvironmentBuilderPerformer;
 import com.adm.utils.uft.sdk.Logger;
 import com.adm.utils.uft.enums.UFTConstants;
 import com.atlassian.bamboo.build.logger.BuildLogger;
+import com.atlassian.bamboo.build.test.TestCollationService;
 import com.atlassian.bamboo.configuration.ConfigurationMap;
 import com.atlassian.bamboo.task.*;
-import com.atlassian.bamboo.variable.VariableDefinitionManager;
+import com.atlassian.bamboo.variable.CustomVariableContext;
 
+import com.atlassian.bamboo.variable.VariableContext;
+import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -44,15 +47,15 @@ import java.util.List;
 import java.util.Properties;
 
 public class AlmLabEnvPrepareUftTask implements AbstractLauncherTask {
-    private final VariableService variableService;
+    private final CustomVariableContext customVariableContext;
 
-    public AlmLabEnvPrepareUftTask(VariableDefinitionManager variableDefinitionManager) {
-
-        this.variableService = new VariableService(variableDefinitionManager);
+    public AlmLabEnvPrepareUftTask(@ComponentImport CustomVariableContext customVariableContext) {
+        this.customVariableContext = customVariableContext;
     }
 
     @NotNull
     public TaskResult execute(@NotNull TaskContext taskContext) throws TaskException {
+        final VariableContext variableContext = taskContext.getCommonContext().getVariableContext();
         final BuildLogger buildLogger = taskContext.getBuildLogger();
         ConfigurationMap confMap = taskContext.getConfigurationMap();
         TaskState state = TaskState.SUCCESS;
@@ -114,7 +117,7 @@ public class AlmLabEnvPrepareUftTask implements AbstractLauncherTask {
             if (!StringUtils.isNullOrEmpty(outputConfig)) {
 
                 String confId = autEnvModel.getCurrentConfigID();
-                variableService.saveGlobalVariable(outputConfig, confId);
+                variableContext.addResultVariable(outputConfig, confId);
             }
 
         } catch (InterruptedException e) {

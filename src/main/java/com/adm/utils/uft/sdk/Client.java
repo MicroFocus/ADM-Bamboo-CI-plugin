@@ -50,4 +50,6 @@ public interface Client {
     String getServerUrl();
 
     String getUsername();
+
+    String getXsrfTokenValue();
 }

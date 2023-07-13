@@ -20,9 +20,11 @@
 
 package com.adm.utils.uft.sdk.request;
 
+import com.adm.utils.uft.rest.RESTConstants;
 import com.adm.utils.uft.sdk.Client;
 import com.adm.utils.uft.sdk.Response;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public abstract class GeneralRequest{
@@ -53,8 +55,9 @@ public abstract class GeneralRequest{
     }
 
     protected Map<String, String> getHeaders() {
-
-        return null;
+        Map<String, String> ret = new HashMap<String, String>();
+        ret.put(RESTConstants.X_XSRF_TOKEN, _client.getXsrfTokenValue());
+        return ret;
     }
 
     protected String getBody() {
