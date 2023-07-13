@@ -24,6 +24,7 @@ import com.adm.bamboo.plugin.uft.api.AbstractLauncherTask;
 import com.adm.bamboo.plugin.uft.capability.UftCapabilityTypeModule;
 import com.adm.bamboo.plugin.uft.helpers.LauncherParamsBuilder;
 import com.adm.bamboo.plugin.uft.helpers.locator.UFTLocatorServiceFactory;
+import com.adm.utils.uft.Aes256Encryptor;
 import com.adm.utils.uft.enums.RunType;
 import com.adm.bamboo.plugin.uft.results.TestResultHelperAlm;
 import com.adm.utils.uft.enums.AlmRunMode;
@@ -44,7 +45,6 @@ import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Properties;
 
 import static com.adm.bamboo.plugin.uft.results.TestResultHelper.collateTestResults;
@@ -54,6 +54,7 @@ public class RunFromAlmUftTask implements AbstractLauncherTask {
     private final TestCollationService testCollationService;
     private final CustomVariableContext customVariableContext;
     private final CapabilityContext capabilityContext;
+    private final Aes256Encryptor aes256Encryptor;
 
     public RunFromAlmUftTask(final TestCollationService testCollationService, final CapabilityContext capabilityContext, @NotNull final I18nBeanFactory i18nBeanFactory,
                              @ComponentImport CustomVariableContext customVariableContext) {
@@ -61,18 +62,23 @@ public class RunFromAlmUftTask implements AbstractLauncherTask {
         this.testCollationService = testCollationService;
         this.customVariableContext = customVariableContext;
         this.capabilityContext = capabilityContext;
+        this.aes256Encryptor = new Aes256Encryptor(getEncryptionKeyVectorPair());
     }
 
+    @Override
+    public Aes256Encryptor getAes256Encryptor() { return aes256Encryptor; };
+
+    @Override
     public CustomVariableContext getCustomVariableContext() {
         return customVariableContext;
     }
 
     @Override
-    public Properties getTaskProperties(final TaskContext taskContext) throws Exception {
+    public Properties getTaskProperties(final TaskContext taskContext) {
         final String splitMarker = "\n";
         final ConfigurationMap map = taskContext.getConfigurationMap();
 
-        LauncherParamsBuilder builder = new LauncherParamsBuilder();
+        LauncherParamsBuilder builder = new LauncherParamsBuilder(getAes256Encryptor());
         builder.setRunType(RunType.ALM);
 
         final String almServerPath = map.get(UFTConstants.ALM_SERVER.getValue());
@@ -123,15 +129,13 @@ public class RunFromAlmUftTask implements AbstractLauncherTask {
         return builder.getProperties();
     }
 
-
     @NotNull
     @Override
     public TaskResult execute(@NotNull TaskContext taskContext) throws TaskException {
         final ConfigurationMap map = taskContext.getConfigurationMap();
         final String runMode = map.get(UFTConstants.RUN_MODE.getValue());
 
-        // we only check if the remote machine has the UFT installed, if the ALM run mode is local,
-        // otherwise it is not our responsibility
+        // we only check if the remote machine has the UFT installed, if the ALM run mode is local, otherwise it is not our responsibility
         if (runMode.equals(UFTConstants.RUN_LOCALLY_PARAMETER.getValue())
                 &&
                 !UFTLocatorServiceFactory.getInstance().getLocator().validateUFTPath(capabilityContext.getCapabilityValue(UftCapabilityTypeModule.MF_UFT_CAPABILITY))) {
@@ -139,13 +143,7 @@ public class RunFromAlmUftTask implements AbstractLauncherTask {
             return TaskResultBuilder.newBuilder(taskContext).failedWithError().build();
         }
 
-        return AbstractLauncherTask.super.execute(taskContext, customVariableContext);
-    }
-
-    @Override
-    public Integer runTask(final File workingDirectory, final String launcherPath,
-                           final String paramFile, final BuildLogger logger) throws IOException, InterruptedException {
-        return AbstractLauncherTask.super.runTask(workingDirectory, launcherPath, paramFile, logger);
+        return AbstractLauncherTask.super.execute(taskContext);
     }
 
     @Override

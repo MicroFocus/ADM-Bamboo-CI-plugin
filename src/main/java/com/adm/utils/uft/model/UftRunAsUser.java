@@ -20,20 +20,23 @@
 
 package com.adm.utils.uft.model;
 
-import com.adm.utils.uft.EncryptionUtils;
+import com.adm.utils.uft.Aes256Encryptor;
+import org.jetbrains.annotations.NotNull;
 
 public class UftRunAsUser {
+    private final Aes256Encryptor aes256Encryptor;
     private String username;
     private String encodedPassword;
     private String password;
 
-    public UftRunAsUser(String username, String password, boolean isEncoded) {
+    public UftRunAsUser(String username, String password, boolean isEncoded, @NotNull final Aes256Encryptor aes256Encryptor) {
         this.username = username;
         if (isEncoded) {
             this.encodedPassword = password;
         } else {
             this.password = password;
         }
+        this.aes256Encryptor = aes256Encryptor;
     }
 
     public String getUsername() {
@@ -47,10 +50,10 @@ public class UftRunAsUser {
     public String getPassword() { return password; }
 
     public String getPasswordAsEncrypted() throws Exception {
-        return EncryptionUtils.Encrypt(password, EncryptionUtils.getSecretKey());
+        return aes256Encryptor.Encrypt(password);
     }
 
     public String getEncodedPasswordAsEncrypted() throws Exception {
-        return EncryptionUtils.Encrypt(encodedPassword, EncryptionUtils.getSecretKey());
+        return aes256Encryptor.Encrypt(encodedPassword);
     }
 }

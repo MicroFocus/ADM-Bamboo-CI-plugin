@@ -21,6 +21,7 @@
 package com.adm.bamboo.plugin.uft.task;
 
 import com.adm.bamboo.plugin.uft.api.AbstractLauncherTask;
+import com.adm.utils.uft.Aes256Encryptor;
 import com.adm.utils.uft.SSEException;
 import com.adm.utils.uft.model.CdaDetails;
 import com.adm.utils.uft.rest.RestClient;
@@ -63,6 +64,7 @@ public class RunFromAlmLabManagementUftTask implements AbstractLauncherTask {
         this.customVariableContext = customVariableContext;
     }
 
+    @Override
     public CustomVariableContext getCustomVariableContext() {
         return customVariableContext;
     }
@@ -85,7 +87,6 @@ public class RunFromAlmLabManagementUftTask implements AbstractLauncherTask {
                     map.get(UFTConstants.DEPLOYED_ENVIRONMENT_NAME.getValue()),
                     map.get(UFTConstants.DEPROVISIONING_ACTION_PARAM.getValue()));
         }
-
 
         Args args = new Args(
                 almServerPath,
@@ -122,8 +123,8 @@ public class RunFromAlmLabManagementUftTask implements AbstractLauncherTask {
             //run task
             Testsuites result = runManager.execute(restClient, args, logger);
 
-            taskContext.getBuildLogger().addBuildLogEntry("Bamboo build timestamp variable has value: " + getBuildTimeStamp(customVariableContext));
-            ResultSerializer.saveResults(result, taskContext.getWorkingDirectory().getPath(), getBuildTimeStamp(customVariableContext), logger);
+            taskContext.getBuildLogger().addBuildLogEntry("Bamboo build timestamp variable has value: " + getBuildTimeStamp());
+            ResultSerializer.saveResults(result, taskContext.getWorkingDirectory().getPath(), getBuildTimeStamp(), logger);
         } catch (InterruptedException e) {
             e.printStackTrace();
             return TaskResultBuilder.newBuilder(taskContext).failed().build();
@@ -135,7 +136,7 @@ public class RunFromAlmLabManagementUftTask implements AbstractLauncherTask {
     }
 
     @Override
-    public Properties getTaskProperties(TaskContext taskContext) throws Exception {
+    public Properties getTaskProperties(TaskContext taskContext) {
         return null;
     }
 
@@ -149,5 +150,8 @@ public class RunFromAlmLabManagementUftTask implements AbstractLauncherTask {
             return TaskResultBuilder.newBuilder(taskContext).failed().build();
         }
     }
+
+    @Override
+    public Aes256Encryptor getAes256Encryptor() { return null; }
 
 }

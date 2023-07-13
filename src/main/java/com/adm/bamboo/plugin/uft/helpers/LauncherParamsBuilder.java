@@ -20,11 +20,11 @@
 
 package com.adm.bamboo.plugin.uft.helpers;
 
-import com.adm.utils.uft.EncryptionUtils;
+import com.adm.utils.uft.Aes256Encryptor;
 import com.adm.utils.uft.StringUtils;
 import com.adm.utils.uft.enums.AlmRunMode;
 import com.adm.utils.uft.enums.RunType;
-
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
@@ -43,9 +43,11 @@ public class LauncherParamsBuilder {
                                                                     "almRunHost");
 
     private Properties properties;
+    private final Aes256Encryptor aes256Encryptor;
 
-    public LauncherParamsBuilder() {
+    public LauncherParamsBuilder(@NotNull final Aes256Encryptor aes256Encryptor) {
         properties = new Properties();
+        this.aes256Encryptor = aes256Encryptor;
     }
 
     private void setParamValue(final String paramName, final String paramValue) {
@@ -80,7 +82,6 @@ public class LauncherParamsBuilder {
         setParamValue("MobileProxySetting_Authentication", String.valueOf(authentication));
     }
 
-
     public void setProxyHost(String proxyHost) {
         setParamValue("proxyHost", proxyHost);
     }
@@ -96,7 +97,7 @@ public class LauncherParamsBuilder {
     public void setMobileProxySetting_Password(String proxyPassword) {
         String proxyPass;
         try {
-            proxyPass = EncryptionUtils.Encrypt(proxyPassword, EncryptionUtils.getSecretKey());
+            proxyPass = aes256Encryptor.Encrypt(proxyPassword);
             properties.put("MobileProxySetting_Password", proxyPass);
         } catch (Exception e) {
         }
@@ -116,7 +117,7 @@ public class LauncherParamsBuilder {
 
     public void setAlmApiKeySecret(String almApiKeySecret){
         try {
-            setParamValue("apiKeySecret", EncryptionUtils.Encrypt(almApiKeySecret, EncryptionUtils.getSecretKey()));
+            setParamValue("apiKeySecret", aes256Encryptor.Encrypt(almApiKeySecret));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -128,7 +129,7 @@ public class LauncherParamsBuilder {
 
     public void setAlmPassword(String almPassword) {
         try {
-            String encAlmPass = EncryptionUtils.Encrypt(almPassword, EncryptionUtils.getSecretKey());
+            String encAlmPass = aes256Encryptor.Encrypt(almPassword);
             properties.put("almPassword", encAlmPass);
         } catch (Exception e) {
         }
@@ -175,7 +176,7 @@ public class LauncherParamsBuilder {
     }
     public void setFileSystemPassword(String oriPass) {
         try {
-            String encPass = EncryptionUtils.Encrypt(oriPass, EncryptionUtils.getSecretKey());
+            String encPass = aes256Encryptor.Encrypt(oriPass);
             properties.put("MobilePassword", encPass);
         } catch (Exception e) {
         }

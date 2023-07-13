@@ -22,6 +22,7 @@ package com.adm.bamboo.plugin.uft.task;
 
 import com.adm.bamboo.plugin.uft.api.AbstractLauncherTask;
 import com.adm.bamboo.plugin.uft.ui.UploadApplicationUftTaskConfigurator;
+import com.adm.utils.uft.Aes256Encryptor;
 import com.adm.utils.uft.StringUtils;
 import com.adm.utils.uft.integration.HttpConnectionException;
 import com.adm.utils.uft.integration.JobOperation;
@@ -36,6 +37,7 @@ import com.atlassian.bamboo.task.TaskResultBuilder;
 import com.atlassian.bamboo.utils.i18n.I18nBean;
 import com.atlassian.bamboo.utils.i18n.I18nBeanFactory;
 
+import com.atlassian.bamboo.variable.CustomVariableContext;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 import net.minidev.json.parser.ParseException;
@@ -54,7 +56,6 @@ import static com.adm.utils.uft.TaskUtils.logErrorMessage;
 public class UploadApplicationUftTask implements AbstractLauncherTask {
     private final I18nBean i18nBean;
     private final TestCollationService testCollationService;
-
 
     public UploadApplicationUftTask(@NotNull final TestCollationService testCollationService, @NotNull final I18nBeanFactory i18nBeanFactory) {
         this.i18nBean = i18nBeanFactory.getI18nBean();
@@ -143,7 +144,16 @@ public class UploadApplicationUftTask implements AbstractLauncherTask {
     }
 
     @Override
-    public Properties getTaskProperties(TaskContext taskContext) throws Exception {
+    public Properties getTaskProperties(TaskContext taskContext) {
+        return null;
+    }
+    @Override
+    public Aes256Encryptor getAes256Encryptor() {
+        return null;
+    }
+
+    @Override
+    public CustomVariableContext getCustomVariableContext() {
         return null;
     }
 }

@@ -22,8 +22,8 @@ package com.adm.bamboo.plugin.uft.task;
 
 import com.adm.bamboo.plugin.uft.api.AbstractLauncherTask;
 import com.adm.bamboo.plugin.uft.helpers.AlmConfigParameter;
-import com.adm.bamboo.plugin.uft.helpers.VariableService;
 import com.adm.bamboo.plugin.uft.ui.AlmLabEnvPrepareUftTaskConfigurator;
+import com.adm.utils.uft.Aes256Encryptor;
 import com.adm.utils.uft.StringUtils;
 import com.adm.utils.uft.model.AutEnvironmentConfigModel;
 import com.adm.utils.uft.model.AutEnvironmentParameterModel;
@@ -33,7 +33,6 @@ import com.adm.utils.uft.sdk.AUTEnvironmentBuilderPerformer;
 import com.adm.utils.uft.sdk.Logger;
 import com.adm.utils.uft.enums.UFTConstants;
 import com.atlassian.bamboo.build.logger.BuildLogger;
-import com.atlassian.bamboo.build.test.TestCollationService;
 import com.atlassian.bamboo.configuration.ConfigurationMap;
 import com.atlassian.bamboo.task.*;
 import com.atlassian.bamboo.variable.CustomVariableContext;
@@ -51,6 +50,11 @@ public class AlmLabEnvPrepareUftTask implements AbstractLauncherTask {
 
     public AlmLabEnvPrepareUftTask(@ComponentImport CustomVariableContext customVariableContext) {
         this.customVariableContext = customVariableContext;
+    }
+
+    @Override
+    public CustomVariableContext getCustomVariableContext() {
+        return customVariableContext;
     }
 
     @NotNull
@@ -145,12 +149,17 @@ public class AlmLabEnvPrepareUftTask implements AbstractLauncherTask {
     }
 
     @Override
-    public Properties getTaskProperties(TaskContext taskContext) throws Exception {
+    public Properties getTaskProperties(TaskContext taskContext) {
         return null;
     }
 
     @Override
     public TaskResult collateResults(@NotNull TaskContext taskContext, Properties mergedProperties) {
+        return null;
+    }
+
+    @Override
+    public Aes256Encryptor getAes256Encryptor() {
         return null;
     }
 }
