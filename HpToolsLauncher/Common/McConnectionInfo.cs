@@ -15,6 +15,7 @@ namespace HpToolsLauncher
         private const string HTTP = "Http";
         private const string HTTPS = "Https";
         private const string PORT_8080 = "8080";
+        private const string PORT_443 = "443";
         private const int ZERO = 0;
         private const int ONE = 1;
         private static readonly char[] _slash = new char[] {'/'};
@@ -105,9 +106,17 @@ namespace HpToolsLauncher
             if (ciParams.ContainsKey("MobileHostAddress"))
             {
                 string mcServerUrl = ciParams["MobileHostAddress"].Trim();
-
                 if (!string.IsNullOrEmpty(mcServerUrl))
                 {
+                    //ssl
+                    bool useSSL = false;
+                    if (ciParams.ContainsKey("MobileUseSSL"))
+                    {
+                        int.TryParse(ciParams["MobileUseSSL"], out int mcUseSslAsInt);
+                        UseSslAsInt = mcUseSslAsInt;
+                        useSSL = mcUseSslAsInt == ONE;
+                    }
+
                     //url is something like http://xxx.xxx.xxx.xxx:8080
                     string[] arr = mcServerUrl.Split(_comma, StringSplitOptions.RemoveEmptyEntries);
                     if (arr.Length == 1)
@@ -121,6 +130,7 @@ namespace HpToolsLauncher
                         if (arr[0].Trim().In(true, HTTP, HTTPS))
                         {
                             HostAddress = arr[1].Trim(_slash);
+                            HostPort = useSSL ? PORT_443 : PORT_8080;
                         }
                         else
                         {
@@ -157,13 +167,6 @@ namespace HpToolsLauncher
                         {
                             MobilePassword = Aes256Encryptor.Instance.Decrypt(mcPassword);
                         }
-                    }
-
-                    //ssl
-                    if (ciParams.ContainsKey("MobileUseSSL"))
-                    {
-                        int.TryParse(ciParams["MobileUseSSL"], out int mcUseSslAsInt);
-                        UseSslAsInt = mcUseSslAsInt;
                     }
 
                     //mc tenantId
