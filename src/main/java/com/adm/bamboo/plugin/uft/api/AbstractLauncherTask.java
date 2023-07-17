@@ -126,9 +126,9 @@ public interface AbstractLauncherTask extends TaskType {
         try {
             ProcessBuilder builder = new ProcessBuilder(launcherPath, "-paramfile", paramFile);
             builder.directory(workingDirectory);
-            Aes256Encryptor encrypter = getAes256Encryptor();
-            builder.environment().put(AES_256_SECRET_KEY, encrypter.getSecretKey());
-            builder.environment().put(AES_256_SECRET_INIT_VECTOR, encrypter.getInitVector());
+            Aes256Encryptor encryptor = getAes256Encryptor();
+            builder.environment().put(AES_256_SECRET_KEY, encryptor.getSecretKey());
+            builder.environment().put(AES_256_SECRET_INIT_VECTOR, encryptor.getInitVector());
             logger.addBuildLogEntry(launcherPath + " -paramfile " + paramFile);
             Process process = builder.start();
             BufferedReader output = new BufferedReader(new InputStreamReader(process.getInputStream()));

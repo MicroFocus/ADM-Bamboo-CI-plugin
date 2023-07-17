@@ -287,6 +287,25 @@ namespace HpToolsLauncher
                         ignoreErrorStrings.AddRange(_ciParams["ignoreErrorStrings"].Split(delim, StringSplitOptions.RemoveEmptyEntries));
                     }
 
+                    //--MC connection info
+                    McConnectionInfo mcConnectionInfo = null;
+                    try
+                    {
+                        mcConnectionInfo = new McConnectionInfo(_ciParams);
+                    }
+                    catch (Exception ex)
+                    {
+                        ConsoleWriter.WriteErrLine(ex.Message);
+                        Environment.Exit((int)ExitCodeEnum.Failed);
+                    }
+
+                    // other mobile info
+                    string mobileinfo = string.Empty;
+                    if (_ciParams.ContainsKey("mobileinfo"))
+                    {
+                        mobileinfo = _ciParams["mobileinfo"];
+                    }
+
                     if (tests.IsNullOrEmpty())
                     {
                         WriteToConsole(Resources.LauncherNoTestsFound);
@@ -315,7 +334,7 @@ namespace HpToolsLauncher
                             uftRunAsUser = new RunAsUser(username, plainTextPwd.ToSecureString());
                         }
                     }
-                    runner = new FileSystemTestsRunner(validTests, timeout, pollingInterval, perScenarioTimeOut, ignoreErrorStrings, bambooEnvVars, uftRunAsUser);
+                    runner = new FileSystemTestsRunner(validTests, timeout, pollingInterval, perScenarioTimeOut, ignoreErrorStrings, mcConnectionInfo, mobileinfo, bambooEnvVars, uftRunAsUser);
 
                     break;
 

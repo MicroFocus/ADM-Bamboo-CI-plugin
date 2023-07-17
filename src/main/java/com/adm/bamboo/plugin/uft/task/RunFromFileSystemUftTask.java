@@ -207,7 +207,7 @@ public class RunFromFileSystemUftTask implements AbstractLauncherTask {
             try {
                 jobJSON = operation.getJobById(jobUUID);
             } catch (HttpConnectionException e) {
-                buildLogger.addErrorLogEntry("********** Fail to connect Digital Lab, please check URL, UserName, Password, and Proxy Configuration ********** ");
+                buildLogger.addErrorLogEntry("********** Failed to connect Digital Lab, please check URL, UserName / Password, and Proxy Configuration ********** ");
             }
 
             if (jobJSON != null) {
