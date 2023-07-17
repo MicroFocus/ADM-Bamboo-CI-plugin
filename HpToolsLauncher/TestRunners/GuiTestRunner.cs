@@ -116,14 +116,14 @@ namespace HpToolsLauncher
 
                     break;
                 case McConnectionInfo.AuthType.UsernamePassword:
-                    if (!string.IsNullOrEmpty(_mcConnection.MobileUserName))
+                    if (!string.IsNullOrEmpty(_mcConnection.UserName))
                     {
-                        _qtpApplication.TDPierToTulip.SetTestOptionsVal(MOBILE_USER, _mcConnection.MobileUserName);
+                        _qtpApplication.TDPierToTulip.SetTestOptionsVal(MOBILE_USER, _mcConnection.UserName);
                     }
 
-                    if (!string.IsNullOrEmpty(_mcConnection.MobilePassword))
+                    if (!string.IsNullOrEmpty(_mcConnection.Password))
                     {
-                        string encriptedMcPassword = WinUserNativeMethods.ProtectBSTRToBase64(_mcConnection.MobilePassword);
+                        string encriptedMcPassword = WinUserNativeMethods.ProtectBSTRToBase64(_mcConnection.Password);
                         if (encriptedMcPassword == null)
                         {
                             ConsoleWriter.WriteLine("ProtectBSTRToBase64 fail for mcPassword");

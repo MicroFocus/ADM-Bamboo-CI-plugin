@@ -16,13 +16,30 @@ namespace HpToolsLauncher
         private const string HTTPS = "Https";
         private const string PORT_8080 = "8080";
         private const string PORT_443 = "443";
+        private const string CLIENT = "client";
+        private const string SECRET = "secret";
+        private const string TENANT = "tenant";
         private const int ZERO = 0;
         private const int ONE = 1;
-        private static readonly char[] _slash = new char[] {'/'};
-        private static readonly char[] _comma = new char[] { ':' };
+        private static readonly char[] SLASH = new char[] {'/'};
+        private static readonly char[] COMMA = new char[] { ':' };
+        private static readonly char[] DBL_QUOTE = new char[] { '"' };
 
-    // auth types for MC
-    public enum AuthType
+        private const string MOBILEHOSTADDRESS = "MobileHostAddress";
+        private const string MOBILEUSESSL = "MobileUseSSL"; 
+        private const string MOBILEUSERNAME = "MobileUserName";
+        private const string MOBILEPASSWORD = "MobilePassword";
+        private const string MOBILETENANTID = "MobileTenantId";
+        private const string MOBILEEXECTOKEN = "MobileExecToken";
+        private const string MOBILEUSEPROXY = "MobileUseProxy";
+        private const string MOBILEPROXYTYPE = "MobileProxyType";
+        private const string MOBILEPROXYSETTING_ADDRESS = "MobileProxySetting_Address";
+        private const string MOBILEPROXYSETTING_AUTHENTICATION = "MobileProxySetting_Authentication";
+        private const string MOBILEPROXYSETTING_USERNAME = "MobileProxySetting_UserName";
+        private const string MOBILEPROXYSETTING_PASSWORD = "MobileProxySetting_Password";
+
+        // auth types for MC
+        public enum AuthType
         {
             UsernamePassword,
             AuthToken
@@ -37,9 +54,9 @@ namespace HpToolsLauncher
         public McConnectionInfo()
         {
             HostPort = PORT_8080;
-            MobileUserName = string.Empty;
-            MobileExecToken = string.Empty;
-            MobilePassword = string.Empty;
+            UserName = string.Empty;
+            ExecToken = string.Empty;
+            Password = string.Empty;
             HostAddress = string.Empty;
             TenantId = string.Empty;
             UseSslAsInt = ZERO;
@@ -58,12 +75,12 @@ namespace HpToolsLauncher
         private string _execToken;
         private AuthType _authType = AuthType.UsernamePassword;
 
-        public string MobileUserName { get; set; }
-        public string MobilePassword { get; set; }
-        public string MobileClientId { get; set; }
-        public string MobileSecretKey { get; set; }
+        public string UserName { get; set; }
+        public string Password { get; set; }
+        public string ClientId { get; set; }
+        public string SecretKey { get; set; }
 
-        public string MobileExecToken
+        public string ExecToken
         {
             get
             {
@@ -103,45 +120,45 @@ namespace HpToolsLauncher
 
         public McConnectionInfo(JavaProperties ciParams) : this()
         {
-            if (ciParams.ContainsKey("MobileHostAddress"))
+            if (ciParams.ContainsKey(MOBILEHOSTADDRESS))
             {
-                string mcServerUrl = ciParams["MobileHostAddress"].Trim();
+                string mcServerUrl = ciParams[MOBILEHOSTADDRESS].Trim();
                 if (!string.IsNullOrEmpty(mcServerUrl))
                 {
                     //ssl
                     bool useSSL = false;
-                    if (ciParams.ContainsKey("MobileUseSSL"))
+                    if (ciParams.ContainsKey(MOBILEUSESSL))
                     {
-                        int.TryParse(ciParams["MobileUseSSL"], out int mcUseSslAsInt);
+                        int.TryParse(ciParams[MOBILEUSESSL], out int mcUseSslAsInt);
                         UseSslAsInt = mcUseSslAsInt;
                         useSSL = mcUseSslAsInt == ONE;
                     }
 
                     //url is something like http://xxx.xxx.xxx.xxx:8080
-                    string[] arr = mcServerUrl.Split(_comma, StringSplitOptions.RemoveEmptyEntries);
+                    string[] arr = mcServerUrl.Split(COMMA, StringSplitOptions.RemoveEmptyEntries);
                     if (arr.Length == 1)
                     {
                         if (arr[0].Trim().In(true, HTTP, HTTPS))
                             throw new ArgumentException(string.Format(Resources.McInvalidUrl, mcServerUrl));
-                        HostAddress = arr[0].TrimEnd(_slash);
+                        HostAddress = arr[0].TrimEnd(SLASH);
                         HostPort = useSSL ? PORT_443 : PORT_8080;
                     }
                     else if (arr.Length == 2)
                     {
                         if (arr[0].Trim().In(true, HTTP, HTTPS))
                         {
-                            HostAddress = arr[1].Trim(_slash);
+                            HostAddress = arr[1].Trim(SLASH);
                             HostPort = useSSL ? PORT_443 : PORT_8080;
                         }
                         else
                         {
-                            HostAddress = arr[0].Trim(_slash);
+                            HostAddress = arr[0].Trim(SLASH);
                             HostPort = arr[1].Trim();
                         }
                     }
                     else if (arr.Length == 3)
                     {
-                        HostAddress = arr[1].Trim(_slash);
+                        HostAddress = arr[1].Trim(SLASH);
                         HostPort = arr[2].Trim();
                     }
 
@@ -151,29 +168,29 @@ namespace HpToolsLauncher
                     }
 
                     //mc username
-                    if (ciParams.ContainsKey("MobileUserName"))
+                    if (ciParams.ContainsKey(MOBILEUSERNAME))
                     {
-                        string mcUsername = ciParams["MobileUserName"].Trim();
+                        string mcUsername = ciParams[MOBILEUSERNAME].Trim();
                         if (!string.IsNullOrEmpty(mcUsername))
                         {
-                            MobileUserName = mcUsername;
+                            UserName = mcUsername;
                         }
                     }
 
                     //mc password
-                    if (ciParams.ContainsKey("MobilePassword"))
+                    if (ciParams.ContainsKey(MOBILEPASSWORD))
                     {
-                        string mcPassword = ciParams["MobilePassword"];
+                        string mcPassword = ciParams[MOBILEPASSWORD];
                         if (!string.IsNullOrEmpty(mcPassword))
                         {
-                            MobilePassword = Aes256Encryptor.Instance.Decrypt(mcPassword);
+                            Password = Aes256Encryptor.Instance.Decrypt(mcPassword);
                         }
                     }
 
                     //mc tenantId
-                    if (ciParams.ContainsKey("MobileTenantId"))
+                    if (ciParams.ContainsKey(MOBILETENANTID))
                     {
-                        string mcTenantId = ciParams["MobileTenantId"];
+                        string mcTenantId = ciParams[MOBILETENANTID];
                         if (!string.IsNullOrEmpty(mcTenantId))
                         {
                             TenantId = mcTenantId;
@@ -181,27 +198,27 @@ namespace HpToolsLauncher
                     }
 
                     //mc exec token	
-                    if (ciParams.ContainsKey("MobileExecToken"))
+                    if (ciParams.ContainsKey(MOBILEEXECTOKEN))
                     {
-                        var mcExecToken = ciParams["MobileExecToken"];
+                        var mcExecToken = ciParams[MOBILEEXECTOKEN];
                         if (!string.IsNullOrEmpty(mcExecToken))
                         {
-                            MobileExecToken = Aes256Encryptor.Instance.Decrypt(mcExecToken);
+                            ExecToken = Aes256Encryptor.Instance.Decrypt(mcExecToken);
                         }
                     }
 
                     //Proxy enabled flag
-                    if (ciParams.ContainsKey("MobileUseProxy"))
+                    if (ciParams.ContainsKey(MOBILEUSEPROXY))
                     {
-                        string useProxy = ciParams["MobileUseProxy"];
+                        string useProxy = ciParams[MOBILEUSEPROXY];
                         int.TryParse(useProxy, out int mcUseProxyAsInt);
                         UseProxyAsInt = mcUseProxyAsInt;
                     }
 
                     //Proxy type
-                    if (ciParams.ContainsKey("MobileProxyType"))
+                    if (ciParams.ContainsKey(MOBILEPROXYTYPE))
                     {
-                        string proxyType = ciParams["MobileProxyType"];
+                        string proxyType = ciParams[MOBILEPROXYTYPE];
                         if (!string.IsNullOrEmpty(proxyType))
                         {
                             ProxyType = int.Parse(proxyType);
@@ -209,33 +226,33 @@ namespace HpToolsLauncher
                     }
 
                     //proxy address
-                    string proxyAddress = ciParams.GetOrDefault("MobileProxySetting_Address");
-                    if (!string.IsNullOrEmpty(proxyAddress))
+                    string proxyAddr = ciParams.GetOrDefault(MOBILEPROXYSETTING_ADDRESS);
+                    if (!string.IsNullOrEmpty(proxyAddr))
                     {
                         // data is something like "16.105.9.23:8080"
-                        string[] strArrayForProxyAddress = proxyAddress.Split(new char[] { ':' });
-                        if (strArrayForProxyAddress.Length == 2)
+                        string[] arrProxyAddr = proxyAddr.Split(new char[] { ':' });
+                        if (arrProxyAddr.Length == 2)
                         {
-                            ProxyAddress = strArrayForProxyAddress[0];
-                            ProxyPort = int.Parse(strArrayForProxyAddress[1]);
+                            ProxyAddress = arrProxyAddr[0];
+                            ProxyPort = int.Parse(arrProxyAddr[1]);
                         }
                     }
 
 
                     //Proxy authentication
-                    if (ciParams.ContainsKey("MobileProxySetting_Authentication"))
+                    if (ciParams.ContainsKey(MOBILEPROXYSETTING_AUTHENTICATION))
                     {
-                        string proxyAuthentication = ciParams["MobileProxySetting_Authentication"];
-                        if (!string.IsNullOrEmpty(proxyAuthentication))
+                        string strProxyAuth = ciParams[MOBILEPROXYSETTING_AUTHENTICATION];
+                        if (!string.IsNullOrEmpty(strProxyAuth))
                         {
-                            ProxyAuth = int.Parse(proxyAuthentication);
+                            ProxyAuth = int.Parse(strProxyAuth);
                         }
                     }
 
                     //Proxy username
-                    if (ciParams.ContainsKey("MobileProxySetting_UserName"))
+                    if (ciParams.ContainsKey(MOBILEPROXYSETTING_USERNAME))
                     {
-                        string proxyUsername = ciParams["MobileProxySetting_UserName"].Trim();
+                        string proxyUsername = ciParams[MOBILEPROXYSETTING_USERNAME].Trim();
                         if (!string.IsNullOrEmpty(proxyUsername))
                         {
                             ProxyUserName = proxyUsername;
@@ -243,9 +260,9 @@ namespace HpToolsLauncher
                     }
 
                     //Proxy password
-                    if (ciParams.ContainsKey("MobileProxySetting_Password"))
+                    if (ciParams.ContainsKey(MOBILEPROXYSETTING_PASSWORD))
                     {
-                        string proxyPassword = ciParams["MobileProxySetting_Password"];
+                        string proxyPassword = ciParams[MOBILEPROXYSETTING_PASSWORD];
                         if (!string.IsNullOrEmpty(proxyPassword))
                         {
                             ProxyPassword = Aes256Encryptor.Instance.Decrypt(proxyPassword);
@@ -272,15 +289,9 @@ namespace HpToolsLauncher
             // e.g., "client=oauth2-QHxvc8bOSz4lwgMqts2w@microfocus.com; secret=EHJp8ea6jnVNqoLN6HkD; tenant=999999999;"
             // "client=oauth2-OuV8k3snnGp9vJugC1Zn@microfocus.com; secret=6XSquF1FUD4CyQM7fb0B; tenant=999999999;"
             // "client=oauth2-OuV8k3snnGp9vJugC1Zn@microfocus.com; secret=6XSquF1FUD7CyQM7fb0B; tenant=999999999;"
-            var execToken = MobileExecToken.Trim();
+            var execToken = ExecToken.Trim().Trim(DBL_QUOTE);
 
             var ret = new AuthTokenInfo();
-
-            // it may or may not contains surrounding quotes
-            if (execToken.StartsWith("\"") && execToken.EndsWith("\"") && execToken.Length > 1)
-            {
-                execToken = execToken.Substring(1, execToken.Length - 2);
-            }
 
             if (execToken.Length == 0) return ret; // empty string was given as token, may semnalize that it wasn't specified
 
@@ -301,15 +312,15 @@ namespace HpToolsLauncher
                 var key = parts[0].Trim();
                 var value = parts[1].Trim();
 
-                if ("client".EqualsIgnoreCase(key))
+                if (CLIENT.EqualsIgnoreCase(key))
                 {
                     ret.ClientId = value;
                 }
-                else if ("secret".EqualsIgnoreCase(key))
+                else if (SECRET.EqualsIgnoreCase(key))
                 {
                     ret.SecretKey = value;
                 }
-                else if ("tenant".EqualsIgnoreCase(key))
+                else if (TENANT.EqualsIgnoreCase(key))
                 {
                     TenantId = value;
                 }
@@ -345,22 +356,18 @@ namespace HpToolsLauncher
             string usernameOrClientId = string.Empty;
             if (MobileAuthType == AuthType.AuthToken)
             {
-                usernameOrClientId = string.Format("ClientId: {0}", MobileClientId);
+                usernameOrClientId = $"ClientId: {ClientId}";
             }
             else if (MobileAuthType == AuthType.UsernamePassword)
             {
-                usernameOrClientId = string.Format("Username: {0}", MobileUserName);
+                usernameOrClientId = $"Username: {UserName}" ;
             }
-            string strProxy = string.Format("UseProxy: {0}", UseProxyAsStr);
+            string strProxy = $"UseProxy: {UseProxyAsStr}";
             if (UseProxy)
             {
-                strProxy += string.Format(", ProxyType: {0}, ProxyAddress: {1}, ProxyPort: {2}, ProxyAuth: {3}, ProxyUser: {4}",
-                    ProxyTypeAsStr, ProxyAddress, ProxyPort, ProxyAuthAsStr, ProxyUserName);
+                strProxy += $", ProxyType: {ProxyTypeAsStr}, ProxyAddress: {ProxyAddress}, ProxyPort: {ProxyPort}, ProxyAuth: {ProxyAuthAsStr}, ProxyUser: {ProxyUserName}";
             }
-            string mcConnStr =
-                 string.Format("HostAddress: {0}, Port: {1}, AuthType: {2}, {3}, TenantId: {4}, UseSSL: {5}, {6}",
-                 HostAddress, HostPort, MobileAuthType, usernameOrClientId, TenantId, UseSslAsStr, strProxy);
-            return mcConnStr;
+            return $"HostAddress: {HostAddress}, Port: {HostPort}, AuthType: {MobileAuthType}, {usernameOrClientId}, TenantId: {TenantId}, UseSSL: {UseSslAsStr}, {strProxy}";
         }
     }
 
