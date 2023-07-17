@@ -124,6 +124,7 @@ namespace HpToolsLauncher
                         if (arr[0].Trim().In(true, HTTP, HTTPS))
                             throw new ArgumentException(string.Format(Resources.McInvalidUrl, mcServerUrl));
                         HostAddress = arr[0].TrimEnd(_slash);
+                        HostPort = useSSL ? PORT_443 : PORT_8080;
                     }
                     else if (arr.Length == 2)
                     {
