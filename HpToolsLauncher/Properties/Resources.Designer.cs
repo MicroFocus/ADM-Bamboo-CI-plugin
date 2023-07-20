@@ -925,6 +925,60 @@ namespace HpToolsLauncher.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Empty Digital Lab Server..
+        /// </summary>
+        internal static string McEmptyHostAddress {
+            get {
+                return ResourceManager.GetString("McEmptyHostAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid execution token for Digital Lab, should contain ClientID, SecretKey and TenantID..
+        /// </summary>
+        internal static string McInvalidToken {
+            get {
+                return ResourceManager.GetString("McInvalidToken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid Digital Lab Server URL: &apos;{0}&apos;..
+        /// </summary>
+        internal static string McInvalidUrl {
+            get {
+                return ResourceManager.GetString("McInvalidUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Malformed execution token for Digital Lab, invalid key value: {0}..
+        /// </summary>
+        internal static string McMalformedTokenInvalidKey {
+            get {
+                return ResourceManager.GetString("McMalformedTokenInvalidKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Malformed execution token for Digital Lab, key-value pairs are not separated by {0}..
+        /// </summary>
+        internal static string McMalformedTokenInvalidKeyValueSeparator {
+            get {
+                return ResourceManager.GetString("McMalformedTokenInvalidKeyValueSeparator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Malformed execution token for Digital Lab, token without key-value..
+        /// </summary>
+        internal static string McMalformedTokenMissingKeyValuePair {
+            get {
+                return ResourceManager.GetString("McMalformedTokenMissingKeyValuePair", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to QTPActivity.TestCleanup - exception {0}.
         /// </summary>
         internal static string QtpCleanupError {

@@ -25,6 +25,7 @@ import com.adm.bamboo.plugin.uft.capability.UftCapabilityTypeModule;
 import com.adm.bamboo.plugin.uft.helpers.LauncherParamsBuilder;
 import com.adm.bamboo.plugin.uft.helpers.locator.UFTLocatorService;
 import com.adm.bamboo.plugin.uft.helpers.locator.UFTLocatorServiceFactory;
+import com.adm.utils.uft.Aes256Encryptor;
 import com.adm.utils.uft.FilesHandler;
 import com.adm.utils.uft.integration.HttpConnectionException;
 import com.adm.utils.uft.integration.JobOperation;
@@ -68,31 +69,36 @@ public class RunFromFileSystemUftTask implements AbstractLauncherTask {
     private final TestCollationService testCollationService;
     private final CustomVariableContext customVariableContext;
     private final CapabilityContext capabilityContext;
+    private final Aes256Encryptor aes256Encryptor;
 
     public RunFromFileSystemUftTask(@NotNull final TestCollationService testCollationService, final CapabilityContext capabilityContext, @NotNull final I18nBeanFactory i18nBeanFactory, @ComponentImport CustomVariableContext customVariableContext) {
         this.i18nBean = i18nBeanFactory.getI18nBean();
         this.testCollationService = testCollationService;
         this.customVariableContext = customVariableContext;
         this.capabilityContext = capabilityContext;
+        this.aes256Encryptor = new Aes256Encryptor(getEncryptionKeyVectorPair());
     }
 
+    @Override
     public CustomVariableContext getCustomVariableContext() {
         return customVariableContext;
     }
+
+    @Override
+    public Aes256Encryptor getAes256Encryptor() { return aes256Encryptor; }
 
     /**
      * Get task properties
      *
      * @param taskContext
      * @return
-     * @throws Exception
      */
-    public Properties getTaskProperties(final TaskContext taskContext) throws Exception {
+    public Properties getTaskProperties(final TaskContext taskContext) {
         final String splitMarker = "\n";
         final ConfigurationMap map = taskContext.getConfigurationMap();
         final BuildLogger buildLogger = taskContext.getBuildLogger();
 
-        LauncherParamsBuilder builder = new LauncherParamsBuilder();
+        LauncherParamsBuilder builder = new LauncherParamsBuilder(aes256Encryptor);
         builder.setRunType(RunType.FILE_SYSTEM);
 
         String timeout = map.get(UFTConstants.TIMEOUT.getValue());
@@ -201,7 +207,7 @@ public class RunFromFileSystemUftTask implements AbstractLauncherTask {
             try {
                 jobJSON = operation.getJobById(jobUUID);
             } catch (HttpConnectionException e) {
-                buildLogger.addErrorLogEntry("********** Fail to connect Digital Lab, please check URL, UserName, Password, and Proxy Configuration ********** ");
+                buildLogger.addErrorLogEntry("********** Failed to connect Digital Lab, please check URL, UserName / Password, and Proxy Configuration ********** ");
             }
 
             if (jobJSON != null) {
@@ -243,24 +249,7 @@ public class RunFromFileSystemUftTask implements AbstractLauncherTask {
             return TaskResultBuilder.newBuilder(taskContext).failedWithError().build();
         }
 
-       return AbstractLauncherTask.super.execute(taskContext, customVariableContext);
-    }
-
-    /**
-     * Run build task
-     *
-     * @param workingDirectory
-     * @param launcherPath
-     * @param paramFile
-     * @param logger
-     * @return
-     * @throws IOException
-     * @throws InterruptedException
-     */
-    @Override
-    public Integer runTask(final File workingDirectory, final String launcherPath, final String paramFile,
-                           final BuildLogger logger) throws IOException, InterruptedException {
-        return AbstractLauncherTask.super.runTask(workingDirectory, launcherPath, paramFile, logger);
+       return AbstractLauncherTask.super.execute(taskContext);
     }
 
     /**

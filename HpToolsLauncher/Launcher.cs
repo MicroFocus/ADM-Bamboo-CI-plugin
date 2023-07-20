@@ -43,7 +43,8 @@ namespace HpToolsLauncher
         private TestStorageType _runtype = TestStorageType.Unknown;
         private readonly string _failOnUftTestFailed;
         private static readonly char[] _commaAndSemiColon = new char[] { ',' , ';'};
-        private const string _secretKey = "EncriptionPass4Java";
+        private readonly string _secretKey;
+        private readonly string _initVector;
 
         public static string DateFormat { get; set; } = "dd/MM/yyyy HH:mm:ss";
 
@@ -90,6 +91,8 @@ namespace HpToolsLauncher
                 _ciParams.Load(paramFileName);
 
             _failOnUftTestFailed = string.IsNullOrEmpty(failOnTestFailed) ? "N" : failOnTestFailed;
+            _secretKey = Environment.GetEnvironmentVariable("AES_256_SECRET_KEY");
+            _initVector = Environment.GetEnvironmentVariable("AES_256_SECRET_INIT_VECTOR");
         }
 
         /// <summary>
@@ -103,20 +106,12 @@ namespace HpToolsLauncher
             {
                 Mode = CipherMode.CBC,
                 Padding = PaddingMode.PKCS7,
-                KeySize = 0x80,
-                BlockSize = 0x80
+                KeySize = 256,
+                BlockSize = 128,
+                Key = Encoding.UTF8.GetBytes(_secretKey), // 32 bytes
+                IV = Encoding.UTF8.GetBytes(_initVector) // 16 bytes
             };
             byte[] encryptedData = Convert.FromBase64String(textToDecrypt); 
-            byte[] pwdBytes = Encoding.UTF8.GetBytes(_secretKey);
-            byte[] keyBytes = new byte[0x10];
-            int len = pwdBytes.Length;
-            if (len > keyBytes.Length)
-            {
-                len = keyBytes.Length;
-            }
-            Array.Copy(pwdBytes, keyBytes, len);
-            rijndaelCipher.Key = keyBytes;
-            rijndaelCipher.IV = keyBytes;
             byte[] plainText = rijndaelCipher.CreateDecryptor().TransformFinalBlock(encryptedData, 0, encryptedData.Length);
             return Encoding.UTF8.GetString(plainText);
         }
@@ -227,7 +222,7 @@ namespace HpToolsLauncher
                     string apiKey = _ciParams.ContainsKey("apiKeySecret") ? Decrypt(_ciParams["apiKeySecret"]) : string.Empty;
                     string almUserName = _ciParams.GetOrDefault("almUserName");
                     string almPassword = _ciParams.ContainsKey("almPassword") ? Decrypt(_ciParams["almPassword"]) : string.Empty;
-         
+
                     //create an Alm runner
                     runner = new AlmTestSetsRunner(_ciParams["almServerUrl"],
                                       almUserName,
@@ -292,6 +287,25 @@ namespace HpToolsLauncher
                         ignoreErrorStrings.AddRange(_ciParams["ignoreErrorStrings"].Split(delim, StringSplitOptions.RemoveEmptyEntries));
                     }
 
+                    //--MC connection info
+                    McConnectionInfo mcConnectionInfo = null;
+                    try
+                    {
+                        mcConnectionInfo = new McConnectionInfo(_ciParams);
+                    }
+                    catch (Exception ex)
+                    {
+                        ConsoleWriter.WriteErrLine(ex.Message);
+                        Environment.Exit((int)ExitCodeEnum.Failed);
+                    }
+
+                    // other mobile info
+                    string mobileinfo = string.Empty;
+                    if (_ciParams.ContainsKey("mobileinfo"))
+                    {
+                        mobileinfo = _ciParams["mobileinfo"];
+                    }
+
                     if (tests.IsNullOrEmpty())
                     {
                         WriteToConsole(Resources.LauncherNoTestsFound);
@@ -320,7 +334,7 @@ namespace HpToolsLauncher
                             uftRunAsUser = new RunAsUser(username, plainTextPwd.ToSecureString());
                         }
                     }
-                    runner = new FileSystemTestsRunner(validTests, timeout, pollingInterval, perScenarioTimeOut, ignoreErrorStrings, bambooEnvVars, uftRunAsUser);
+                    runner = new FileSystemTestsRunner(validTests, timeout, pollingInterval, perScenarioTimeOut, ignoreErrorStrings, mcConnectionInfo, mobileinfo, bambooEnvVars, uftRunAsUser);
 
                     break;
 

@@ -37,10 +37,12 @@ namespace HpToolsLauncher
         private static string _uftViewerPath;
         private int _errors, _fail;
         private bool _useUFTLicense;
+        private McConnectionInfo _mcConnection;
+        private string _mobileInfo;
         private RunAsUser _uftRunAsUser;
         private TimeSpan _timeout = TimeSpan.MaxValue;
         private Stopwatch _stopwatch = null;
-        private string _abortFilename = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\stop" + Launcher.UniqueTimeStamp + ".txt";
+        private string _abortFilename = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\stop" + Launcher.UniqueTimeStamp + ".txt";
 
         //LoadRunner Arguments
         private int _pollingInterval;
@@ -67,6 +69,8 @@ namespace HpToolsLauncher
             int ControllerPollingInterval,
             TimeSpan perScenarioTimeOut,
             List<string> ignoreErrorStrings,
+            McConnectionInfo mcConnection,
+            string mobileInfo,
             Dictionary<string, string> bambooEnvVariables,
             RunAsUser uftRunAsUser,
             bool useUFTLicense = false
@@ -86,6 +90,9 @@ namespace HpToolsLauncher
             _pollingInterval = ControllerPollingInterval;
             _perScenarioTimeOut = perScenarioTimeOut;
             _ignoreErrorStrings = ignoreErrorStrings;
+
+            _mcConnection = mcConnection;
+            _mobileInfo = mobileInfo;
 
             _uftRunAsUser = uftRunAsUser;
             _useUFTLicense = useUFTLicense;
@@ -154,6 +161,8 @@ namespace HpToolsLauncher
                 ConsoleWriter.WriteLine(Resources.FsRunnerNoValidTests);
                 Environment.Exit((int)Launcher.ExitCodeEnum.Failed);
             }
+
+            ConsoleWriter.WriteLine("Digital Lab connection info is - " + _mcConnection.ToString());
 
             ConsoleWriter.WriteLine(string.Format(Resources.FsRunnerTestsFound, _tests.Count));
             _tests.ForEach(t => ConsoleWriter.WriteLine(t.TestName));
@@ -300,7 +309,7 @@ namespace HpToolsLauncher
                     runner = new ApiTestRunner(this, _timeout - _stopwatch.Elapsed, _uftRunAsUser);
                     break;
                 case TestType.QTP:
-                    runner = new GuiTestRunner(this, _useUFTLicense, _timeout - _stopwatch.Elapsed, _uftRunAsUser);
+                    runner = new GuiTestRunner(this, _useUFTLicense, _timeout - _stopwatch.Elapsed, _mcConnection, _mobileInfo, _uftRunAsUser);
                     break;
                 case TestType.LoadRunner:
                     AppDomain.CurrentDomain.AssemblyResolve += Helper.HPToolsAssemblyResolver;

@@ -77,6 +77,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\WinUserNativeMethods.cs" />
     <Compile Include="Launcher.cs" />
     <Compile Include="ConsoleWriter.cs" />
     <Compile Include="Interfaces\IAssetRunner.cs" />
@@ -91,6 +92,7 @@
       <DependentUpon>junit.xsd</DependentUpon>
       <SubType>code</SubType>
     </Compile>
+    <Compile Include="Common\McConnectionInfo.cs" />
     <Compile Include="MtbManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -110,6 +112,7 @@
     <Compile Include="TestRunners\ApiTestRunner.cs" />
     <Compile Include="Runners\AlmTestSetsRunner.cs" />
     <Compile Include="TestSuiteRunResults.cs" />
+    <Compile Include="Utils\Aes256Encryptor.cs" />
     <Compile Include="Utils\Encoder.cs" />
     <Compile Include="Utils\Extensions.cs" />
     <Compile Include="Utils\Helper.cs" />

@@ -28,6 +28,7 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using HpToolsLauncher.Utils;
 using System.Runtime.InteropServices;
+using HpToolsLauncher.Common;
 
 namespace HpToolsLauncher
 {
@@ -45,8 +46,26 @@ namespace HpToolsLauncher
         private Parameters _qtpParameters;
         private readonly bool _useUFTLicense;
         private RunCancelledDelegate _runCancelled;
+        private McConnectionInfo _mcConnection;
+        private string _mobileInfo;
         private readonly RunAsUser _uftRunAsUser;
         private const int DISP_E_MEMBERNOTFOUND = -2147352573;
+        private const string MOBILE_HOST_ADDRESS = "ALM_MobileHostAddress";
+        private const string MOBILE_HOST_PORT = "ALM_MobileHostPort";
+        private const string MOBILE_USER = "ALM_MobileUserName";
+        private const string MOBILE_PASSWORD = "ALM_MobilePassword";
+        private const string MOBILE_CLIENTID = "EXTERNAL_MobileClientID";
+        private const string MOBILE_SECRET = "EXTERNAL_MobileSecretKey";
+        private const string MOBILE_AUTH_TYPE = "EXTERNAL_MobileAuthType";
+        private const string MOBILE_TENANT = "EXTERNAL_MobileTenantId";
+        private const string MOBILE_USE_SSL = "ALM_MobileUseSSL";
+        private const string MOBILE_USE_PROXY = "EXTERNAL_MobileProxySetting_UseProxy";
+        private const string MOBILE_PROXY_SETTING_ADDRESS = "EXTERNAL_MobileProxySetting_Address";
+        private const string MOBILE_PROXY_SETTING_PORT = "EXTERNAL_MobileProxySetting_Port";
+        private const string MOBILE_PROXY_SETTING_AUTHENTICATION = "EXTERNAL_MobileProxySetting_Authentication";
+        private const string MOBILE_PROXY_SETTING_USERNAME = "EXTERNAL_MobileProxySetting_UserName";
+        private const string MOBILE_PROXY_SETTING_PASSWORD = "EXTERNAL_MobileProxySetting_Password";
+        private const string MOBILE_INFO = "mobileinfo";
         private const string REPORT = "Report";
         private const string READY = "Ready";
         private const string WAITING = "Waiting";
@@ -61,13 +80,95 @@ namespace HpToolsLauncher
         /// <param name="runNotifier"></param>
         /// <param name="useUftLicense"></param>
         /// <param name="timeLeftUntilTimeout"></param>
-        public GuiTestRunner(IAssetRunner runNotifier, bool useUftLicense, TimeSpan timeLeftUntilTimeout, RunAsUser uftRunAsUser)
+        public GuiTestRunner(IAssetRunner runNotifier, bool useUftLicense, TimeSpan timeLeftUntilTimeout, McConnectionInfo mcConnectionInfo, string mobileInfo, RunAsUser uftRunAsUser)
         {
             _timeLeftUntilTimeout = timeLeftUntilTimeout;
             _stopwatch = Stopwatch.StartNew();
             _runNotifier = runNotifier;
             _useUFTLicense = useUftLicense;
+            _mcConnection = mcConnectionInfo;
+            _mobileInfo = mobileInfo;
             _uftRunAsUser = uftRunAsUser;
+        }
+
+        private void SetMobileInfo()
+        {
+            #region Mc connection and other mobile info
+
+            // Mc Address, username and password
+            if (!string.IsNullOrEmpty(_mcConnection.HostAddress))
+            {
+                _qtpApplication.TDPierToTulip.SetTestOptionsVal(MOBILE_HOST_ADDRESS, _mcConnection.HostAddress);
+                if (!string.IsNullOrEmpty(_mcConnection.HostPort))
+                {
+                    _qtpApplication.TDPierToTulip.SetTestOptionsVal(MOBILE_HOST_PORT, _mcConnection.HostPort);
+                }
+            }
+
+            var mcAuthType = _mcConnection.MobileAuthType;
+            switch (mcAuthType)
+            {
+                case McConnectionInfo.AuthType.AuthToken:
+                    var token = _mcConnection.GetAuthToken();
+
+                    _qtpApplication.TDPierToTulip.SetTestOptionsVal(MOBILE_CLIENTID, token.ClientId);
+                    _qtpApplication.TDPierToTulip.SetTestOptionsVal(MOBILE_SECRET, token.SecretKey);
+
+                    break;
+                case McConnectionInfo.AuthType.UsernamePassword:
+                    if (!string.IsNullOrEmpty(_mcConnection.UserName))
+                    {
+                        _qtpApplication.TDPierToTulip.SetTestOptionsVal(MOBILE_USER, _mcConnection.UserName);
+                    }
+
+                    if (!string.IsNullOrEmpty(_mcConnection.Password))
+                    {
+                        string encriptedMcPassword = WinUserNativeMethods.ProtectBSTRToBase64(_mcConnection.Password);
+                        if (encriptedMcPassword == null)
+                        {
+                            ConsoleWriter.WriteLine("ProtectBSTRToBase64 fail for mcPassword");
+                            throw new Exception("ProtectBSTRToBase64 fail for mcPassword");
+                        }
+                        _qtpApplication.TDPierToTulip.SetTestOptionsVal(MOBILE_PASSWORD, encriptedMcPassword);
+                    }
+                    break;
+            }
+
+            // set authentication type
+            _qtpApplication.TDPierToTulip.SetTestOptionsVal(MOBILE_AUTH_TYPE, mcAuthType);
+
+            // set tenantID
+            if (!string.IsNullOrEmpty(_mcConnection.TenantId))
+            {
+                _qtpApplication.TDPierToTulip.SetTestOptionsVal(MOBILE_TENANT, _mcConnection.TenantId);
+            }
+
+            // ssl and proxy info
+            _qtpApplication.TDPierToTulip.SetTestOptionsVal(MOBILE_USE_SSL, _mcConnection.UseSslAsInt);
+
+            if (_mcConnection.UseProxy)
+            {
+                _qtpApplication.TDPierToTulip.SetTestOptionsVal(MOBILE_USE_PROXY, _mcConnection.UseProxyAsInt);
+                _qtpApplication.TDPierToTulip.SetTestOptionsVal(MOBILE_PROXY_SETTING_ADDRESS, _mcConnection.ProxyAddress);
+                _qtpApplication.TDPierToTulip.SetTestOptionsVal(MOBILE_PROXY_SETTING_PORT, _mcConnection.ProxyPort);
+                _qtpApplication.TDPierToTulip.SetTestOptionsVal(MOBILE_PROXY_SETTING_AUTHENTICATION, _mcConnection.ProxyAuth);
+                _qtpApplication.TDPierToTulip.SetTestOptionsVal(MOBILE_PROXY_SETTING_USERNAME, _mcConnection.ProxyUserName);
+                string encriptedMcProxyPassword = WinUserNativeMethods.ProtectBSTRToBase64(_mcConnection.ProxyPassword);
+                if (encriptedMcProxyPassword == null)
+                {
+                    ConsoleWriter.WriteLine("ProtectBSTRToBase64 fail for mc proxy Password");
+                    throw new Exception("ProtectBSTRToBase64 fail for mc proxy Password");
+                }
+                _qtpApplication.TDPierToTulip.SetTestOptionsVal(MOBILE_PROXY_SETTING_PASSWORD, encriptedMcProxyPassword);
+            }
+
+            // Mc info (device, app, launch and terminate data)
+            if (!string.IsNullOrEmpty(_mobileInfo))
+            {
+                _qtpApplication.TDPierToTulip.SetTestOptionsVal(MOBILE_INFO, _mobileInfo);
+            }
+
+            #endregion
         }
 
         #region QTP
@@ -127,6 +228,9 @@ namespace HpToolsLauncher
                     {
                         runDesc.ReportLocation = GetReportLocation(testPath);
                     }
+
+                    // set Mc connection and other mobile info into rack if neccesary
+                    SetMobileInfo();
 
                     // Check for required Addins
                     LoadNeededAddins(testPath);

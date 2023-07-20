@@ -20,10 +20,8 @@
 
 package com.adm.bamboo.plugin.uft.api;
 
+import com.adm.utils.uft.*;
 import com.adm.utils.uft.model.UftRunAsUser;
-import com.adm.utils.uft.FilesHandler;
-import com.adm.utils.uft.StringUtils;
-import com.adm.utils.uft.TaskUtils;
 import com.atlassian.bamboo.build.logger.BuildLogger;
 import com.atlassian.bamboo.task.*;
 import com.atlassian.bamboo.variable.CustomVariableContext;
@@ -39,16 +37,19 @@ import java.util.Properties;
 
 public interface AbstractLauncherTask extends TaskType {
     String BUILD_KEY = "buildTimeStamp";
+    String AES_256_SECRET_KEY = "AES_256_SECRET_KEY";
+    String AES_256_SECRET_INIT_VECTOR = "AES_256_SECRET_INIT_VECTOR";
     String KEY_VALUE_FORMAT = "%s = %s";
     String UFT_RUN_AS_USER_NAME = "UFT_RUN_AS_USER_NAME";
     String UFT_RUN_AS_USER_ENCODED_PWD = "UFT_RUN_AS_USER_ENCODED_PASSWORD";
     String UFT_RUN_AS_USER_PWD = "UFT_RUN_AS_USER_PASSWORD";
 
+    CustomVariableContext getCustomVariableContext();
     Properties getTaskProperties(final TaskContext taskContext) throws Exception;
-
+    Aes256Encryptor getAes256Encryptor();
     TaskResult collateResults(@NotNull final TaskContext taskContext, final Properties mergedProperties);
 
-    default TaskResult execute(@NotNull TaskContext taskContext,  CustomVariableContext customVariableContext) throws TaskException {
+    default TaskResult execute(@NotNull TaskContext taskContext) throws TaskException {
         final BuildLogger buildLogger = taskContext.getBuildLogger();
 
         Properties mergedProperties = new Properties();
@@ -62,11 +63,11 @@ public interface AbstractLauncherTask extends TaskType {
         }
 
         //retrieve bamboo buildTimeStamp
-        String buildTimeStamp = getBuildTimeStamp(customVariableContext);
+        String buildTimeStamp = getBuildTimeStamp();
 
         UftRunAsUser uftRunAsUser;
         try {
-            uftRunAsUser = getUftRunAsUser(customVariableContext, buildLogger);;
+            uftRunAsUser = getUftRunAsUser(buildLogger);
             if (uftRunAsUser != null) {
                 mergedProperties.put("uftRunAsUserName", uftRunAsUser.getUsername());
                 if (!StringUtils.isBlank(uftRunAsUser.getEncodedPassword())) {
@@ -125,7 +126,9 @@ public interface AbstractLauncherTask extends TaskType {
         try {
             ProcessBuilder builder = new ProcessBuilder(launcherPath, "-paramfile", paramFile);
             builder.directory(workingDirectory);
-
+            Aes256Encryptor encryptor = getAes256Encryptor();
+            builder.environment().put(AES_256_SECRET_KEY, encryptor.getSecretKey());
+            builder.environment().put(AES_256_SECRET_INIT_VECTOR, encryptor.getInitVector());
             logger.addBuildLogEntry(launcherPath + " -paramfile " + paramFile);
             Process process = builder.start();
             BufferedReader output = new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -136,13 +139,14 @@ public interface AbstractLauncherTask extends TaskType {
             output.close();
             return process.waitFor();
         } catch (Throwable t) {
-            logger.addBuildLogEntry(t.getMessage());
+            if (t.getMessage() != null)
+                logger.addBuildLogEntry(t.getMessage());
             return -1;
         }
     }
 
-    default String getBuildTimeStamp(CustomVariableContext customVariableContext){
-        Map<String, VariableDefinitionContext> variables = customVariableContext.getVariableContexts();
+    default String getBuildTimeStamp(){
+        Map<String, VariableDefinitionContext> variables = getCustomVariableContext().getVariableContexts();
         String buildTimeStamp = "";
         if(variables.containsKey(BUILD_KEY)) {
            buildTimeStamp = variables.get(BUILD_KEY).getValue();
@@ -151,8 +155,8 @@ public interface AbstractLauncherTask extends TaskType {
         return buildTimeStamp;
     }
 
-    default UftRunAsUser getUftRunAsUser(CustomVariableContext customVariableContext, BuildLogger logger) throws IllegalArgumentException {
-        Map<String, VariableDefinitionContext> vars = customVariableContext.getVariableContexts();
+    default UftRunAsUser getUftRunAsUser(BuildLogger logger) throws IllegalArgumentException {
+        Map<String, VariableDefinitionContext> vars = getCustomVariableContext().getVariableContexts();
         if (vars != null && !vars.isEmpty()) {
             if (vars.keySet().contains(UFT_RUN_AS_USER_NAME)) {
                 String username = vars.get(UFT_RUN_AS_USER_NAME).getValue();
@@ -165,17 +169,30 @@ public interface AbstractLauncherTask extends TaskType {
                         isEncoded = true;
                     } else if (vars.keySet().contains(UFT_RUN_AS_USER_PWD)) {
                         password = vars.get(UFT_RUN_AS_USER_PWD).getValue();
-                        return new UftRunAsUser(username, password, false);
+                        return new UftRunAsUser(username, password, false, getAes256Encryptor());
                     }
 
                     if (StringUtils.isBlank(password)) {
                         throw new IllegalArgumentException(String.format("Either %s or %s is required.", UFT_RUN_AS_USER_PWD, UFT_RUN_AS_USER_ENCODED_PWD));
                     }
-                    return new UftRunAsUser(username, password, isEncoded);
+                    return new UftRunAsUser(username, password, isEncoded, getAes256Encryptor());
                 }
             }
         }
         return null;
+    }
+
+    default Pair<String, String> getEncryptionKeyVectorPair() {
+        final Map<String, VariableDefinitionContext> variables = getCustomVariableContext().getVariableContexts();
+        String privateKey = null, initVect = null;
+        if (variables.containsKey(AES_256_SECRET_KEY)) {
+            privateKey = variables.get(AES_256_SECRET_KEY).getValue();
+        }
+        if (variables.containsKey(AES_256_SECRET_INIT_VECTOR)) {
+            initVect = variables.get(AES_256_SECRET_INIT_VECTOR).getValue();
+        }
+
+        return new Pair<>(privateKey, initVect);
     }
 }
 

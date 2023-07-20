@@ -23,6 +23,7 @@ using System;
 using System.Security;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.SqlServer.Server;
 
 namespace HpToolsLauncher.Utils
 {
@@ -76,6 +77,11 @@ namespace HpToolsLauncher.Utils
         public static bool EqualsIgnoreCase(this string s1, string s2)
         {
             return s1?.Equals(s2, StringComparison.OrdinalIgnoreCase) ?? (s2 == null);
+        }
+
+        public static bool StartsWithIngoreCase(this string str, string prefix)
+        {
+            return str.StartsWith(prefix, StringComparison.OrdinalIgnoreCase);
         }
 
         public static bool In(this string str, bool ignoreCase, params string[] values)
