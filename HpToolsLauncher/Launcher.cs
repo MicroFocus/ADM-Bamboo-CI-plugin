@@ -102,6 +102,9 @@ namespace HpToolsLauncher
         /// <returns></returns>
         private string Decrypt(string textToDecrypt)
         {
+            if (textToDecrypt.IsNullOrWhiteSpace())
+                return string.Empty;
+
             RijndaelManaged rijndaelCipher = new()
             {
                 Mode = CipherMode.CBC,
