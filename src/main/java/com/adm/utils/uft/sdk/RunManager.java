@@ -29,6 +29,10 @@ import com.adm.utils.uft.sdk.handler.PollHandler;
 import com.adm.utils.uft.sdk.handler.PollHandlerFactory;
 import com.adm.utils.uft.sdk.handler.RunHandler;
 import com.adm.utils.uft.sdk.handler.RunHandlerFactory;
+import com.microfocus.adm.performancecenter.plugins.common.rest.RESTConstants;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class RunManager {
     private RunHandler _runHandler;
@@ -78,17 +82,25 @@ public class RunManager {
     }
 
     private void appendQCSessionCookies(RestClient client) {
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put(RESTConstants.CONTENT_TYPE, RESTConstants.APP_XML);
+        headers.put(RESTConstants.ACCEPT, RESTConstants.APP_XML);
 
         // issue a post request so that cookies relevant to the QC Session will be added to the RestClient
         Response response =
                 client.httpPost(
                         client.build("rest/site-session"),
-                        null,
-                        null,
+                        generateClientTypeData(),
+                        headers,
                         ResourceAccessLevel.PUBLIC);
         if (!response.isOk()) {
-            throw new SSEException("Cannot appned QCSession cookies", response.getFailure());
+            throw new SSEException("Cannot append QCSession cookies", response.getFailure());
         }
+    }
+
+    private byte[] generateClientTypeData() {
+        String data = String.format("<session-parameters><client-type>%s</client-type></session-parameters>", CLIENT_TYPE);
+        return data.getBytes();
     }
 
     private boolean poll() throws InterruptedException {
