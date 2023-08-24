@@ -216,7 +216,7 @@
         <dependency>
             <groupId>com.microfocus.adm.performancecenter</groupId>
             <artifactId>plugins-common</artifactId>
-            <version>1.0.2-TENANT</version>
+            <version>1.1.11</version>
         </dependency>
 
         <!-- !!!!! VERY IMPORTANT NOTE: jakarta.xml.bind-api 3.0.0-RC1 is required to get rid of JAXB runtime errors, even if it is not used in code, so please do not remove it, unless your are sure the JAXB objects are working with remote agents using either JDK1.8 or JDK11 -->
