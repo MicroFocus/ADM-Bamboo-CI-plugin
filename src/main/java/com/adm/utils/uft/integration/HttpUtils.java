@@ -33,7 +33,6 @@ public class HttpUtils {
     public static final String POST = "POST";
     public static final String GET = "GET";
 
-
     private HttpUtils() {
 
     }
@@ -60,14 +59,12 @@ public class HttpUtils {
         return response;
     }
 
-
     private static HttpResponse doHttp(ProxyInfo proxyInfo, String requestMethod, String connectionUrl, String queryString, Map<String, String> headers, byte[] data) throws IOException {
         HttpResponse response = new HttpResponse();
 
         if ((queryString != null) && !queryString.isEmpty()) {
             connectionUrl += "?" + queryString;
         }
-
 
         URL url = new URL(connectionUrl);
 
@@ -91,11 +88,11 @@ public class HttpUtils {
 
         connection.connect();
 
+        int resCode = connection.getResponseCode();
+        response.setResponseCode(resCode);
+        response.setResponseMessage(connection.getResponseMessage());
 
-        int responseCode = connection.getResponseCode();
-        response.setResponseCode(String.valueOf(responseCode));
-
-        if (responseCode == HttpURLConnection.HTTP_OK) {
+        if (resCode == HttpURLConnection.HTTP_OK || resCode == HttpURLConnection.HTTP_CREATED || resCode == HttpURLConnection.HTTP_ACCEPTED) {
             InputStream inputStream = connection.getInputStream();
             JSONObject jsonObject = convertStreamToJSONObject(inputStream);
             Map<String, List<String>> headerFields = connection.getHeaderFields();
@@ -121,7 +118,6 @@ public class HttpUtils {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
         }
 
         if (proxy != null && proxyInfo._userName != null && proxyInfo._password != null && !proxyInfo._password.isEmpty() && !proxyInfo._password.isEmpty()) {
@@ -132,7 +128,6 @@ public class HttpUtils {
                 }
             };
 
-
             Authenticator.setDefault(authenticator);
         }
 
@@ -140,10 +135,8 @@ public class HttpUtils {
             return _url.openConnection();
         }
 
-
         return _url.openConnection(proxy);
     }
-
 
     private static void setConnectionHeaders(HttpURLConnection connection, Map<String, String> headers) {
 
@@ -154,7 +147,6 @@ public class HttpUtils {
                 connection.setRequestProperty(header.getKey(), header.getValue());
             }
         }
-
     }
 
     private static JSONObject convertStreamToJSONObject(InputStream inputStream) {
@@ -237,8 +229,6 @@ public class HttpUtils {
             _userName = userName;
             _password = password;
         }
-
     }
-
 
 }

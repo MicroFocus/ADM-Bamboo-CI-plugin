@@ -102,6 +102,9 @@ namespace HpToolsLauncher
         /// <returns></returns>
         private string Decrypt(string textToDecrypt)
         {
+            if (textToDecrypt.IsNullOrWhiteSpace())
+                return string.Empty;
+
             RijndaelManaged rijndaelCipher = new()
             {
                 Mode = CipherMode.CBC,
@@ -293,6 +296,10 @@ namespace HpToolsLauncher
                     {
                         mcConnectionInfo = new McConnectionInfo(_ciParams);
                     }
+                    catch (NoMcConnectionException)
+                    {
+                        // no action, the Test will use the default UFT One settings
+                    }
                     catch (Exception ex)
                     {
                         ConsoleWriter.WriteErrLine(ex.Message);
@@ -427,7 +434,9 @@ namespace HpToolsLauncher
                     ConsoleWriter.WriteLine(string.Format(Resources.LauncherRunnerDisposeError, ex.Message));
                 };
             }
-
+        }
+        public class NoMcConnectionException : Exception
+        {
         }
 
     }

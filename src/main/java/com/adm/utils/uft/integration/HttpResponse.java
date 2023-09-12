@@ -22,6 +22,7 @@ package com.adm.utils.uft.integration;
 
 import net.minidev.json.JSONObject;
 
+import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +30,8 @@ public class HttpResponse {
 
     private Map<String, List<String>> headers;
     private JSONObject jsonObject;
-    private String responseCode;
+    private int responseCode;
+    private String responseMessage;
 
     public HttpResponse() {
 
@@ -40,12 +42,18 @@ public class HttpResponse {
         this.jsonObject = jsonObject;
     }
 
-    public String getResponseCode() {
+    public int getResponseCode() {
         return responseCode;
     }
+    public String getResponseMessage() {
+        return responseMessage;
+    }
 
-    public void setResponseCode(String responseCode) {
+    public void setResponseCode(int responseCode) {
         this.responseCode = responseCode;
+    }
+    public void setResponseMessage(String message) {
+        this.responseMessage = message;
     }
 
     public void setHeaders(Map<String, List<String>> headers) {
