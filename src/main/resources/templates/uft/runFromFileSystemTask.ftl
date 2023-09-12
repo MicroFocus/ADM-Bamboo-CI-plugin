@@ -244,7 +244,7 @@
                         }
                     } else if (dataJSON.status) {
                         var status = dataJSON.status;
-                        if (status != 200) {
+                        if (status != 200 && status != 201 && status != 202) {
                             openMCBtn.disabled = false;
                             let err = dataJSON.error;
                             if (status > 0)
