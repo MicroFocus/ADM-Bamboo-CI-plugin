@@ -69,7 +69,6 @@ public class HttpOperationServlet extends HttpServlet {
         JobOperation operation = null;
 
         if (CommonUtils.doCheck(serverUrl, userName, password)) {
-
             try {
                 //1:no proxy 2:config proxy, but proxy info is null 3:config proxy, no auth 4: config proxy config auth, but auth null   5:cinfig proxy,auth
                 if (isProxy) {
@@ -97,19 +96,12 @@ public class HttpOperationServlet extends HttpServlet {
                     operation = new JobOperation(serverUrl, userName, password, null, null, null);//1
                     msg = send(operation,req);
                 }
-
-
-            } catch (Exception e) {
-
-            }
-
+            } catch (Exception e) { }
         } else {
             msg = "{\"myErrorCode\":\"0\"}";//0  userName password or url null
         }
 
-
         writeJSON(resp, msg);
-
     }
 
     private String send(JobOperation operation,HttpServletRequest req) throws Exception{

@@ -162,7 +162,8 @@ namespace HpToolsLauncher
                 Environment.Exit((int)Launcher.ExitCodeEnum.Failed);
             }
 
-            ConsoleWriter.WriteLine("Digital Lab connection info is - " + _mcConnection.ToString());
+            if (_mcConnection != null)
+                ConsoleWriter.WriteLine("Digital Lab connection info is - " + _mcConnection.ToString());
 
             ConsoleWriter.WriteLine(string.Format(Resources.FsRunnerTestsFound, _tests.Count));
             _tests.ForEach(t => ConsoleWriter.WriteLine(t.TestName));

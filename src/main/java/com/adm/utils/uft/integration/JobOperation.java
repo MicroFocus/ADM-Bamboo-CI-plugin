@@ -24,6 +24,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -42,6 +43,8 @@ public class JobOperation {
     public static final String COOKIE = "Cookie";
     public static final String SET_COOKIE = "Set-Cookie";
     public static final String EQUAL = "=";
+    public static final String STATUS = "status";
+    public static final String ERROR = "error";
 
     //about upload
     private final static String CONTENT_TYPE_DOWNLOAD_VALUE = "multipart/form-data; boundary=----";
@@ -109,13 +112,12 @@ public class JobOperation {
         String hp4mSecret = null;
         String jsessionId = null;
 
-        String loginJson = loginToMC();
+        SessionInfo info = loginToMC();
 
         try {
-            if (loginJson != null) {
-                JSONObject jsonObject = (JSONObject) JSONValue.parseStrict(loginJson);
-                hp4mSecret = (String) jsonObject.get(LOGIN_SECRET);
-                jsessionId = (String) jsonObject.get(JSESSIONID);
+            if (info != null) {
+                hp4mSecret = info.getHp4MSecret();
+                jsessionId = info.getJSessionId();
             }
         } catch (Exception e) {
             return null;
@@ -130,7 +132,6 @@ public class JobOperation {
         headers.put(COOKIE, JSESSIONID + EQUAL + jsessionId);
         headers.put(CONTENT_TYPE, CONTENT_TYPE_DOWNLOAD_VALUE + BOUNDARYSTR);
         headers.put("filename", appFile.getName());
-
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
@@ -167,13 +168,11 @@ public class JobOperation {
         return json;
     }
 
-
     //Login to MC
-    public String loginToMC() throws HttpConnectionException {
+    public SessionInfo loginToMC() throws HttpConnectionException {
 
-        JSONObject returnObject = new JSONObject();
-
-        Map<String, String> headers = new HashMap<String, String>();
+        SessionInfo info = null;
+        Map<String, String> headers = new HashMap<>();
         headers.put(ACCEPT, "application/json");
         headers.put(CONTENT_TYPE, "application/json;charset=UTF-8");
 
@@ -181,7 +180,6 @@ public class JobOperation {
         sendObject.put("name", _userName);
         sendObject.put("password", _password);
         sendObject.put("accountName", "default");
-
 
         HttpUtils.ProxyInfo proxyInfo = null;
 
@@ -191,36 +189,33 @@ public class JobOperation {
 
         HttpResponse response = HttpUtils.post(proxyInfo, _serverUrl + LOGIN_URL, headers, sendObject.toJSONString().getBytes());
 
-        if (response != null && response.getResponseCode() != null) {
-            returnObject.put("code", response.getResponseCode());
+        if (response != null) {
+            if (response.getHeaders() != null) {
+                Map<String, List<String>> headerFields = response.getHeaders();
+                List<String> hp4mSecretList = headerFields.get(LOGIN_SECRET);
+                String hp4mSecret = null;
+                if (hp4mSecretList != null && hp4mSecretList.size() != 0) {
+                    hp4mSecret = hp4mSecretList.get(0);
+                }
+                List<String> setCookieList = headerFields.get(SET_COOKIE);
+                String setCookie = null;
+                if (setCookieList != null && setCookieList.size() != 0) {
+                    setCookie = setCookieList.toString();
+                }
+
+                String jsessionId = getJSESSIONID(setCookie);
+
+                if (hp4mSecret == null || jsessionId == null) {
+                    throw new HttpConnectionException();
+                }
+
+                info = new SessionInfo(jsessionId, hp4mSecret, response);
+            } else {
+                info = new SessionInfo(response);
+            }
         }
 
-        if (response != null && response.getHeaders() != null) {
-            Map<String, List<String>> headerFields = response.getHeaders();
-            List<String> hp4mSecretList = headerFields.get(LOGIN_SECRET);
-            String hp4mSecret = null;
-            if (hp4mSecretList != null && hp4mSecretList.size() != 0) {
-                hp4mSecret = hp4mSecretList.get(0);
-            }
-            List<String> setCookieList = headerFields.get(SET_COOKIE);
-            String setCookie = null;
-            if (setCookieList != null && setCookieList.size() != 0) {
-                setCookie = setCookieList.toString();
-            }
-
-            String jsessionId = getJSESSIONID(setCookie);
-
-            if (hp4mSecret == null || jsessionId == null) {
-                throw new HttpConnectionException();
-            }
-
-
-            returnObject.put(JSESSIONID, jsessionId);
-            returnObject.put(LOGIN_SECRET, hp4mSecret);
-            returnObject.put(COOKIE, JSESSIONID + EQUAL + jsessionId);
-        }
-
-        return returnObject.toJSONString();
+        return info;
     }
 
     //create one temp job
@@ -229,21 +224,30 @@ public class JobOperation {
         String hp4mSecret = null;
         String jsessionId = null;
 
-        String loginJson = loginToMC();
+        SessionInfo info = loginToMC();
         try {
-            if (loginJson != null) {
-                JSONObject jsonObject = (JSONObject) JSONValue.parseStrict(loginJson);
-                hp4mSecret = (String) jsonObject.get(LOGIN_SECRET);
-                jsessionId = (String) jsonObject.get(JSESSIONID);
+            if (info == null) {
+                JSONObject jsonObj = new JSONObject();
+                jsonObj.put(STATUS, -999);
+                return jsonObj.toJSONString();
+            } else {
+                if (info.getResponse().getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    hp4mSecret = info.getHp4MSecret();
+                    jsessionId = info.getJSessionId();
+                } else {
+                    JSONObject jsonObj = new JSONObject();
+                    jsonObj.put(STATUS, info.getResponse().getResponseCode());
+                    jsonObj.put(ERROR, info.getResponse().getResponseMessage());
+                    return jsonObj.toJSONString();
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        boolean b = CommonUtils.doCheck(hp4mSecret, jsessionId);
+        boolean ok = CommonUtils.doCheck(hp4mSecret, jsessionId);
 
-        if (b) {
-
+        if (ok) {
             Map<String, String> headers = new HashMap<String, String>();
             headers.put(LOGIN_SECRET, hp4mSecret);
             headers.put(COOKIE, JSESSIONID + EQUAL + jsessionId);
@@ -255,10 +259,16 @@ public class JobOperation {
 
             HttpResponse response = HttpUtils.get(proxyInfo, _serverUrl + CREATE_JOB_URL, headers, null);
 
-            if (response != null && response.getJsonObject() != null) {
-                json = response.getJsonObject().toJSONString();
+            if (response != null) {
+                if (response.getJsonObject() == null) {
+                    JSONObject jsonObj = new JSONObject();
+                    jsonObj.put(STATUS, response.getResponseCode());
+                    jsonObj.put(ERROR, response.getResponseMessage());
+                    json = jsonObj.toJSONString();
+                } else {
+                    json = response.getJsonObject().toJSONString();
+                }
             }
-
         }
         return json;
     }
@@ -269,21 +279,26 @@ public class JobOperation {
         String hp4mSecret = null;
         String jsessionId = null;
 
-        String loginJson = loginToMC();
+        SessionInfo info = loginToMC();
         try {
-            if (loginJson != null) {
-                JSONObject jsonObject = (JSONObject) JSONValue.parseStrict(loginJson);
-                hp4mSecret = (String) jsonObject.get(LOGIN_SECRET);
-                jsessionId = (String) jsonObject.get(JSESSIONID);
+            if (info != null) {
+                if (info.getResponse().getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    hp4mSecret = info.getHp4MSecret();
+                    jsessionId = info.getJSessionId();
+                } else {
+                    JSONObject jsonObj = new JSONObject();
+                    jsonObj.put(STATUS, info.getResponse().getResponseCode());
+                    jsonObj.put(ERROR, info.getResponse().getResponseMessage());
+                    return jsonObj;
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        boolean b = CommonUtils.doCheck(jobUUID, hp4mSecret, jsessionId);
+        boolean ok = CommonUtils.doCheck(jobUUID, hp4mSecret, jsessionId);
 
-        if (b) {
-
+        if (ok) {
             Map<String, String> headers = new HashMap<String, String>();
             headers.put(LOGIN_SECRET, hp4mSecret);
             headers.put(COOKIE, JSESSIONID + EQUAL + jsessionId);
@@ -347,7 +362,6 @@ public class JobOperation {
                     returnDeviceJSON.put("manufacturerAndModel", manufacturerAndModel);
                 }
             }
-
 
             //Applications under test
             JSONArray returnExtraJSONArray = new JSONArray();
@@ -438,7 +452,6 @@ public class JobOperation {
                     }
                 }
 
-
                 returnDefinitionJSON.put("autActions", removeLastSemicolon(sb));
                 returnDefinitionJSON.put("deviceMetrics", removeLastSemicolon(deviceMetricsSb));
 
@@ -516,6 +529,33 @@ public class JobOperation {
         return serverUrl;
     }
 
+    protected class SessionInfo {
+        private String jsessionId;
+        private String hp4mSecret;
+
+        private HttpResponse response;
+
+        public SessionInfo(String jsessionId, String hp4mSecret, HttpResponse response) {
+            this.jsessionId = jsessionId;
+            this.hp4mSecret = hp4mSecret;
+            this.response = response;
+        }
+
+        public SessionInfo(HttpResponse response) {
+            this.response = response;
+        }
+
+        public String getJSessionId() {
+            return jsessionId;
+        }
+        public String getHp4MSecret() {
+            return hp4mSecret;
+        }
+
+        public HttpResponse getResponse() {
+            return response;
+        }
+    }
 
 }
 

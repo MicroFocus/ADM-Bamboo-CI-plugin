@@ -137,46 +137,31 @@
 [/@ui.bambooSection]
 
 <script  type="text/javascript">
-    var jobId,
-            wizard,
-            loginInfo,
-            mcServerURLInput,
-            mcUserNameInput,
-            mcPasswordInput,
-            useProxy,
-            proxyAddress,
-            proxyUserName,
-            proxyPassword,
-            useAuthentication;
-    var customWidth = "500px";
-    document.getElementById('timeoutInput').style.maxWidth=customWidth;
-    document.getElementById('testPathInput').style.maxWidth=customWidth;
-    document.getElementById('publishMode').style.maxWidth=customWidth;
-    document.getElementById('mcServerURLInput').style.maxWidth=customWidth;
-    document.getElementById('mcUserNameInput').style.maxWidth=customWidth;
-    document.getElementById('mcPasswordInput').style.maxWidth=customWidth;
-    document.getElementById('extraApps').style.maxWidth=customWidth;
+    let jobId, wizard, loginInfo, mcServerURL;
+    const customWidth = "500px";
+    document.getElementById('timeoutInput').style.maxWidth=
+        document.getElementById('testPathInput').style.maxWidth=
+        document.getElementById('publishMode').style.maxWidth=
+        document.getElementById('mcServerURLInput').style.maxWidth=
+        document.getElementById('mcUserNameInput').style.maxWidth=
+        document.getElementById('mcPasswordInput').style.maxWidth=
+        document.getElementById('extraApps').style.maxWidth=customWidth;
     var openMCBtn = document.getElementById('openMCBtn');
     var specifyAuthenticationBox = document.getElementById('specifyAuthentication');
     specifyAuthenticationBox.addEventListener('change', function (e) {
         var proxyUserNameInput = document.getElementById('proxyUserName'),
-                proxyPasswordInput = document.getElementById('proxyPassword');
+            proxyPasswordInput = document.getElementById('proxyPassword');
 
         if (specifyAuthenticationBox.checked == true) {
-            proxyUserNameInput.disabled = false;
-            proxyPasswordInput.disabled = false;
+            proxyUserNameInput.disabled = proxyPasswordInput.disabled = false;
         } else {
-            proxyUserNameInput.disabled = true;
-            proxyPasswordInput.disabled = true;
+            proxyUserNameInput.disabled = proxyPasswordInput.disabled = true;
         }
     });
 
     function toggle_visibility(id) {
         var e = document.getElementById(id);
-        if (e.style.display == 'block')
-            e.style.display = 'none';
-        else
-            e.style.display = 'block';
+        e.style.display = e.style.display == 'block' ? 'none' : 'block';
     }
 
     function openMCWizardHandler(e) {
@@ -184,27 +169,54 @@
         openMCBtn.disabled = true;
 
         //get login info, url, username, password
-        mcServerURLInput = document.getElementById('mcServerURLInput').value.replace(/\/$/, "");//remove tailing slash
-        mcUserNameInput = document.getElementById('mcUserNameInput').value;
-        mcPasswordInput = document.getElementById('mcPasswordInput').value;
-        proxyAddress = document.getElementById('proxyAddress').value;
-        proxyUserName = document.getElementById('proxyUserName').value;
-        proxyPassword = document.getElementById('proxyPassword').value;
-        useProxy = document.getElementById('useProxy').checked;
-        useAuthentication = specifyAuthenticationBox.checked;
+        const inputMcServerURL = document.getElementById('mcServerURLInput');
+        mcServerURL = inputMcServerURL.value.trim();
+        const inputUserName = document.getElementById('mcUserNameInput');
+        const userName = inputUserName.value.trim();
+        const inputPassword = document.getElementById('mcPasswordInput');
+        const password = inputPassword.value;
+        const inputProxyAddr = document.getElementById('proxyAddress');
+        const proxyAddr = inputProxyAddr.value.trim();
+        const inputProxyUserName = document.getElementById('proxyUserName');
+        const proxyUserName = inputProxyUserName.value.trim();
+        const inputProxyPassword = document.getElementById('proxyPassword');
+        const proxyPwd = inputProxyPassword.value;
+        const useProxy = document.getElementById('useProxy').checked;
+        const useProxyAuth = specifyAuthenticationBox.checked;
 
-        loginInfo = {
-            mcServerURLInput: mcServerURLInput,
-                    mcUserNameInput: mcUserNameInput,
-                mcPasswordInput: mcPasswordInput,
-                proxyAddress: proxyAddress,
-                proxyUserName: proxyUserName,
-                proxyPassword: proxyPassword,
-                useProxy: useProxy,
-                useAuthentication: useAuthentication
-        };
-        //no need do login, get job id directly
-        getJobIdHelper(loginInfo);
+        if (mcServerURL == "" && userName == "" && password == "") {
+            showDigitalLabAlert(inputMcServerURL, "The Digital Lab URL, User Name and Password fields cannot be empty.");
+        } else if (mcServerURL == "") {
+            showDigitalLabAlert(inputMcServerURL, "The Digital Lab URL field cannot be empty.");
+        } else if (userName == "") {
+            showDigitalLabAlert(inputUserName, "The Digital Lab User Name field cannot be empty.");
+        } else if (password == "") {
+            showDigitalLabAlert(inputPassword, "The Digital Lab Password field cannot be empty.");
+        } else if (useProxy && proxyAddr == "") {
+            showDigitalLabAlert(inputProxyAddr, "Use Proxy is enabled, but no Proxy Address was provided.");
+        } else if (useProxy && useProxyAuth && proxyUserName == "") {
+            showDigitalLabAlert(inputProxyUserName, "Specific Authentication is selected, but the Proxy User Name is empty.");
+        } else if (useProxy && useProxyAuth && proxyPassword == "") {
+            showDigitalLabAlert(inputProxyPassword, "Specific Authentication is selected, but the Proxy Password is empty.");
+        } else { //no need do login, get job id directly
+            loginInfo = {
+                mcServerURLInput: mcServerURL,
+                    mcUserNameInput: userName,
+                    mcPasswordInput: password,
+                    proxyAddress: proxyAddr,
+                    proxyUserName: proxyUserName,
+                    proxyPassword: proxyPwd,
+                    useProxy: useProxy,
+                    useAuthentication: useProxyAuth
+            };
+            getJobIdHelper(loginInfo);
+        }
+    }
+
+    function showDigitalLabAlert(el, msg) {
+        alert(msg);
+        el && el.focus();
+        openMCBtn.disabled = false;
     }
 
     function getJobIdHelper(loginInfo) {
@@ -214,6 +226,7 @@
             method: "POST",
             data: loginInfo,
             success: function(data) {
+                console.log("createTempJob response: " + data);
                 var dataJSON = JSON.parse(data);
                 if(dataJSON != null){
                     var errorCode = dataJSON.myErrorCode;
@@ -229,8 +242,20 @@
                             alert("Specific Authentication is selected, but the Proxy User name or password is empty.");
                             return;
                         }
+                    } else if (dataJSON.status) {
+                        var status = dataJSON.status;
+                        if (status != 200) {
+                            openMCBtn.disabled = false;
+                            let err = dataJSON.error;
+                            if (status > 0)
+                                alert("Http Status: " + status + ", Error: " + err + "\n" + "Digital Lab login information or proxy is incorrect.");
+                            else
+                                alert("Digital Lab login information or proxy is incorrect.");
+
+                            return;
+                        }
                     }
-                    jobId =  dataJSON.data && dataJSON.data.id;
+                    jobId = dataJSON.data && dataJSON.data.id;
                     if (!jobId){
                         alert('The login to Digital Lab failed. Check that the Digital Lab login information is correct.');
                         openMCBtn.disabled = false;
@@ -241,18 +266,16 @@
                     jobIdInput.value = jobId;
                     //open MC wizard
                     wizard = window.open(
-                            mcServerURLInput+ "/integration/#/login?jobId=" + jobId + "&displayUFTMode=true&appType=native",
+                            mcServerURL + "/integration/#/login?jobId=" + jobId + "&displayUFTMode=true&appType=native",
                             "MCWizardWindow",
                             "width=1024,height=768");
                     wizard.focus();
                     window.addEventListener('message', messageEventHandler, false);
-                }else{
+                } else {
                     alert('The login to Digital Lab failed. Check that the Digital Lab login information is correct.');
                     openMCBtn.disabled = false;
                     return;
                 }
-
-
             },
             error: function(error) {
                 var errorCode = error.myErrorCode;
@@ -263,8 +286,8 @@
                 } else if (errorCode == 4) {
                     alert("Specific Authentication is selected, but the Proxy User name or password is empty.");
                 }
-
                 openMCBtn.disabled = false;
+                console.error("error.myErrorCode: " + error);
             }
         });
     }

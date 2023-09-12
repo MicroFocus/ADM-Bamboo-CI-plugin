@@ -90,14 +90,12 @@ namespace HpToolsLauncher
         }
 
         // if token auth was specified this is populated
-        private AuthTokenInfo _tokens;
+        private AuthTokenInfo _token;
         private string _execToken;
         private AuthType _authType = AuthType.UsernamePassword;
 
         public string UserName { get; set; }
         public string Password { get; set; }
-        public string ClientId { get; set; }
-        public string SecretKey { get; set; }
 
         public string ExecToken
         {
@@ -108,7 +106,7 @@ namespace HpToolsLauncher
             set
             {
                 _execToken = value;
-                _tokens = ParseExecToken();
+                _token = ParseExecToken();
             }
         }
 
@@ -311,8 +309,7 @@ namespace HpToolsLauncher
             var execToken = ExecToken.Trim().Trim(DBL_QUOTE);
 
             var ret = new AuthTokenInfo();
-
-            if (execToken.Length == 0) return ret; // empty string was given as token, may semnalize that it wasn't specified
+                if (execToken.Length == 0) return ret; // empty string was given as token, may semnalize that it wasn't specified
 
             var tokens = execToken.Split(TOKEN_SEPARATOR.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 
@@ -359,7 +356,7 @@ namespace HpToolsLauncher
         /// <returns></returns>
         public AuthTokenInfo GetAuthToken()
         {
-            return _tokens;
+            return _token;
         }
 
         private string UseSslAsStr => UseSslAsInt == ONE ? YES : NO; 
@@ -375,7 +372,7 @@ namespace HpToolsLauncher
             string usernameOrClientId = string.Empty;
             if (MobileAuthType == AuthType.AuthToken)
             {
-                usernameOrClientId = $"ClientId: {ClientId}";
+                usernameOrClientId = $"ClientId: {_token.ClientId}";
             }
             else if (MobileAuthType == AuthType.UsernamePassword)
             {
