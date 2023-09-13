@@ -1,29 +1,31 @@
 /*
- * Certain versions of software and/or documents ("Material") accessible here may contain branding from
- * Hewlett-Packard Company (now HP Inc.) and Hewlett Packard Enterprise Company.  As of September 1, 2017,
- * the Material is now offered by Micro Focus, a separately owned and operated company.  Any reference to the HP
- * and Hewlett Packard Enterprise/HPE marks is historical in nature, and the HP and Hewlett Packard Enterprise/HPE
- * marks are the property of their respective owners.
- * __________________________________________________________________
- * MIT License
- *
- * (c) Copyright 2012-2019 Micro Focus or one of its affiliates.
- *
- * The only warranties for products and services of Micro Focus and its affiliates
- * and licensors ("Micro Focus") are set forth in the express warranty statements
- * accompanying such products and services. Nothing herein should be construed as
- * constituting an additional warranty. Micro Focus shall not be liable for technical
- * or editorial errors or omissions contained herein.
- * The information contained herein is subject to change without notice.
- * ___________________________________________________________________
- */
+* Certain versions of software and/or documents ("Material") accessible here may contain branding from
+* Hewlett-Packard Company (now HP Inc.) and Hewlett Packard Enterprise Company.
+* The Material is now offered by Open Text Corporation, a separately owned and operated company.  Any reference to the HP
+* and Hewlett Packard Enterprise/HPE marks is historical in nature, and the HP and Hewlett Packard Enterprise/HPE
+* marks are the property of their respective owners.
+* __________________________________________________________________
+* MIT License
+*
+* Copyright © 2023 Open Text Corporation
+*
+* The only warranties for products and services of Open Text Corporation
+* are set forth in the express warranty statements
+* accompanying such products and services. Nothing herein should be construed as
+* constituting an additional warranty. Open Text shall not be liable for technical
+* or editorial errors or omissions contained herein.
+* The information contained herein is subject to change without notice.
+* ___________________________________________________________________
+*/
 
 package com.adm.bamboo.plugin.performancecenter.impl;
 
 
+import com.microfocus.adm.performancecenter.plugins.common.pcentities.PostRunAction;
+import com.microfocus.adm.performancecenter.plugins.common.pcentities.TimeslotDuration;
+
 import java.util.Arrays;
 import java.util.List;
-import com.microfocus.adm.performancecenter.plugins.common.pcentities.*;
 
 /**
  * Created by bemh on 8/6/2017.
@@ -31,28 +33,26 @@ import com.microfocus.adm.performancecenter.plugins.common.pcentities.*;
 public class PcModelBamboo {
 
 
-
-    private final String           pcServerName;
-    private final String           almUserName;
+    private final String pcServerName;
+    private final String almUserName;
     private final String almPassword;
-    private final String           almDomain;
-    private final String           almProject;
-    private final String           testId;
-    private final String           testInstanceId;
-    private final String           autoTestInstanceID;
+    private final String almDomain;
+    private final String almProject;
+    private final String testId;
+    private final String testInstanceId;
+    private final String autoTestInstanceID;
     private final TimeslotDuration timeslotDuration;
     private final PostRunAction postRunAction;
-    private final boolean          vudsMode;
-    private final boolean          sla;
-    private final String           description;
-    private final String          addRunToTrendReport;
-    private String trendReportId;
+    private final boolean vudsMode;
+    private final boolean sla;
+    private final String description;
+    private final String addRunToTrendReport;
     private final boolean HTTPSProtocol;
     private final String proxyOutURL;
     private final String proxyOutUser;
     private final String proxyOutPassword;
     private final boolean authenticateWithToken;
-
+    private String trendReportId;
 
 
     public PcModelBamboo(String pcServerName, String almUserName, String almPassword, String almDomain, String almProject,
@@ -88,6 +88,10 @@ public class PcModelBamboo {
 //        return secretContainer;
 //    }
 
+    public static List<PostRunAction> getPostRunActions() {
+        return Arrays.asList(PostRunAction.values());
+    }
+
     public String getPcServerName() {
 
         return this.pcServerName;
@@ -122,7 +126,7 @@ public class PcModelBamboo {
         return this.testInstanceId;
     }
 
-    public String getAutoTestInstanceID(){
+    public String getAutoTestInstanceID() {
         return this.autoTestInstanceID;
     }
 
@@ -146,28 +150,25 @@ public class PcModelBamboo {
         return this.description;
     }
 
-    public boolean httpsProtocol(){
+    public boolean httpsProtocol() {
         return this.HTTPSProtocol;
     }
 
-    public String getProxyOutURL(){
+    public String getProxyOutURL() {
         return this.proxyOutURL;
     }
 
-    public String getProxyOutUser(){
+    public String getProxyOutUser() {
         return this.proxyOutUser;
     }
 
-    public String getProxyOutPassword(){
+    public String getProxyOutPassword() {
         return this.proxyOutPassword;
     }
 
-    public boolean isAuthenticateWithToken() { return this.authenticateWithToken; }
-
-    public static List<PostRunAction> getPostRunActions() {
-        return Arrays.asList(PostRunAction.values());
+    public boolean isAuthenticateWithToken() {
+        return this.authenticateWithToken;
     }
-
 
     @Override
     public String toString() {
@@ -178,13 +179,13 @@ public class PcModelBamboo {
     public String runParamsToString() {
 
         String vudsModeString = (vudsMode) ? ", VUDsMode='true'" : "";
-        String trendString = ("USE_ID").equals(addRunToTrendReport) ? String.format(", TrendReportID = '%s'",trendReportId) : "";
+        String trendString = ("USE_ID").equals(addRunToTrendReport) ? String.format(", TrendReportID = '%s'", trendReportId) : "";
 
         return String.format("[Domain='%s', Project='%s', TestID='%s', " +
                         "TestInstanceID='%s', TimeslotDuration='%s', PostRunAction='%s'%s%s]",
 
                 almDomain, almProject, testId, testInstanceId,
-                timeslotDuration, postRunAction, vudsModeString, trendString,HTTPSProtocol);
+                timeslotDuration, postRunAction, vudsModeString, trendString, HTTPSProtocol);
     }
 
 
@@ -192,7 +193,7 @@ public class PcModelBamboo {
         return trendReportId;
     }
 
-    public void setTrendReportId(String trendReportId){
+    public void setTrendReportId(String trendReportId) {
         this.trendReportId = trendReportId;
     }
 
@@ -200,7 +201,7 @@ public class PcModelBamboo {
         return addRunToTrendReport;
     }
 
-    public String isHTTPSProtocol(){
+    public String isHTTPSProtocol() {
         if (!HTTPSProtocol)
             return "http";
         return "https";
