@@ -33,9 +33,11 @@
 package com.adm.bamboo.plugin.performancecenter.impl;
 
 
+import com.microfocus.adm.performancecenter.plugins.common.pcentities.PostRunAction;
+import com.microfocus.adm.performancecenter.plugins.common.pcentities.TimeslotDuration;
+
 import java.util.Arrays;
 import java.util.List;
-import com.microfocus.adm.performancecenter.plugins.common.pcentities.*;
 
 /**
  * Created by bemh on 8/6/2017.
@@ -43,28 +45,26 @@ import com.microfocus.adm.performancecenter.plugins.common.pcentities.*;
 public class PcModelBamboo {
 
 
-
-    private final String           pcServerName;
-    private final String           almUserName;
+    private final String pcServerName;
+    private final String almUserName;
     private final String almPassword;
-    private final String           almDomain;
-    private final String           almProject;
-    private final String           testId;
-    private final String           testInstanceId;
-    private final String           autoTestInstanceID;
+    private final String almDomain;
+    private final String almProject;
+    private final String testId;
+    private final String testInstanceId;
+    private final String autoTestInstanceID;
     private final TimeslotDuration timeslotDuration;
     private final PostRunAction postRunAction;
-    private final boolean          vudsMode;
-    private final boolean          sla;
-    private final String           description;
-    private final String          addRunToTrendReport;
-    private String trendReportId;
+    private final boolean vudsMode;
+    private final boolean sla;
+    private final String description;
+    private final String addRunToTrendReport;
     private final boolean HTTPSProtocol;
     private final String proxyOutURL;
     private final String proxyOutUser;
     private final String proxyOutPassword;
     private final boolean authenticateWithToken;
-
+    private String trendReportId;
 
 
     public PcModelBamboo(String pcServerName, String almUserName, String almPassword, String almDomain, String almProject,
@@ -100,6 +100,10 @@ public class PcModelBamboo {
 //        return secretContainer;
 //    }
 
+    public static List<PostRunAction> getPostRunActions() {
+        return Arrays.asList(PostRunAction.values());
+    }
+
     public String getPcServerName() {
 
         return this.pcServerName;
@@ -134,7 +138,7 @@ public class PcModelBamboo {
         return this.testInstanceId;
     }
 
-    public String getAutoTestInstanceID(){
+    public String getAutoTestInstanceID() {
         return this.autoTestInstanceID;
     }
 
@@ -158,28 +162,25 @@ public class PcModelBamboo {
         return this.description;
     }
 
-    public boolean httpsProtocol(){
+    public boolean httpsProtocol() {
         return this.HTTPSProtocol;
     }
 
-    public String getProxyOutURL(){
+    public String getProxyOutURL() {
         return this.proxyOutURL;
     }
 
-    public String getProxyOutUser(){
+    public String getProxyOutUser() {
         return this.proxyOutUser;
     }
 
-    public String getProxyOutPassword(){
+    public String getProxyOutPassword() {
         return this.proxyOutPassword;
     }
 
-    public boolean isAuthenticateWithToken() { return this.authenticateWithToken; }
-
-    public static List<PostRunAction> getPostRunActions() {
-        return Arrays.asList(PostRunAction.values());
+    public boolean isAuthenticateWithToken() {
+        return this.authenticateWithToken;
     }
-
 
     @Override
     public String toString() {
@@ -190,13 +191,13 @@ public class PcModelBamboo {
     public String runParamsToString() {
 
         String vudsModeString = (vudsMode) ? ", VUDsMode='true'" : "";
-        String trendString = ("USE_ID").equals(addRunToTrendReport) ? String.format(", TrendReportID = '%s'",trendReportId) : "";
+        String trendString = ("USE_ID").equals(addRunToTrendReport) ? String.format(", TrendReportID = '%s'", trendReportId) : "";
 
         return String.format("[Domain='%s', Project='%s', TestID='%s', " +
                         "TestInstanceID='%s', TimeslotDuration='%s', PostRunAction='%s'%s%s]",
 
                 almDomain, almProject, testId, testInstanceId,
-                timeslotDuration, postRunAction, vudsModeString, trendString,HTTPSProtocol);
+                timeslotDuration, postRunAction, vudsModeString, trendString, HTTPSProtocol);
     }
 
 
@@ -204,7 +205,7 @@ public class PcModelBamboo {
         return trendReportId;
     }
 
-    public void setTrendReportId(String trendReportId){
+    public void setTrendReportId(String trendReportId) {
         this.trendReportId = trendReportId;
     }
 
@@ -212,7 +213,7 @@ public class PcModelBamboo {
         return addRunToTrendReport;
     }
 
-    public String isHTTPSProtocol(){
+    public String isHTTPSProtocol() {
         if (!HTTPSProtocol)
             return "http";
         return "https";

@@ -36,6 +36,7 @@ package com.adm.bamboo.plugin.performancecenter.impl;
 import com.atlassian.bamboo.build.fileserver.DefaultBuildDirectoryManager;
 import com.atlassian.bamboo.build.logger.BuildLogger;
 import com.atlassian.bamboo.task.TaskContext;
+import com.microfocus.adm.performancecenter.plugins.common.pcentities.*;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.protocol.ClientContext;
@@ -51,8 +52,6 @@ import java.io.IOException;
 
 import static com.microfocus.adm.performancecenter.plugins.common.pcentities.RunState.FINISHED;
 import static com.microfocus.adm.performancecenter.plugins.common.pcentities.RunState.RUN_FAILURE;
-
-import com.microfocus.adm.performancecenter.plugins.common.pcentities.*;
 
 /**
  * Created by bemh on 7/23/2017.
@@ -74,7 +73,7 @@ public class PcComponentsImpl {
 
     public PcComponentsImpl(TaskContext taskContext, BuildLogger buildLogger, String pcServerName, String almUserName, String almPassword, String almDomain, String almProject,
                             String testId, String autoTestInstanceID, String testInstanceId, String timeslotDurationHours, String timeslotDurationMinutes,
-                            PostRunAction postRunAction, boolean vudsMode, boolean sla, String description, String addRunToTrendReport, String trendReportId, boolean HTTPSProtocol, String proxyOutURL, String proxyUser, String proxyPassword, boolean authenticateWithToken){
+                            PostRunAction postRunAction, boolean vudsMode, boolean sla, String description, String addRunToTrendReport, String trendReportId, boolean HTTPSProtocol, String proxyOutURL, String proxyUser, String proxyPassword, boolean authenticateWithToken) {
 
 //    public PcComponentsImpl(BuildLogger buildLogger){
 
@@ -89,16 +88,16 @@ public class PcComponentsImpl {
         cxMgr.setMaxTotal(100);
         cxMgr.setDefaultMaxPerRoute(20);
         client = new DefaultHttpClient(cxMgr);
-        pcModel = new PcModelBamboo(pcServerName, almUserName,almPassword, almDomain, almProject,testId,autoTestInstanceID, testInstanceId,timeslotDurationHours,timeslotDurationMinutes, postRunAction,vudsMode,sla, description,addRunToTrendReport,trendReportId,HTTPSProtocol,proxyOutURL,proxyUser,proxyPassword, authenticateWithToken);
+        pcModel = new PcModelBamboo(pcServerName, almUserName, almPassword, almDomain, almProject, testId, autoTestInstanceID, testInstanceId, timeslotDurationHours, timeslotDurationMinutes, postRunAction, vudsMode, sla, description, addRunToTrendReport, trendReportId, HTTPSProtocol, proxyOutURL, proxyUser, proxyPassword, authenticateWithToken);
 //        PcModelBamboo pcModel = new PcModelBamboo(PC_SERVER_NAME, ALM_USER_NAME,ALM_PASSWORD, ALM_DOMAIN, ALM_PROJECT,TEST_ID,TESTINSTANCEID, TEST_INSTANCE_ID,TIMESLOT_DURATION_HOURS,TIMESLOT_DURATION_MINUTES, POST_RUN_ACTION,VUDS_MODE, DESCRIPTION,ADD_RUN_TO_TREND_REPORT,TREND_REPORT_ID,IS_HTTPS,PROXY_OUT_URL);
-        pcClient = new PcClientBamboo(pcModel,taskContext,buildLogger);
+        pcClient = new PcClientBamboo(pcModel, taskContext, buildLogger);
     }
 
 
     public Boolean pcAuthenticate() throws IOException, PcException {
 
         Boolean loggedIn = false;
-        loggedIn =  pcClient.login();
+        loggedIn = pcClient.login();
         return loggedIn;
 
     }
@@ -109,7 +108,6 @@ public class PcComponentsImpl {
         boolean trendReportReady = false;
 
 
-
         try {
             runId = pcClient.startRun();
 
@@ -118,20 +116,20 @@ public class PcComponentsImpl {
             RunState runState = RunState.get(response.getRunState());
             if (response != null && runState == FINISHED) {
                 DefaultBuildDirectoryManager defaultBuildDirectoryManager = new DefaultBuildDirectoryManager();
-                pcReportFile = pcClient.publishRunReport(runId,String.valueOf(taskContext.getWorkingDirectory()));
+                pcReportFile = pcClient.publishRunReport(runId, String.valueOf(taskContext.getWorkingDirectory()));
 
                 buildLogger.addBuildLogEntry("View analysis report of run: " + runId + ", in the Artifacts Tab.");
 
                 // Adding the trend report section if ID has been set
-                if(("USE_ID").equals(pcModel.getAddRunToTrendReport()) && pcModel.getTrendReportId() != null && runState != RUN_FAILURE){
+                if (("USE_ID").equals(pcModel.getAddRunToTrendReport()) && pcModel.getTrendReportId() != null && runState != RUN_FAILURE) {
                     pcClient.addRunToTrendReport(runId, pcModel.getTrendReportId());
                     pcClient.waitForRunToPublishOnTrendReport(runId, pcModel.getTrendReportId());
-                    pcClient.downloadTrendReportAsPdf(pcModel.getTrendReportId(),getTrendReportsDirectory(runId));
+                    pcClient.downloadTrendReportAsPdf(pcModel.getTrendReportId(), getTrendReportsDirectory(runId));
                     trendReportReady = true;
                 }
 
                 // Adding the trend report if the Associated Trend report is selected.
-                if(("ASSOCIATED").equals(pcModel.getAddRunToTrendReport()) && runState != RUN_FAILURE){
+                if (("ASSOCIATED").equals(pcModel.getAddRunToTrendReport()) && runState != RUN_FAILURE) {
                     pcClient.addRunToTrendReport(runId, pcModel.getTrendReportId());
                     pcClient.waitForRunToPublishOnTrendReport(runId, pcModel.getTrendReportId());
                     pcClient.downloadTrendReportAsPdf(pcModel.getTrendReportId(), getTrendReportsDirectory(runId));
@@ -158,37 +156,33 @@ public class PcComponentsImpl {
         return String.valueOf(runId);
     }
 
-    public Boolean isSlaStatusPassed()
-    {
-        if(response != null)
+    public Boolean isSlaStatusPassed() {
+        if (response != null)
             return response.getRunSLAStatus().equalsIgnoreCase("passed");
         return false;
     }
 
-    public String getRunSLAStatus()
-    {
-        if(response != null)
+    public String getRunSLAStatus() {
+        if (response != null)
             return response.getRunSLAStatus();
-		return "unknown";
+        return "unknown";
     }
 
     private String getTrendReportsDirectory(int runId) {
 //        return String.valueOf(taskContext.getWorkingDirectory())  + File.separator + taskContext.getBuildContext().getBuildNumber() +  File.separator + "TrendReports";
-        return String.valueOf(taskContext.getWorkingDirectory())  + File.separator + "Reports" +  File.separator + "TrendReports";
+        return String.valueOf(taskContext.getWorkingDirectory()) + File.separator + "Reports" + File.separator + "TrendReports";
     }
 
 
     private String buildEventLogString(PcRunEventLog eventLog) {
 
         String logFormat = "%-5s | %-7s | %-19s | %s\n";
-        StringBuilder eventLogStr = new StringBuilder("Event Log:\n\n" + String.format(logFormat, "ID", "TYPE", "TIME","DESCRIPTION"));
+        StringBuilder eventLogStr = new StringBuilder("Event Log:\n\n" + String.format(logFormat, "ID", "TYPE", "TIME", "DESCRIPTION"));
         for (PcRunEventLogRecord record : eventLog.getRecordsList()) {
             eventLogStr.append(String.format(logFormat, record.getID(), record.getType(), record.getTime(), record.getDescription()));
         }
         return eventLogStr.toString();
     }
-
-
 
 
 }
