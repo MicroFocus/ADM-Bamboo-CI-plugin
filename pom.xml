@@ -61,28 +61,6 @@
         <developerConnection>scm:git:https://github.com/MicroFocus/ADM-Bamboo-CI-plugin</developerConnection>
         <tag>HEAD</tag>
     </scm>
-    <developers>
-        <developer>
-            <name>Daniel Gront</name>
-            <email>daniel.gront@microfocus.com</email>
-            <organization>Micro Focus</organization>
-        </developer>
-        <developer>
-            <name>Amin Habash</name>
-            <email>amin.habash@microfocus.com</email>
-            <organization>Micro Focus</organization>
-        </developer>
-        <developer>
-            <name>Anda Sorina Laakso</name>
-            <email>anda-sorina.laakso@microfocus.com</email>
-            <organization>Micro Focus</organization>
-        </developer>
-        <developer>
-            <name>Yafim Kazak (retired)</name>
-            <email>kazak@microfocus.com</email>
-            <organization>Micro Focus</organization>
-        </developer>
-    </developers>
 
     <issueManagement/>
 
