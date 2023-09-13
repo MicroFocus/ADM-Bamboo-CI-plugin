@@ -35,7 +35,7 @@
 </div>
 [@ui.bambooSection dependsOn='useMC' showOn='true']
 <div class="btn-container">
-    <button class="action-button" id="openMCBtn" onclick="javascript: openMCWizardHandler(event);">Open Wizard</button>
+    <button class="action-button" type="button" id="openMCBtn" onclick="javascript: openMCWizardHandler(event);">Open Wizard</button>
 </div>
 <div class="control">
     [@ww.textfield labelKey="FileSystemTaskConfigurator.mcServerURLInputLbl" name="mcServerURLInput"/]
@@ -214,9 +214,10 @@
     }
 
     function showDigitalLabAlert(el, msg) {
-        alert(msg);
-        el && el.focus();
         openMCBtn.disabled = false;
+        el && el.focus();
+        console.error(msg);
+        alert(msg);
     }
 
     function getJobIdHelper(loginInfo) {
@@ -247,11 +248,8 @@
                         if (status != 200 && status != 201 && status != 202) {
                             openMCBtn.disabled = false;
                             let err = dataJSON.error;
-                            if (status > 0)
-                                alert("Http Status: " + status + ", Error: " + err + "\n" + "Digital Lab login information or proxy is incorrect.");
-                            else
-                                alert("Digital Lab login information or proxy is incorrect.");
-
+                            const msg = "Digital Lab login information or proxy is incorrect.";
+                            alert((status > 0 ? ("Http Status: " + status + ", Error: [" + err + "]\n") : "") + msg);
                             return;
                         }
                     }
