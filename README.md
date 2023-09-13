@@ -1,10 +1,10 @@
-# Micro Focus ADM Bamboo Plugin
+# OpenText ADM Bamboo Plugin
 
 ###### Current master branch status: [![Build status](https://ci.appveyor.com/api/projects/status/ggg1nepwx438dpo4?svg=true)](https://ci.appveyor.com/project/HPEbot/adm-bamboo-ci-plugin)
 
 ###### Current latest branch status: [![Build status](https://ci.appveyor.com/api/projects/status/ggg1nepwx438dpo4/branch/latest?svg=true)](https://ci.appveyor.com/project/HPEbot/adm-bamboo-ci-plugin/branch/latest)
 
-This plugin contains the Micro Focus Software products capabilities.
+This plugin contains the OpenText Software products capabilities.
 
 The products currently supported are:
 - LoadRunner
