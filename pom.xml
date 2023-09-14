@@ -96,7 +96,6 @@
         <integrations.sdk.version>2.7.6.1</integrations.sdk.version>
         <nexus-staging-maven-plugin.version>1.6.7</nexus-staging-maven-plugin.version>
 
-        <!--<msbuild.exe>C:\Windows\Microsoft.NET\Framework\v4.0.30319\msbuild.exe</msbuild.exe>-->
         <msbuild.exe>C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe</msbuild.exe>
         <msbuild.configuration>Release</msbuild.configuration>
         <!--bamboo.buildTimestamp>${bamboo.buildTimestamp}</bamboo.buildTimestamp-->
@@ -208,9 +207,16 @@
             <groupId>com.microfocus.adm.performancecenter</groupId>
             <artifactId>plugins-common</artifactId>
             <version>1.1.11</version>
+			<exclusions>
+				<!-- ClassCastException: attempting to cast jar:file:/c:/Bamboo_9/classpath/jaxb-api-2.3.1.jar!/javax/xml/bind/JAXBContext.class to bundle://42.0:1/javax/xml/bind/JAXBContext.class.  Please make sure that you are specifying the proper ClassLoader.-->
+				<exclusion> 
+					<groupId>javax.xml.bind</groupId>
+					<artifactId>jaxb-api</artifactId>
+				</exclusion>
+			</exclusions>
         </dependency>
 
-        <!-- !!!!! VERY IMPORTANT NOTE: jakarta.xml.bind-api 3.0.0-RC1 is required to get rid of JAXB runtime errors, even if it is not used in code, so please do not remove it, unless your are sure the JAXB objects are working with remote agents using either JDK1.8 or JDK11 -->
+        <!-- !!!!! VERY IMPORTANT NOTE: jakarta.xml.bind-api 3.0.0-RC1 is required to get rid of JAXB runtime errors, even if it is not used in code, so please do not remove it, unless you are sure the JAXB objects are working with remote agents using either JDK1.8 or JDK11 -->
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
