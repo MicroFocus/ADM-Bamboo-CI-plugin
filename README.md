@@ -8,7 +8,7 @@ This plugin contains the OpenText Software products capabilities.
 
 The products currently supported are:
 - LoadRunner
-- LoadRunner Enterprise
+- OpenText Enterprise Performance Engineering
 - UFT
 - SV
 

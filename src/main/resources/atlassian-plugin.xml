@@ -171,8 +171,8 @@
                 location="images/task/uft/upload_app.png"/>
     </taskType>
 
-    <taskType key="TaskExecution" name="LoadRunner Enterprise Task" class="com.adm.bamboo.plugin.performancecenter.TaskExecution">
-        <description>Execute LoadRunner Enterprise load test</description>
+    <taskType key="TaskExecution" name="OpenText Enterprise Performance Engineering Task" class="com.adm.bamboo.plugin.performancecenter.TaskExecution">
+        <description>Execute OpenText Enterprise performance Engineering test</description>
         <configuration class="com.adm.bamboo.plugin.performancecenter.TaskConfigurator"/>
         <resource type="download" name="icon" location="/images/pc/pc_64x64.png"/>
         <resource type="freemarker" name="edit" location="templates/performancecenter/configurePC.ftl"/>
