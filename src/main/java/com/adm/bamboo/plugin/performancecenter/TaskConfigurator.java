@@ -48,7 +48,7 @@ import java.util.Map;
  */
 public class TaskConfigurator extends AbstractTaskConfigurator {
 
-    public static final String PC_SERVER = "Server";
+    public static final String PC_SERVER = "LRE Server";
     public static final String USER = "User name";
     public static final String HTTPS = "https";
     public static final String PASSWORD = "Password";

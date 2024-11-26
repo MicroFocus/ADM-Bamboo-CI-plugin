@@ -33,7 +33,7 @@ For example, using https://myserver/LoadTest will fail. Instead, just specify 'm
             </a>
         </td>
         <td>
-            <span>[@ww.textfield name="Server" required='true'/]</span>
+            <span>[@ww.textfield name="LRE Server" required='true'/]</span>
         </td>
     </tr>
     <tr>
@@ -94,7 +94,7 @@ Enter the ClientIdKey and the ClientSecretKey obtained when generating an access
             <span>Project*</span>
         </td>
         <td>
-        [@ww.textfield name="Project" required='true'/]
+        [@ww.textfield name="PC Project" required='true'/]
         </td>
     </tr>
     <tr>
