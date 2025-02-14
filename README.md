@@ -4,12 +4,12 @@
 
 ###### Current latest branch status: [![Build status](https://ci.appveyor.com/api/projects/status/ggg1nepwx438dpo4/branch/latest?svg=true)](https://ci.appveyor.com/project/HPEbot/adm-bamboo-ci-plugin/branch/latest)
 
-This plugin contains the OpenText Software products capabilities.
+This plugin contains the OpenText™ Software products capabilities.
 
 The products currently supported are:
 - LoadRunner
 - LoadRunner Enterprise
-- UFT
+- OpenText Functional Testing
 - SV
 
 ### Development:

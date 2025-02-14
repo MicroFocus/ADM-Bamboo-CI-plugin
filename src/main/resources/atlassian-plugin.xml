@@ -66,8 +66,8 @@
         <context>bamboo-plugin</context>
     </web-resource>
 
-    <capabilityType key="OpenTextUftCapabilityType" name="OpenText UFT One" class="com.adm.bamboo.plugin.uft.capability.UftCapabilityTypeModule" sortOrder="1001">
-        <description>OpenText UFT One Capability Type</description>
+    <capabilityType key="OpenTextUftCapabilityType" name="OpenText™ Functional Testing" class="com.adm.bamboo.plugin.uft.capability.UftCapabilityTypeModule" sortOrder="1001">
+        <description>OpenText™ Functional Testing Capability Type</description>
         <resource type="freemarker" name="edit" location="capability/editMicroFocusCapability.ftl" />
     </capabilityType>
 
@@ -85,7 +85,7 @@
             name="UFT File System Execution"
             class="com.adm.bamboo.plugin.uft.task.RunFromFileSystemUftTask"
             key="RunFromFileSystemUftTask">
-        <description>Execute UFT tests from file system</description>
+        <description>Execute Functional Testing tests from file system</description>
         <category name="test"/>
         <configuration class="com.adm.bamboo.plugin.uft.ui.FileSystemUftTaskConfigurator"/>
         <capabilityDefaultsHelper class="com.adm.bamboo.plugin.uft.capability.UftCapabilityTypeModule"/>
@@ -107,7 +107,7 @@
             name="UFT ALM Execution"
             class="com.adm.bamboo.plugin.uft.task.RunFromAlmUftTask"
             key="RunFromAlmUftTask">
-        <description>Execute UFT tests from ALM</description>
+        <description>Execute Functional Testing tests from Application Quality Management</description>
         <category name="test"/>
         <configuration class="com.adm.bamboo.plugin.uft.ui.AlmUftTaskConfigurator"/>
         <resource
@@ -124,7 +124,7 @@
             name="UFT ALM Lab Management"
             class="com.adm.bamboo.plugin.uft.task.RunFromAlmLabManagementUftTask"
             key="RunFromAlmLabManagementUftTask">
-        <description>Execute UFT tests using ALM Lab Management</description>
+        <description>Execute Functional Testing tests using ALM Lab Management</description>
         <category name="test"/>
         <configuration class="com.adm.bamboo.plugin.uft.ui.AlmLabManagementUftTaskConfigurator"/>
         <resource
@@ -155,10 +155,10 @@
     </taskType>
 
     <taskType
-            name="Digital Lab Application Upload"
+            name="Functional Testing Lab Application Upload"
             class="com.adm.bamboo.plugin.uft.task.UploadApplicationUftTask"
             key="UploadApplicationUftTask">
-        <description>Uploads apps to Digital Lab</description>
+        <description>Uploads apps to Functional Testing Lab</description>
         <category name="test"/>
         <configuration class="com.adm.bamboo.plugin.uft.ui.UploadApplicationUftTaskConfigurator"/>
         <resource

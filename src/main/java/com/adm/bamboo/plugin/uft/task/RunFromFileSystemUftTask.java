@@ -139,7 +139,7 @@ public class RunFromFileSystemUftTask implements AbstractLauncherTask {
     }
 
     /**
-     * If "use Digital Lab" option is checked add the Digital Lab settings to task properties set
+     * If "use Functional Testing Lab" option is checked add the Functional Testing Lab settings to task properties set
      *
      * @param builder
      * @param map
@@ -219,7 +219,7 @@ public class RunFromFileSystemUftTask implements AbstractLauncherTask {
             try {
                 jobJSON = operation.getJobById(jobUUID);
             } catch (HttpConnectionException e) {
-                buildLogger.addErrorLogEntry("********** Failed to connect Digital Lab, please check URL, UserName / Password, and Proxy Configuration ********** ");
+                buildLogger.addErrorLogEntry("********** Failed to connect Functional Testing Lab, please check URL, UserName / Password, and Proxy Configuration ********** ");
             }
 
             if (jobJSON != null) {
