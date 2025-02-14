@@ -313,7 +313,7 @@ namespace HpToolsLauncher.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No HP testing tool is installed on {0}.
+        ///   Looks up a localized string similar to No Functional Testing tool is installed on {0}.
         /// </summary>
         internal static string FileSystemTestsRunner_No_HP_testing_tool_is_installed_on {
             get {
@@ -979,7 +979,7 @@ namespace HpToolsLauncher.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to QTPActivity.TestCleanup - exception {0}.
+        ///   Looks up a localized string similar to Functional TestingActivity.TestCleanup - exception {0}.
         /// </summary>
         internal static string QtpCleanupError {
             get {
@@ -988,7 +988,7 @@ namespace HpToolsLauncher.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to QTP is not launched..
+        ///   Looks up a localized string similar to Functional Testing is not launched..
         /// </summary>
         internal static string QtpNotLaunchedError {
             get {
@@ -997,7 +997,7 @@ namespace HpToolsLauncher.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to QTP could not handle output arguments..
+        ///   Looks up a localized string similar to Functional Testing could not handle output arguments..
         /// </summary>
         internal static string QtpOutputError {
             get {
@@ -1006,7 +1006,7 @@ namespace HpToolsLauncher.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to QTP could not run..
+        ///   Looks up a localized string similar to Functional Testing could not run..
         /// </summary>
         internal static string QtpRunError {
             get {
@@ -1015,8 +1015,8 @@ namespace HpToolsLauncher.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Test execution stopped due to unsaved changes in QuickTest. 
-        ///Save the test in QuickTest and then run it again..
+        ///   Looks up a localized string similar to Test execution stopped due to unsaved changes in Functional Testing. 
+        ///Save the test in Functional Testing and then run it again..
         /// </summary>
         internal static string QtpUnsavedError {
             get {
@@ -1043,7 +1043,7 @@ namespace HpToolsLauncher.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HP Testing Tool is missing : HP Service Test/HP Unified Function Testing.
+        ///   Looks up a localized string similar to Testing Tool is missing : OpenText Functional Testing.
         /// </summary>
         internal static string STExecuterNotFound {
             get {
