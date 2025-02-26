@@ -80,8 +80,8 @@
         <maven-gpg-plugin.version>1.5</maven-gpg-plugin.version>
         <java.version>1.8</java.version>
         <maven-source-plugin.version>2.2.1</maven-source-plugin.version>
-        <bamboo.version>7.0.6</bamboo.version>
-        <bamboo.data.version>7.0.6</bamboo.data.version>
+        <bamboo.version>8.2.9</bamboo.version>
+        <bamboo.data.version>8.2.9</bamboo.data.version>
         <amps.version>8.0.0</amps.version>
         <plugin.testrunner.version>1.2.3</plugin.testrunner.version>
         <atlassian.spring.scanner.version>1.2.13</atlassian.spring.scanner.version>
