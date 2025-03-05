@@ -21,15 +21,15 @@
     <tr>
         <td>
             <a href="#" title=" Hostname or IP address
-The LoadRunner Enterprise Hostname or IP address. If the port of the LRE server is different than the default one, mention it by adding a collon (:) and then the port number
-Example: mypcserver.mycompany.net or 182.138.255.1 or mypcserver.mycompany.net:81
+The server's Hostname or IP address. If the port of the server is different than the default one, mention it by adding a collon (:) and then the port number
+Example: myserver.mycompany.net or 182.138.255.1 or myserver.mycompany.net:81
 
-If the LRE server requires to be accessed via a tenant, you can specify it by adding the tenant details to the LRE Server field.
-Example: mypcserver.mycompany.net/?tenant=fa128c06-5436-413d-9cfa-9f04bb738df3 or 182.138.255.1/?tenant=fa128c06-5436-413d-9cfa-9f04bb738df3 or mypcserver.mycompany.net:81/?tenant=fa128c06-5436-413d-9cfa-9f04bb738df3
+If the server requires to be accessed via a tenant, you can specify it by adding the tenant details to the Server field.
+Example: myserver.mycompany.net/?tenant=fa128c06-5436-413d-9cfa-9f04bb738df3 or 182.138.255.1/?tenant=fa128c06-5436-413d-9cfa-9f04bb738df3 or myserver.mycompany.net:81/?tenant=fa128c06-5436-413d-9cfa-9f04bb738df3
 
-Important: Do not use the full URL of LoadRunner Enterprise server.
-For example, using https://mypcserver/LoadTest will fail. Instead, just specify 'mypcserver' value in 'LRE Server' field and switch on the 'Use HTTPS Protocol' if secured protocol is required.">
-                <span>PC Server*</span>
+Important: Do not use the full URL of OpenText Enterprise Performance Engineering server.
+For example, using https://myserver/LoadTest will fail. Instead, just specify 'myserver' value in 'Server' field and switch on the 'Use HTTPS Protocol' if secured protocol is required.">
+                <span>Server*</span>
             </a>
         </td>
         <td>
@@ -49,13 +49,13 @@ For example, using https://mypcserver/LoadTest will fail. Instead, just specify 
 
         </td>
         <td >
-            <a href="#" title="Depending on the authentication type required by your LoadRunner Enterprise server, credentials can be a username and password, or an API key for SSO or LDAP authentication.
+            <a href="#" title="Depending on the authentication type required by your OpenText Enterprise Performance Engineering server, credentials can be a username and password or an access key (only valid option for SSO authentication).
 - Username and password:
-User name. Enter the user name required to connect to the LoadRunner Enterprise server.
-Password. Enter the password required to connect to the LoadRunner Enterprise server.
-- SSO or LDAP authentication (LoadRunner Enterprise 2021 R1 and later)
+Username. Enter the username required to connect to the server.
+Password. Enter the password required to connect to the server.
+- SSO authentication
 Select Authenticate with token.
-Enter the Client ID and Secret key obtained from your LoadRunner Enterprise site administrator in the Id Key and Secret key fields." >
+Enter the ClientIdKey and the ClientSecretKey obtained when generating an access key from the Administration page in the Id Key and Secret key fields." >
             [@ww.checkbox label='Use token for authentication' name='authenticateWithToken' toggle='true'/]
             </a>
         </td>
@@ -63,7 +63,7 @@ Enter the Client ID and Secret key obtained from your LoadRunner Enterprise site
 
     <tr>
         <td>
-            <a href="#" title="LoadRunner Enterprise User (username) or access Token's Credentials (ClientIdKey)." >
+            <a href="#" title="Username or ClientIdKey of the access key." >
             <span>User name / Id Key*</span>
             </a>
         </td>
@@ -73,7 +73,7 @@ Enter the Client ID and Secret key obtained from your LoadRunner Enterprise site
     </tr>
     <tr>
         <td>
-            <a href="#" title="LoadRunner Enterprise User (password) or Token's Credentials ( or ClientSecretKey)." >
+            <a href="#" title="User's password or ClientSecretKey of the access token." >
                 <span>Password / Secret key</span>
             </a>
         </td>
@@ -91,7 +91,7 @@ Enter the Client ID and Secret key obtained from your LoadRunner Enterprise site
     </tr>
     <tr>
         <td>
-            <span>PC Project*</span>
+            <span>Project*</span>
         </td>
         <td>
         [@ww.textfield name="PC Project" required='true'/]
@@ -99,7 +99,7 @@ Enter the Client ID and Secret key obtained from your LoadRunner Enterprise site
     </tr>
     <tr>
         <td>
-            <a href="#" title="You can get the ID from My LoadRunner Enterprise > Test Management > Test Lab > Performance Test Set view. If the column is not visible, you can select it by clicking the Select Columns button" >
+            <a href="#" title="You can get the ID from the application > Test Management > Test Lab > Performance Test Set view. If the column is not visible, you can select it by clicking the Select Columns button" >
                 <span>Test ID*</span>
             </a>
         </td>
@@ -109,7 +109,7 @@ Enter the Client ID and Secret key obtained from your LoadRunner Enterprise site
     </tr>
     <tr>
         <td style="vertical-align: top;">
-            <a href="#" title="Represents an instance of a performance test within an ALM Test Set. In order to find the test instance id go to: LoadRunner Enterprise Application > Test Lab perspective > Performance Test Set table and look for the ID column" >
+            <a href="#" title="Represents an instance of a performance test within an ALM Test Set. In order to find the test instance id go to: Application > Test Lab perspective > Performance Test Set table and look for the ID column" >
                 <span>Test Instance ID</span>
             </a>
         </td>
@@ -286,7 +286,7 @@ or Leave empty if not using a local proxy. The following proxy configurations ar
         </td>
         <td>
             <a href="#" title="A Virtual User Day (VUD) license provides you with a specified number of Vusers (VUDs) that you can run an unlimited number of times within a 24 hour period.
-Before using this option, make sure that VUDs licenses are applied in your LoadRunner Enterprise environment." >
+Before using this option, make sure that VUDs licenses are applied in your environment." >
                 [@ww.checkbox label='Use VUDs' name='vuds' toggle='true'/]
             </a>
         </td>

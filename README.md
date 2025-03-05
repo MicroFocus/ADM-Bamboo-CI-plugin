@@ -8,9 +8,10 @@ This plugin contains the OpenText™ Software products capabilities.
 
 The products currently supported are:
 - LoadRunner
-- LoadRunner Enterprise
+- OpenText Enterprise Performance Engineering
 - OpenText Functional Testing
 - SV
+
 
 ### Development:
 1. Read https://developer.atlassian.com/server/bamboo/
