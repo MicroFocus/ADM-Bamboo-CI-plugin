@@ -3,7 +3,7 @@
 
 [@ww.textfield labelKey="RunFromAlmTask.almServerInputLbl" name="almServer" required='true'/]
 
-[@ui.bambooSection titleKey='ALM Connectivity' collapsible=true]
+[@ui.bambooSection titleKey='Application Quality Management Connectivity' collapsible=true]
     [@ww.checkbox labelKey="RunFromAlmTask.almSSOEnabledInputLbl" name="almSSO" toggle='true'/]
 
     [@ui.bambooSection dependsOn='almSSO' showOn='true']

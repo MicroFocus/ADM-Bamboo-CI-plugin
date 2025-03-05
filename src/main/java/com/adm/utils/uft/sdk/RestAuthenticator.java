@@ -73,11 +73,11 @@ public class RestAuthenticator {
         boolean result = response.isOk();
         logger.log(
                 result ? String.format(
-                        "Logged in successfully to ALM Server %s using %s",
+                        "Logged in successfully to Application Quality Management Server %s using %s",
                         client.getServerUrl(),
                         clientId)
                         : String.format(
-                        "Login to ALM Server at %s failed. Status Code: %s",
+                        "Login to Application Quality Management Server at %s failed. Status Code: %s",
                         client.getServerUrl(),
                         response.getStatusCode()));
         return result;

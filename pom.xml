@@ -153,6 +153,12 @@
             <groupId>com.atlassian.bamboo</groupId>
             <version>${bamboo.version}</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.transaction</groupId>
+                    <artifactId>jta</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <artifactId>atlassian-spring-scanner-annotation</artifactId>
