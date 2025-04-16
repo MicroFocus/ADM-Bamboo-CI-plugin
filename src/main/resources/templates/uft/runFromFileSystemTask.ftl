@@ -185,13 +185,13 @@
         const useProxyAuth = specifyAuthenticationBox.checked;
 
         if (mcServerURL == "" && userName == "" && password == "") {
-            showDigitalLabAlert(inputMcServerURL, "The Digital Lab URL, User Name and Password fields cannot be empty.");
+            showDigitalLabAlert(inputMcServerURL, "The Functional Testing Lab URL, User Name and Password fields cannot be empty.");
         } else if (mcServerURL == "") {
-            showDigitalLabAlert(inputMcServerURL, "The Digital Lab URL field cannot be empty.");
+            showDigitalLabAlert(inputMcServerURL, "The Functional Testing Lab URL field cannot be empty.");
         } else if (userName == "") {
-            showDigitalLabAlert(inputUserName, "The Digital Lab User Name field cannot be empty.");
+            showDigitalLabAlert(inputUserName, "The Functional Testing Lab User Name field cannot be empty.");
         } else if (password == "") {
-            showDigitalLabAlert(inputPassword, "The Digital Lab Password field cannot be empty.");
+            showDigitalLabAlert(inputPassword, "The Functional Testing Lab Password field cannot be empty.");
         } else if (useProxy && proxyAddr == "") {
             showDigitalLabAlert(inputProxyAddr, "Use Proxy is enabled, but no Proxy Address was provided.");
         } else if (useProxy && useProxyAuth && proxyUserName == "") {
@@ -248,14 +248,14 @@
                         if (status != 200 && status != 201 && status != 202) {
                             openMCBtn.disabled = false;
                             let err = dataJSON.error;
-                            const msg = "Digital Lab login information or proxy is incorrect.";
+                            const msg = "Functional Testing Lab login information or proxy is incorrect.";
                             alert((status > 0 ? ("Http Status: " + status + ", Error: [" + err + "]\n") : "") + msg);
                             return;
                         }
                     }
                     jobId = dataJSON.data && dataJSON.data.id;
                     if (!jobId){
-                        alert('The login to Digital Lab failed. Check that the Digital Lab login information is correct.');
+                        alert('The login to Functional Testing Lab failed. Check that the Functional Testing Lab login information is correct.');
                         openMCBtn.disabled = false;
                         return;
                     }
@@ -270,7 +270,7 @@
                     wizard.focus();
                     window.addEventListener('message', messageEventHandler, false);
                 } else {
-                    alert('The login to Digital Lab failed. Check that the Digital Lab login information is correct.');
+                    alert('The login to Functional Testing Lab failed. Check that the Functional Testing Lab login information is correct.');
                     openMCBtn.disabled = false;
                     return;
                 }
@@ -316,7 +316,7 @@
                 },
                 error: function(error) {
                     console.log("=====get job detail from mc fail====");
-                    alert('Get job detail information from Digital Lab failed, please try again.');
+                    alert('Get job detail information from Functional Testing Lab failed, please try again.');
                     //enable action button after the wizard closed
                     openMCBtn.disabled = false;
                 }

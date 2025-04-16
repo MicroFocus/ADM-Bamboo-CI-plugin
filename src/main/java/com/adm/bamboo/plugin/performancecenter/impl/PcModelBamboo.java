@@ -185,7 +185,7 @@ public class PcModelBamboo {
     @Override
     public String toString() {
 
-        return String.format("[LREServer='%s', User='%s', %s", runParamsToString().substring(1));
+        return String.format("[Server='%s', User='%s', %s", runParamsToString().substring(1));
     }
 
     public String runParamsToString() {
