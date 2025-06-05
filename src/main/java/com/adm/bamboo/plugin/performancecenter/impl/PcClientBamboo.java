@@ -49,6 +49,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
 
 /**
@@ -372,27 +373,39 @@ public class PcClientBamboo {
      * @throws IOException
      */
     public void unzip(String zipFilePath, String destDirectory) throws IOException {
+        // Sanity check
+        try (ZipInputStream zipTest = new ZipInputStream(new FileInputStream(zipFilePath))) {
+            ZipEntry testEntry;
+            while ((testEntry = zipTest.getNextEntry()) != null) {
+                zipTest.closeEntry();
+            }
+        } catch (ZipException e) {
+            throw new IOException("The ZIP file appears to be corrupted: " + e.getMessage(), e);
+        }
+
         File destDir = new File(destDirectory);
         if (!destDir.exists()) {
-            destDir.mkdir();
+            destDir.mkdirs();
         }
-        ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFilePath));
-        ZipEntry entry = zipIn.getNextEntry();
-        // iterates over entries in the zip file
-        while (entry != null) {
-            String filePath = destDirectory + File.separator + entry.getName();
-            if (!entry.isDirectory()) {
-                // if the entry is a file, extracts it
-                extractFile(zipIn, filePath);
-            } else {
-                // if the entry is a directory, make the directory
-                File dir = new File(filePath);
-                dir.mkdir();
+
+        try (ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFilePath))) {
+            ZipEntry entry = zipIn.getNextEntry();
+            while (entry != null) {
+                String filePath = destDirectory + File.separator + entry.getName();
+                if (!entry.isDirectory()) {
+                    File file = new File(filePath);
+                    File parent = file.getParentFile();
+                    if (!parent.exists()) {
+                        parent.mkdirs();
+                    }
+                    extractFile(zipIn, filePath);
+                } else {
+                    new File(filePath).mkdirs();
+                }
+                zipIn.closeEntry();
+                entry = zipIn.getNextEntry();
             }
-            zipIn.closeEntry();
-            entry = zipIn.getNextEntry();
         }
-        zipIn.close();
     }
 
     /**
@@ -403,13 +416,13 @@ public class PcClientBamboo {
      * @throws IOException
      */
     private void extractFile(ZipInputStream zipIn, String filePath) throws IOException {
-        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
-        byte[] bytesIn = new byte[BUFFER_SIZE];
-        int read = 0;
-        while ((read = zipIn.read(bytesIn)) != -1) {
-            bos.write(bytesIn, 0, read);
+        try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath))) {
+            byte[] buffer = new byte[BUFFER_SIZE];
+            int bytesRead;
+            while ((bytesRead = zipIn.read(buffer)) != -1) {
+                bos.write(buffer, 0, bytesRead);
+            }
         }
-        bos.close();
     }
 
 
