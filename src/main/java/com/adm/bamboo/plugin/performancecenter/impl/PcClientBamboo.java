@@ -389,7 +389,7 @@ public class PcClientBamboo {
                         Files.copy(zipFile.getInputStream(entry), targetPath, StandardCopyOption.REPLACE_EXISTING);
                     }
                 } catch (IOException e) {
-                    buildLogger.addBuildLogEntry("warning - failed to unzip entry: " + entry.getName());
+                    //buildLogger.addBuildLogEntry("warning - failed to unzip entry: " + entry.getName());
                 }
             }
         }
