@@ -39,6 +39,8 @@ import com.microfocus.adm.performancecenter.plugins.common.pcentities.PcExceptio
 import com.microfocus.adm.performancecenter.plugins.common.pcentities.PostRunAction;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 
 /**
@@ -103,22 +105,26 @@ public class TaskExecution implements TaskType {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
             buildLogger.addErrorLogEntry("Error while executing load test: " + e.toString());
+            logException(buildLogger, e);
             return TaskResultBuilder.newBuilder(taskContext).failed().build();
         } catch (PcException e) {
-            e.printStackTrace();
-            buildLogger.addErrorLogEntry("Error while executing load test: " + e.toString());
+            buildLogger.addErrorLogEntry("PcException while executing load test: " + e.toString());
+            logException(buildLogger, e);
             return TaskResultBuilder.newBuilder(taskContext).failed().build();
         } catch (InterruptedException e) {
-            e.printStackTrace();
             buildLogger.addErrorLogEntry("Error while executing load test: " + e.toString());
+            logException(buildLogger, e);
             return TaskResultBuilder.newBuilder(taskContext).failed().build();
         }
-
         return TaskResultBuilder.newBuilder(taskContext).success().build();
     }
 
+    private void logException(BuildLogger logger, Exception e) {
+        StringWriter sw = new StringWriter();
+        e.printStackTrace(new PrintWriter(sw));
+        logger.addErrorLogEntry(sw.toString());
+    }
 
     private PostRunAction convertStringBackToPostRunAction(String postRunAction) {
         for (PostRunAction p : PostRunAction.values()) {

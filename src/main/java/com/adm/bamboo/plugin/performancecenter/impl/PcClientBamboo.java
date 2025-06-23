@@ -49,8 +49,9 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
-
+import java.util.zip.*;
 /**
  * Created by bemh on 8/6/2017.
  */
@@ -242,8 +243,6 @@ public class PcClientBamboo {
     }
 
     public String publishRunReport(int runId, String reportDirectory) throws IOException, PcException, InterruptedException {
-
-
         PcRunResults runResultsList = restProxy.getRunResults(runId);
         if (runResultsList.getResultsList() != null) {
             for (PcRunResult result : runResultsList.getResultsList()) {
@@ -254,11 +253,9 @@ public class PcClientBamboo {
                     buildLogger.addBuildLogEntry("Publishing analysis report");
                     restProxy.GetRunResultData(runId, result.getID(), reportArchiveFullPath);
                     File fp = new File(reportArchiveFullPath);
-                    unzip(reportArchiveFullPath, fp.getParent().toString());
+                    unzipFileSkipUnwritable(reportArchiveFullPath, fp.getParent());
                     String reportFile = dir.getPath() + File.separator + pcReportFileName;
                     publishHTMLReportToArtifact();
-                    //Deleting the unziped report file
-                    //  FileUtils.deleteDirectory(dir);
                     return reportFile;
                 }
             }
@@ -363,55 +360,40 @@ public class PcClientBamboo {
         } while (!publishEnded && counter < 120);
     }
 
-    /**
-     * Extracts a zip file specified by the zipFilePath to a directory specified by
-     * destDirectory (will be created if does not exists)
-     *
-     * @param zipFilePath
-     * @param destDirectory
-     * @throws IOException
-     */
-    public void unzip(String zipFilePath, String destDirectory) throws IOException {
-        File destDir = new File(destDirectory);
-        if (!destDir.exists()) {
-            destDir.mkdir();
+    public void unzipFileSkipUnwritable(String zipPathStr, String destDirStr) throws IOException {
+        Path zipPath = Paths.get(zipPathStr);
+        Path destDir = Paths.get(destDirStr);
+        if (!Files.exists(destDir)) {
+            Files.createDirectories(destDir);
         }
-        ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFilePath));
-        ZipEntry entry = zipIn.getNextEntry();
-        // iterates over entries in the zip file
-        while (entry != null) {
-            String filePath = destDirectory + File.separator + entry.getName();
-            if (!entry.isDirectory()) {
-                // if the entry is a file, extracts it
-                extractFile(zipIn, filePath);
-            } else {
-                // if the entry is a directory, make the directory
-                File dir = new File(filePath);
-                dir.mkdir();
+
+        try (ZipFile zipFile = new ZipFile(zipPath.toFile())) {
+            Enumeration<? extends ZipEntry> entries = zipFile.entries();
+
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+
+                // Avoid path traversal (zip slip)
+                Path targetPath = destDir.resolve(entry.getName()).normalize();
+                if (!targetPath.startsWith(destDir)) {
+                    System.err.println("Skipped potentially unsafe entry: " + entry.getName());
+                    continue;
+                }
+
+                try {
+                    if (entry.isDirectory()) {
+                        Files.createDirectories(targetPath);
+                    } else {
+                        Files.createDirectories(targetPath.getParent());
+                        // Attempt to overwrite file
+                        Files.copy(zipFile.getInputStream(entry), targetPath, StandardCopyOption.REPLACE_EXISTING);
+                    }
+                } catch (IOException e) {
+                    //buildLogger.addBuildLogEntry("warning - failed to unzip entry: " + entry.getName());
+                }
             }
-            zipIn.closeEntry();
-            entry = zipIn.getNextEntry();
         }
-        zipIn.close();
     }
-
-    /**
-     * Extracts a zip entry (file entry)
-     *
-     * @param zipIn
-     * @param filePath
-     * @throws IOException
-     */
-    private void extractFile(ZipInputStream zipIn, String filePath) throws IOException {
-        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
-        byte[] bytesIn = new byte[BUFFER_SIZE];
-        int read = 0;
-        while ((read = zipIn.read(bytesIn)) != -1) {
-            bos.write(bytesIn, 0, read);
-        }
-        bos.close();
-    }
-
 
     public boolean downloadTrendReportAsPdf(String trendReportId, String directory) throws PcException {
 
